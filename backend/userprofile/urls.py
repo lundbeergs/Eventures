@@ -20,7 +20,7 @@ urlpatterns = [
     path('organizations/<uuid:organization_id>/', OrganizationStudentView.as_view()),
 
     # För alla events (homepage)
-    path('<uuid:student_id>/events/', StudentEventView.as_view()),      # behövs studetn_id va me här? kanske kan användas ex när försöker bli member?
+    path('events/', StudentEventView.as_view()),      # behövs studetn_id va me här? kanske kan användas ex när försöker bli member?
     
     # För events på organizationprofile
     path('organizations/<uuid:organization_id>/events/', OrganizationEventView.as_view(), name='organization_event_list'),                     

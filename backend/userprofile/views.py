@@ -5,7 +5,6 @@ from rest_framework import status, viewsets
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS, BasePermission
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
 from user.serializers import *
 from userprofile.models import *
@@ -24,12 +23,16 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 #           - på orgsida ska finnas knapp BECOME MEMBBER och eventuellt alla organisaionens events under dess profil
 #  
 
+
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+    
 class StudentEventView(APIView):
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = [JWTAuthentication]
+    permission_classes = (IsAuthenticated|ReadOnly)
     
     # För studenthomepage se alla event
-    def get(self, request, student_id):
+    def get(self, request):
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
@@ -159,9 +162,6 @@ class OrganizationMembershipView(APIView):
         serializer = MembershipSerializer(memberships, many=True)
         return Response(serializer.data)
 
-class ReadOnly(BasePermission):
-    def has_permission(self, request, view):
-        return request.method in SAFE_METHODS
 
 class OrganizationListView(APIView):
     permission_classes = [IsAuthenticated|ReadOnly]
