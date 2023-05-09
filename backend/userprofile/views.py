@@ -23,12 +23,16 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 #           - på orgsida ska finnas knapp BECOME MEMBBER och eventuellt alla organisaionens events under dess profil
 #  
 
+
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+    
 class StudentEventView(APIView):
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = [JWTAuthentication]
+    permission_classes = (IsAuthenticated|ReadOnly)
     
     # För studenthomepage se alla event
-    def get(self, request, student_id):
+    def get(self, request):
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
