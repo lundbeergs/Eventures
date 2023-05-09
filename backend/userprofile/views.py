@@ -184,10 +184,6 @@ class MembershipDeleteView(APIView):
 
         return Response({'detail': 'Membership deleted.'})
 
-class ReadOnly(BasePermission):
-    def has_permission(self, request, view):
-        return request.method in SAFE_METHODS
-
 class OrganizationListView(APIView):
     permission_classes = [IsAuthenticated|ReadOnly]
     authentication_classes = [JWTAuthentication]
