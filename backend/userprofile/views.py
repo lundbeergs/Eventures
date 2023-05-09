@@ -1,0 +1,332 @@
+from django.shortcuts import render
+
+# Create your views here.
+from rest_framework import status, viewsets
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS, BasePermission
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.views import APIView
+from user.serializers import *
+from userprofile.models import *
+from user.models import User
+from rest_framework.permissions import AllowAny
+from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
+# Eventsidadiskussion 
+#   - när trycker på "events" dyker ALLA events upp, även från organisationer man ej är member av
+#           - när klickar på event kommer till eventsidan
+#           - om ej member ska buy tickets va gråat och ska stå att måste va member
+#   - när trycker på "organizations" dyker ALLA organisationer upp
+#           - när klickar på organisation kommer in på orgsida
+#           - på orgsida ska finnas knapp BECOME MEMBBER och eventuellt alla organisaionens events under dess profil
+#  
+
+class StudentEventView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+    
+    # För studenthomepage se alla event
+    def get(self, request, student_id):
+        events = Event.objects.all()
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data)
+   
+        
+    # Ska vi göra så att events för en viss org visas för student när klickar på den org? 
+    # Kan man isf från frontend bara göra en request till get i OrganizationEventView
+    
+
+# OBS ALLA ARGUMENT SOM organization_id, event_id osv MÅSTE FINNAS I URL!!! k
+class OrganizationEventView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication] 
+
+    # För att se en orgs events  
+    #       - OBS: org_id tas nu från URL!!! Hur kommer det funka om det är en student som gör getrequesten? asså en student som trycker på orgprofilen? organisationens url kommer väl från när man logga in som organisation, studenten har väl ej tilgång till den?????
+    #       - samt borde vi inte ha mer "if student/ if org" både här och för ex membershiprequests? asså för säkerhetsaspekten typ :P
+    def get(self, request, organization_id):    
+        events = Event.objects.filter(event_org=organization_id)
+        serialized_events = EventSerializer(events, many=True)
+        return Response(serialized_events.data)
+       
+    # För att ändra events
+    def put(self, request, organization_id, event_id):
+        try:
+            event = Event.objects.get(pk=event_id, event_org_id=organization_id)
+        except Event.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = EventSerializer(event, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # För att lägga till nya
+    def post(self, request, organization_id):
+        serializer = EventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(event_org_id=organization_id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # för att ta bort event
+    def delete(self, request, organization_id, event_id):
+        try:
+            event = Event.objects.get(pk=event_id, event_org_id=organization_id)
+        except Event.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class MembershipRequestView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request, organization_id, student_id):
+        serializer = MembershipRequestSerializer(data=request.data)
+        if serializer.is_valid() and request.user.is_student:
+            serializer.save(student=request.user.student_profile)               
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Responsible for retreiving the list of membership requests for an organization ('GET')
+# and updating the status of a membership request ('PUT)
+
+
+class OrganizationMembershipRequestsView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, organization_id):     
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        requests = MembershipRequest.objects.filter(organization=organization)
+        serializer = MembershipRequestSerializer(requests, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, organization_id, student_id):
+        student_id = request.data.get('student_id')
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        student = StudentProfile.objects.get(id=student_id)
+
+        membership_request = MembershipRequest.objects.filter(
+            organization=organization, student=student).first()
+        if not membership_request:
+            return Response({'detail': 'Membership request does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        #if membership_request.accepted:
+        #    return Response({'detail': 'Student is already a member.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        membership_request.accepted = True
+        membership_request.save()
+
+        Membership.objects.create(
+            organization=organization,
+            student=student,
+        )
+
+        return Response({'detail': 'Membership changed to accepted.'})
+
+
+class StudentMembershipView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        memberships = Membership.objects.filter(
+            student=request.user.student_profile)
+        serializer = MembershipSerializer(memberships, many=True)
+        return Response(serializer.data)
+
+
+class OrganizationMembershipView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, organization_id):
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        if not organization.org_members.filter(id=request.user.student_profile.id).exists():
+            return Response({'detail': 'You are not a member of this organization.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        memberships = Membership.objects.filter(organization=organization)
+        serializer = MembershipSerializer(memberships, many=True)
+        return Response(serializer.data)
+
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
+class OrganizationListView(APIView):
+    permission_classes = [IsAuthenticated|ReadOnly]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        organizations = OrganizationProfile.objects.all()
+        serializer = OrganizationListSerializer(organizations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+#För en student att kunna få in fullständig information om Organization profile
+class OrganizationStudentView(APIView):
+    permission_classes = [IsAuthenticated|ReadOnly]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request, organization_id):
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        serializer = OrganizationDetailSerializer(organization)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# class OrganizationProfileList(generics.ListAPIView):
+#     serializer_class = OrganizationSerializer
+#     permission_classes = [IsAuthenticated|ReadOnly]
+#     organizations_name = OrganizationProfile.objects.filter().values_list('org_name')
+
+#     def get_queryset(self):
+#         organizations_name = OrganizationProfile.objects.filter().values_list('org_name')
+#         return organizations_name
+
+
+# qs = OrganizationProfile.objects.all()
+#         org_name = self.request.query_params.get('title')
+#         if org_name is not None:
+#             qs =  qs.filter(org_name__icontains=org_name)
+# 		return qs
+
+class UserProfileView(RetrieveAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        try:
+            if request.user.is_student == True:
+                user_profile = StudentProfile.objects.get(user=request.user)
+                status_code = status.HTTP_200_OK
+                response = {
+                    'success': 'true',
+                    'status code': status_code,
+                    'message': 'Student profile fetched successfully',
+                    'data': [{
+                        'id': user_profile.id,
+                        'first_name': user_profile.first_name,
+                        'last_name': user_profile.last_name,
+                        'allergies': user_profile.allergies,
+                    }]
+                }
+            if request.user.is_organization == True:
+                user_profile = OrganizationProfile.objects.get(
+                    user=request.user)
+                status_code = status.HTTP_200_OK
+                response = {
+                    'success': 'true',
+                    'status code': status_code,
+                    'message': 'Organization profile fetched successfully',
+                    'data': [{
+                        'id': user_profile.id,
+                        'org_name': user_profile.org_name,
+                        'org_bio': user_profile.org_bio,
+                    }]
+                }
+            if request.user.is_superuser == True:
+                userprofile = User.objects.get(user=request.user)
+                status_code = status.HTTP_200_OK
+                response = {
+                    'success': 'true',
+                    'status code': status_code,
+                    'message': 'Admin profile fetched successfully',
+                    'data': [{
+                        'email': user_profile.email,
+                    }]
+                }
+
+        except Exception as e:
+            status_code = status.HTTP_400_BAD_REQUEST
+            response = {
+                'success': 'false',
+                'status code': status.HTTP_400_BAD_REQUEST,
+                'message': 'User does not exists',
+                'error': str(e)
+            }
+        return Response(response, status=status_code)
+    def put(self, request):
+        try:
+            if request.user.is_student == True:
+                user_profile = StudentProfile.objects.get(user=request.user)
+                serializer = StudentSerializer(user_profile, data=request.data)
+            elif request.user.is_organization == True:
+                user_profile = OrganizationProfile.objects.get(user=request.user)
+                serializer = OrganizationSerializer(user_profile, data=request.data)
+            else:
+                raise Exception('User is not a student or organization')
+            
+            if serializer.is_valid():
+                serializer.save()
+                status_code = status.HTTP_200_OK
+                response = {
+                    'success': 'true',
+                    'status code': status_code,
+                    'message': 'User profile updated successfully'
+                }
+            else:
+                status_code = status.HTTP_400_BAD_REQUEST
+                response = {
+                    'success': 'false',
+                    'status code': status.HTTP_400_BAD_REQUEST,
+                    'message': 'Validation error',
+                    'error': serializer.errors
+                }
+        except Exception as e:
+            status_code = status.HTTP_400_BAD_REQUEST
+            response = {
+                'success': 'false',
+                'status code': status.HTTP_400_BAD_REQUEST,
+                'message': 'User does not exist or invalid request',
+                'error': str(e)
+            }
+        return Response(response, status=status_code)
+
+# class OrganizationViewSet(viewsets.ModelViewSet):
+    
+# 	queryset = OrganizationProfile.objects.all()
+#     serializer_class = OrganizationSerializer
+# 	permission_classes = (AllowAny,)
+# 	def get_queryset(self):
+#     	qs = OrganizationProfile.objects.all()
+#         org_name = self.request.query_params.get('title')
+#         if org_name is not None:
+#             qs =  qs.filter(org_name__icontains=org_name)
+# 		return qs
+
+
+# GAMLA KODER
+
+
+# class OrganizationMembershipRequestsView(APIView):
+#     permission_classes = (IsAuthenticated,)
+#     authentication_classes = (JSONWebTokenAuthentication,)
+
+#     def get(self, request, organization_id):
+#         organization = OrganizationProfile.objects.get(id=organization_id)
+#         requests = MembershipRequest.objects.filter(organization=organization)
+#         serializer = MembershipRequestSerializer(requests, many=True)
+#         return Response(serializer.data)
+
+#     def put(self, request, organization_id):
+#         organization = OrganizationProfile.objects.get(id=organization_id)
+#         request_id = request.data.get('request_id')
+#         accepted = request.data.get('accepted')
+#         membership_request = MembershipRequest.objects.get(id=request_id, organization=organization)
+#         if accepted:
+#             membership_request.accepted = True
+#             membership_request.save()
+#             organization.members.add(membership_request.student)
+#         else:
+#             membership_request.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
