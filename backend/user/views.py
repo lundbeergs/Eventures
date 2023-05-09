@@ -12,7 +12,6 @@ from user.serializers import UserLoginSerializer
 from user.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import authentication, permissions
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated

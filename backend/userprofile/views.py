@@ -5,7 +5,6 @@ from rest_framework import status, viewsets
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS, BasePermission
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
 from user.serializers import *
 from userprofile.models import *
@@ -112,7 +111,7 @@ class OrganizationMembershipRequestsView(APIView):
         return Response(serializer.data)
 
     def put(self, request, organization_id, student_id):
-        student_id = request.data.get('student_id')
+        # student_id = request.data.get('student_id')
         organization = OrganizationProfile.objects.get(id=organization_id)
         student = StudentProfile.objects.get(id=student_id)
 
@@ -131,6 +130,7 @@ class OrganizationMembershipRequestsView(APIView):
             organization=organization,
             student=student,
         )
+        membership_request.delete()
 
         return Response({'detail': 'Membership changed to accepted.'})
 
@@ -158,6 +158,27 @@ class OrganizationMembershipView(APIView):
         memberships = Membership.objects.filter(organization=organization)
         serializer = MembershipSerializer(memberships, many=True)
         return Response(serializer.data)
+
+class MembershipDeleteView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+
+    def delete(self, request, organization_id, student_id):
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        student = StudentProfile.objects.get(id=student_id)
+
+        membership = Membership.objects.filter(
+            organization=organization, student=student).first()
+        if not membership:
+            return Response({'detail': 'Membership does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the requesting user is an authorized member of the organization
+        if not organization.org_members.filter(id=request.user.student_profile.id).exists():
+            return Response({'detail': 'You are not authorized to delete this membership.'}, status=status.HTTP_403_FORBIDDEN)
+
+        membership.delete()
+
+        return Response({'detail': 'Membership deleted.'})
 
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
