@@ -18,6 +18,7 @@ urlpatterns = [
     path('memberships/<uuid:organization_id>/', OrganizationMembershipView.as_view(), name='organization-memberships'),
     path('organizations/', OrganizationListView.as_view()),
     path('organizations/<uuid:organization_id>/', OrganizationStudentView.as_view()),
+    path('student/home/', StudentHomePageView.as_view(), name='student-home'),
 
     # För alla events (homepage)
     path('events/', StudentEventView.as_view()),      # behövs studetn_id va me här? kanske kan användas ex när försöker bli member?
