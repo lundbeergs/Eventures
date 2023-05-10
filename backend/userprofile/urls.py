@@ -16,6 +16,8 @@ urlpatterns = [
 	path('membership/requests/<uuid:organization_id>/<uuid:student_id>/', OrganizationMembershipRequestsView.as_view()),
     path('memberships/', StudentMembershipView.as_view(), name='student-memberships'),
     path('memberships/<uuid:organization_id>/', OrganizationMembershipView.as_view(), name='organization-memberships'),
+	path('membership/organization/<uuid:organization_id>/<uuid:student_id>/', MembershipDeleteView.as_view(), name='membership_delete'),
+
     path('organizations/', OrganizationListView.as_view()),
     path('organizations/<uuid:organization_id>/', OrganizationStudentView.as_view()),
     path('student/home/', StudentHomePageView.as_view(), name='student-home'),

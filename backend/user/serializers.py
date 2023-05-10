@@ -13,7 +13,7 @@ class MembershipRequestSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class MembershipSerializer(serializers.ModelSerializer):
-
+    
     class Meta: 
         model = Membership
         fields = '__all__'
@@ -27,12 +27,12 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = ('id','first_name', 'last_name', 'allergies')
 
 class OrganizationSerializer(serializers.ModelSerializer):
-    org_members = MembershipSerializer(many = True, read_only =True, required=False)
-    org_memberrequests = MembershipRequestSerializer(many=True, read_only=True, required=False)
+    memberships = MembershipSerializer(many=True, read_only=True, source='org_memberships')
+    member_requests = MembershipRequestSerializer(many=True, read_only=True, source='org_memberrequests')
+
     class Meta:
         model = OrganizationProfile
-        fields = ('id', 'org_name', 'org_bio', 'org_members', 'org_memberrequests')
-
+        fields = ('id', 'org_name', 'org_bio', 'memberships', 'member_requests')
 
 class OrganizationListSerializer(serializers.ModelSerializer):
     class Meta:
