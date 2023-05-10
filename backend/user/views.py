@@ -136,7 +136,7 @@ class UserLogoutView(APIView):
     
 
 class UserDeleteAPIView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def delete(self, request):
         try:
