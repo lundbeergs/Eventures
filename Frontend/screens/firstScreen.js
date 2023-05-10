@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwtDecode from "jwt-decode";
@@ -17,9 +17,11 @@ import GlobalStyles from "../global-style";
 import eventures from "../assets/images/eventures.png";
 import PurpleButton from "../components/PurpleButton";
 import { StatusBar } from "expo-status-bar";
+import Loader from "../components/Loader";
 
 export default function FirstPage() {
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(true);
 
   const checkRefreshToken = async () => {
     try {
@@ -38,6 +40,10 @@ export default function FirstPage() {
     } catch (error) {
       console.log("Error retrieving refresh token:", error);
       // Handle the error
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 8000); // Wait for 8 seconds before setting isLoading to false
     }
   };
 
@@ -53,21 +59,27 @@ export default function FirstPage() {
     navigation.navigate("OrganizationLoginPage");
   }
 
-
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <StatusBar barStyle="dark-content"/>
-      <Image style={GlobalStyles.eventuresImage} source={eventures}></Image>
-      <View style={styles.contentContainer}>
-        <Text style={GlobalStyles.header}> I am a... </Text>
-        <View style={GlobalStyles.buttonContainer}>
-          <PurpleButton onPress={studentButtonHandler} text={"Student"} />
-          <PurpleButton
-            onPress={organizationButtonHandler}
-            text={"Organization"}
-          />
-        </View>
-      </View>
+      <StatusBar barStyle="dark-content" />
+      {isLoading ? ( // render the loader if isLoading is true
+        <Loader />
+      ) : (
+        // otherwise, render the content
+        <>
+          <Image style={GlobalStyles.eventuresImage} source={eventures}></Image>
+          <View style={styles.contentContainer}>
+            <Text style={GlobalStyles.header}> I am a... </Text>
+            <View style={GlobalStyles.buttonContainer}>
+              <PurpleButton onPress={studentButtonHandler} text={"Student"} />
+              <PurpleButton
+                onPress={organizationButtonHandler}
+                text={"Organization"}
+              />
+            </View>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 }
