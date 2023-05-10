@@ -11,10 +11,6 @@ const GlobalStyles = StyleSheet.create({
     backgroundColor: "#B8E3FF",   
   },
 
-  topOfPage: {
-    height: '2%',
-  },
-
   //Text
   header: {
     fontSize: 20,
