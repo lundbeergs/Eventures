@@ -8,7 +8,6 @@ const TestLoginPage = () => {
   const [password, setPassword] = useState("");
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
-  const [phone_number, setPhoneNumber] = useState("");
   const [allergies, setAllergies] = useState("");
   const [error, setError] = useState("");
 
@@ -22,7 +21,6 @@ const TestLoginPage = () => {
         profile: {
         first_name: first_name,
         last_name: last_name,
-        phone_number: phone_number,
         allergies: allergies}
       };
       const response = await API_BASE_URL.post(
@@ -59,10 +57,6 @@ const TestLoginPage = () => {
       <TextInput
         placeholder="Last name"
         onChangeText={(text) => setLastName(text)}
-      />
-      <TextInput
-        placeholder="Phone Number"
-        onChangeText={(text) => setPhoneNumber(text)}
       />
       <TextInput
         placeholder="Allergies"
