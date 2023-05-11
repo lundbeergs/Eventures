@@ -11,7 +11,11 @@ from userprofile.views import *
 urlpatterns = [
 	path('profile/',UserProfileView.as_view()),
     path('membership/request/', MembershipRequestView.as_view()), # FUNKAR INTE OBS
+
+    # Sjsjsjs
 	path('membership/request/<uuid:organization_id>/<uuid:student_id>/', MembershipRequestView.as_view()), # ANVÄND DENNA <3
+
+    # Hahahah
     path('membership/requests/<uuid:organization_id>/', OrganizationMembershipRequestsView.as_view()),
 	path('membership/requests/<uuid:organization_id>/<uuid:student_id>/', OrganizationMembershipRequestsView.as_view()),
     path('memberships/', StudentMembershipView.as_view(), name='student-memberships'),
