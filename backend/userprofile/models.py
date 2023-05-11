@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from user.models import User
+from phone_field import PhoneField
 
 class StudentProfile(models.Model):
 
@@ -10,7 +11,7 @@ class StudentProfile(models.Model):
 	last_name = models.CharField(max_length=50, unique=False)
 	allergies = models.TextField(max_length=100, unique=False)
 
-	
+
 	class Meta:
 		'''
 		to set table name in database
@@ -22,6 +23,8 @@ class OrganizationProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='organization_profile')
 	org_name = models.CharField(max_length=50, unique=False)
 	org_bio = models.CharField(max_length=50, unique=False)
+	# contact_email = models.EmailField(max_length=254, required = False, help_text ='Contact email')
+	# contact_phone = PhoneField(blank=True, null=True, required = False, help_text='Contact phone number')
 	
 	#org_icon = models.ImageField(upload_to='org_icons/', blank=True, null=True)
 	#org_pic = models.ImageField(upload_to='org_pics/', blank=True, null=True)

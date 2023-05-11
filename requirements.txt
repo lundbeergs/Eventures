@@ -4,3 +4,4 @@ django-allauth==0.42.0
 django-rest-auth==0.9.5
 django-cors-headers
 djangorestframework_simplejwt == 5.2.2
+django-phone-field-1.8.1

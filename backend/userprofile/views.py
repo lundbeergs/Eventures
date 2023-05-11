@@ -12,6 +12,7 @@ from user.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.utils import timezone
 
 
 # Eventsidadiskussion 
@@ -87,7 +88,82 @@ class OrganizationEventView(APIView):
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+# class StudentHomePageView(viewsets.ModelViewSet):
+#     serializer_class = EventSerializer
+#     permission_classes = (IsAuthenticated)
 
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.is_student:
+#             student = StudentProfile.objects.get(user.id)
+#             organizations = student.member_organizations.all()
+#             events = Event.objects.filter(event_org__in=organizations)
+#             return events
+#         else:
+#             organization = user.organization_profile
+#             events = organization.event.all()
+#             return events
+
+
+# class StudentHomePageView(generics.ListAPIView):
+#     serializer_class = EventSerializer
+
+#     def get_queryset(self):
+#         student_profile = self.request.user.student_profile
+#         memberships = Membership.objects.filter(student=student_profile)
+#         organization_ids = memberships.values_list('organization__id', flat=True)
+#         queryset = Event.objects.filter(event_org__id__in=organization_ids, event_release__lte=timezone.now())
+#         queryset = queryset.order_by('event_release')
+#         return queryset
+
+#DEN HÄR FINKAR!!!!! --------
+class StudentHomePageView(APIView):
+     def get(self, request):
+         # Get the current user
+         user = request.user
+        
+         # Get the student profile of the current user
+         student_profile = StudentProfile.objects.get(user=user)
+        
+         # Get all organizations that the student is a member of
+         organizations = student_profile.member_organizations.all()
+        
+         # Get all events associated with each organization that the student is a member of
+         events = []
+         for organization in organizations:
+             organization_events = organization.event.all()
+             events += list(organization_events)
+        
+         # Serialize the events and return the response
+         serializer = EventSerializer(events, many=True)
+         return Response(serializer.data)
+
+#DENNA OVAN FUNKAR!!!!!!!! ----------
+
+    # def get(self, request, student_id):
+    #     student = StudentProfile.objects.get(id=student_id)
+
+    #     events = Event.objects.all()
+    #     serializer = EventSerializer(events, many=True)
+    #     return Response(serializer.data)
+
+    # @action(detail=True, methods=['get'], url_path='events')
+    # def get_events(self, request, student_id):
+    #     # Get the student from the request user
+    #     student = StudentProfile.objects.get(id=student_id)
+
+    #     # Get all the organizations that the student is a member of
+    #     organizations = student.member_organizations.all()
+    #     memberships = Membership.objects.filter(
+    #         student=request.user.student_profile)
+
+        # # Get all the events related to the organizations that the student is a member of
+        # events = Event.objects.filter(event_org__in=organizations)
+
+        # # Serialize the events
+        # serializer = EventSerializer(events, many=True)
+
+        # return Response(serializer.data)
 
 class MembershipRequestView(APIView):
     permission_classes = (IsAuthenticated,)
