@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   },
   qrCodeContainer: {
     alignItems: 'center',
+    justifyContent: 'center'
   },
   qrCodeText: {
     marginTop: 10,

@@ -107,7 +107,7 @@ const MyProfilePage = () => {
             </View>
           </View>
         </ImageBackground>
-
+        <View style={styles.lowerWhiteBoxContainer}>
         <View style={styles.infotextContainer}>
           <Text style={styles.header}>
             {firstName} {lastName}
@@ -115,16 +115,17 @@ const MyProfilePage = () => {
           <Text style={styles.text}>First name: {firstName}</Text>
           <Text style={styles.text}>Last name: {lastName}</Text>
           <Text style={styles.text}>Allergies: {allergies}</Text>
-          <TouchableOpacity
-            style={styles.editIconContainer}
-            onPress={handleEditProfile}
-          >
-            <Ionicons name="create-outline" size={30} color="black" />
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          style={styles.editIconContainer}
+          onPress={handleEditProfile}
+        >
+          <Ionicons name="create-outline" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
       </View>
 
-      <View style={{flex: 1, justifyContent: 'space-between'}}>
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
         <View style={{ marginHorizontal: "8%", marginTop: 20 }}>
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My memberships</Text>
@@ -140,6 +141,7 @@ const MyProfilePage = () => {
 
 const styles = StyleSheet.create({
   whiteBox: {
+    height: '43%',
     backgroundColor: "white",
     borderRadius: 4,
     marginHorizontal: "8%",
@@ -194,7 +196,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "regular",
   },
-  editIconContainer: {},
+  editIconContainer: {
+    justifyContent: 'center',
+    marginTop: '20%',
+  },
   buttonContainer: {
     width: "100%",
     bottom: "2%",
@@ -216,3 +221,22 @@ const styles = StyleSheet.create({
 });
 
 export default MyProfilePage;
+
+/* 
+<View style={styles.lowerWhiteBoxContainer}>
+        <View style={styles.infotextContainer}>
+          <Text style={styles.header}>
+            {firstName} {lastName}
+          </Text>
+          <Text style={styles.text}>First name: {firstName}</Text>
+          <Text style={styles.text}>Last name: {lastName}</Text>
+          <Text style={styles.text}>Allergies: {allergies}</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.editIconContainer}
+          onPress={handleEditProfile}
+        >
+          <Ionicons name="create-outline" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
+      */

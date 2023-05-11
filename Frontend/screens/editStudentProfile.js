@@ -12,14 +12,22 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import PurpleButton from "../components/PurpleButton";
+import PopUpModal from "../components/PopUpModal";
 
 export default function EditStudentProfileScreen() {
   const navigation = useNavigation();
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [allergies, setAllergies] = useState("");
+  const [error, setError] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleSave = async () => {
+    if (!first_name || !last_name || !allergies) {
+      setError("Please fill in all the required fields to edit your profile");
+      setModalVisible(true);
+      return;
+    }
     const body = {
       first_name: first_name,
       last_name: last_name,
@@ -66,6 +74,10 @@ export default function EditStudentProfileScreen() {
     getProfile();
   }, []);
 
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
         <View style={GlobalStyles.inputContainer}>
@@ -103,6 +115,12 @@ export default function EditStudentProfileScreen() {
           <PurpleButton onPress={handleSave} text={'Save'}/>
           </View>
         </View>
+        <PopUpModal
+        isVisible={modalVisible}
+        text={error}
+        closeModal={closeModal}
+        buttonText="OK"
+      />
     </SafeAreaView>
   );
 }

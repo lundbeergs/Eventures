@@ -69,6 +69,7 @@ export default function StudentLoginPage() {
         email: email,
         password: password,
       });
+      console.log(response.data)
       const { access, refresh } = response.data;
       if (!access || !refresh) {
         throw new Error("Tokens not found in response data");

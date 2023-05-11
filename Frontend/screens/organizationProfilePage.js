@@ -3,6 +3,10 @@ import { useRoute} from '@react-navigation/native';
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
 import stsKV from '../assets/images/stsKV.jpg'
 import whiteCirkle from '../assets/images/whiteCirkle.png'
+import PurpleButton from "../components/PurpleButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "../axios";
+import { useNavigation} from "@react-navigation/native";
 
 const orgInfo = {orginfo_name: 'STS-sektionen', orginfo_information:'Välkommen till STS-sektionen'}; 
 
@@ -11,6 +15,36 @@ const orgInfo = {orginfo_name: 'STS-sektionen', orginfo_information:'Välkommen 
 
 const OrganizationProfilePage = () => {
   const route = useRoute(); 
+  const navigation = useNavigation();
+
+  const logOutHandler = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+
+      const response = await API_BASE_URL.post(
+        "/api/logout/",
+        {
+          all: true, // Set the 'all' key to true to blacklist all refresh tokens
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        await AsyncStorage.removeItem("accessToken");
+        await AsyncStorage.removeItem("refreshToken");
+
+        navigation.navigate("FirstPage");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   
   return (
     
@@ -29,6 +63,10 @@ const OrganizationProfilePage = () => {
       <Text style={{textAlign: 'center', fontSize: 17}}> {orgInfo.orginfo_name}s eventures </Text>
       </View>
       </ScrollView>
+      <View style={styles.buttonContainer}>
+          <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
+        </View>
+
 
     </View>
 

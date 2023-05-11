@@ -11,18 +11,43 @@ import { useNavigation } from "@react-navigation/native";
 import { API_BASE_URL } from "../axios.js";
 import GlobalStyles from "../global-style.js";
 import PurpleButton from "../components/PurpleButton.js";
+import PopUpModal from "../components/PopUpModal.js";
 
 const StudentSignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [reenterPassword, setReenterPassword] = useState("");
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [allergies, setAllergies] = useState("");
   const [error, setError] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(true);
 
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
+    if (!email || !password || !first_name || !last_name || !allergies) {
+      setError("Please fill in all the required fields to register");
+      setModalVisible(true);
+      return;
+    }
+    if (!isEmailValid(email)) {
+      setError("Please enter a valid email address");
+      setModalVisible(true);
+      return;
+    }
+    if (password !== reenterPassword) {
+      setError("Passwords do not match");
+      setPasswordMatch(false); 
+      setModalVisible(true);
+      return;
+    }
+    if (!isPasswordValid(password)) {
+      setError("Password must be at least 8 characters long and contain at least one number");
+      setModalVisible(true);
+      return;
+    }
     try {
       const body = {
         email: email,
@@ -35,13 +60,38 @@ const StudentSignUp = () => {
       };
       const response = await API_BASE_URL.post("/api/signup/student/", body);
       const state = {
-        userToken: response.data.token, // assuming the API returns a token
+        userToken: response.data.token, 
       };
-      navigation.navigate("StudentLoginPage"); // navigate to the home screen after successful authentication
+      navigation.navigate("StudentLoginPage"); 
     } catch (error) {
       console.log(error);
       setError("There was an error processing your request.");
     }
+  };
+
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleReenterPasswordChange = (text) => {
+    setReenterPassword(text);
+    setPasswordMatch(text === password);
+  };
+
+  const isPasswordValid = (password) => {
+    if (password.length < 8) {
+      return false;
+    }
+    const numberRegex = /[0-9]/;
+    if (!numberRegex.test(password)) {
+      return false;
+    }
+    return true;
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
   };
 
   return (
@@ -82,6 +132,7 @@ const StudentSignUp = () => {
                 placeholderTextColor={"grey"}
                 style={GlobalStyles.inputText}
                 onChangeText={(text) => setPassword(text)}
+                secureTextEntry={true}
               ></TextInput>
             </View>
             <View style={GlobalStyles.inputComponent}>
@@ -89,7 +140,13 @@ const StudentSignUp = () => {
               <TextInput
                 placeholder="Re enter password..."
                 placeholderTextColor={"grey"}
-                style={GlobalStyles.inputText}
+                style={[
+                  GlobalStyles.inputText,
+                  !passwordMatch && styles.inputTextError,
+                ]}
+                value={reenterPassword}
+                onChangeText={handleReenterPasswordChange}
+                secureTextEntry={true}
               ></TextInput>
             </View>
             <View style={GlobalStyles.inputComponent}>
@@ -106,6 +163,13 @@ const StudentSignUp = () => {
       <View style={styles.buttonContainer}>
             <PurpleButton onPress={handleSubmit} text={"Sign Up"} />
           </View>
+
+          <PopUpModal
+        isVisible={modalVisible}
+        text={error}
+        closeModal={closeModal}
+        buttonText="OK"
+      />
     </SafeAreaView>
   );
 };
@@ -124,6 +188,9 @@ const styles = StyleSheet.create({
   inputModalContainer: {
     width: "100%",
     marginTop: 10,
+  },
+  inputTextError: {
+    color: "red",
   },
   buttonContainer: {
     width: "100%",

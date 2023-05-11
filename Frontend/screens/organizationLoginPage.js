@@ -66,7 +66,6 @@ export default function OrganizationLoginPage() {
     }
   };
 
-
   const loginHandler = async () => {
     try {
       const response = await API_BASE_URL.post("/api/signin/", {
