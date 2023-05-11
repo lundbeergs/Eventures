@@ -11,6 +11,7 @@ import { useState, useEffect} from "react";
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
+import PurpleButton from "../components/PurpleButton";
 
 export default function EditStudentProfileScreen() {
   const navigation = useNavigation();
@@ -67,9 +68,8 @@ export default function EditStudentProfileScreen() {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <View>
-        <View style={styles.inputContainer}>
-          <View style={styles.inputComponent}>
+        <View style={GlobalStyles.inputContainer}>
+          <View style={GlobalStyles.inputComponent}>
             <Text style={styles.inputHeader}> First name</Text>
             <TextInput
               placeholder={"First name..."}
@@ -79,7 +79,7 @@ export default function EditStudentProfileScreen() {
               onChangeText={(text) => setFirstName(text)}
             ></TextInput>
           </View>
-          <View style={styles.inputComponent}>
+          <View style={GlobalStyles.inputComponent}>
             <Text style={styles.inputHeader}>Last name</Text>
             <TextInput
               placeholder={"Last name..."}
@@ -89,7 +89,7 @@ export default function EditStudentProfileScreen() {
               onChangeText={(text) => setLastName(text)}
             ></TextInput>
           </View>
-          <View style={styles.inputComponent}>
+          <View style={GlobalStyles.inputComponent}>
             <Text style={styles.inputHeader}>Allergies</Text>
             <TextInput
               placeholder={"Allergies..."}
@@ -99,13 +99,10 @@ export default function EditStudentProfileScreen() {
               onChangeText={(text) => setAllergies(text)}
             ></TextInput>
           </View>
-          <View style={{ marginHorizontal: 40, marginTop: 20 }}>
-            <TouchableOpacity style={styles.editButton} onPress={handleSave}>
-              <Text style={styles.buttonText}> SAVE </Text>
-            </TouchableOpacity>
+          <View style={styles.buttonContainer}> 
+          <PurpleButton onPress={handleSave} text={'Save'}/>
           </View>
         </View>
-      </View>
     </SafeAreaView>
   );
 }
@@ -151,35 +148,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingHorizontal: 40,
   },
-  myMembershipsField: {
-    padding: 8,
+  buttonContainer: {
     width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.45)",
-    borderRadius: 10,
-  },
-  myMembershipsText: {
-    fontSize: 14,
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: 600,
-    justifyContent: "center",
-    alignSelf: "center",
-  },
-  editButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "white",
-    width: "100%",
-    height: 45,
-    backgroundColor: "#6B48D3",
-    alignItems: "center",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-  },
-  buttonText: {
-    justifyContent: "center",
-    alignSelf: "center",
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "white",
+    paddingHorizontal: '8%',
   },
 });

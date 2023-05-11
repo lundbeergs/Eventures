@@ -124,11 +124,13 @@ const MyProfilePage = () => {
         </View>
       </View>
 
-      <View>
-        <View style={{ marginHorizontal: 40, marginTop: 20 }}>
+      <View style={{flex: 1, justifyContent: 'space-between'}}>
+        <View style={{ marginHorizontal: "8%", marginTop: 20 }}>
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My memberships</Text>
           </View>
+        </View>
+        <View style={styles.buttonContainer}>
           <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
         </View>
       </View>
@@ -140,7 +142,7 @@ const styles = StyleSheet.create({
   whiteBox: {
     backgroundColor: "white",
     borderRadius: 4,
-    marginHorizontal: 20,
+    marginHorizontal: "8%",
     padding: "2%",
   },
   lowerWhiteBoxContainer: {
@@ -192,20 +194,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "regular",
   },
-  editIconContainer: {
-    
-  },
-  inputHeader: {
-    marginVertical: "1%",
-    fontWeight: 400,
-  },
-  inputComponent: {
+  editIconContainer: {},
+  buttonContainer: {
     width: "100%",
-    marginTop: 10,
-    paddingHorizontal: 40,
+    bottom: "2%",
+    paddingHorizontal: "8%",
   },
   myMembershipsField: {
-    padding: 8,
+    paddingVertical: 8,
     width: "100%",
     backgroundColor: "rgba(255, 255, 255, 0.45)",
     borderRadius: 10,

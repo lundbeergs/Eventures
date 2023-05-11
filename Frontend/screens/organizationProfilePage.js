@@ -16,8 +16,6 @@ const OrganizationProfilePage = () => {
     
     <View style={{ backgroundColor: '#BDE3FF', flex: 1 }}>
 
-      <View style={styles.topOfPage}/>
-
       <ScrollView>
       <View style={styles.informationContainer}>
       <Image style={styles.orgProfilePic} source={stsKV} />

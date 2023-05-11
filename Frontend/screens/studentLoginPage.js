@@ -118,7 +118,7 @@ export default function StudentLoginPage() {
       <View style={styles.contentContainer}>
         <Header text={"Sign In"} />
 
-        <View style={styles.inputContainer}>
+        <View style={GlobalStyles.inputContainer}>
           <TextInput
             placeholder="Email"
             placeholderTextColor={"grey"}
@@ -128,7 +128,7 @@ export default function StudentLoginPage() {
           ></TextInput>
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={GlobalStyles.inputContainer}>
           <TextInput
             secureTextEntry={true}
             placeholder="Password"
@@ -153,7 +153,7 @@ export default function StudentLoginPage() {
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 40,
-          marginTop: 20,
+          marginTop: '10%'
         }}
       >
         <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
@@ -172,11 +172,10 @@ export default function StudentLoginPage() {
 
       <TouchableOpacity
         style={styles.signInButton}
-        onPress={() => navigation.navigate("TestLoginPage")}
+        onPress={() => navigation.navigate("StudentSignUp")}
       >
         <Text style={{ fontSize: 20, color: "#0D99FF", fontWeight: 500 }}>
-          {" "}
-          Sign Up{" "}
+          Sign Up
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -193,22 +192,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     top: 10,
     marginBottom: 20,
-    marginHorizontal: 40,
+    marginHorizontal: '8%',
   },
   newUsersContainer: {
-    margin: 40,
     flexDirection: "row",
     justifyContent: "space-around",
-    width: "80%",
     backgroundColor: "white",
   },
   contentContainer: {
     marginTop: 20,
-    paddingHorizontal: 40,
-  },
-  inputContainer: {
-    width: "100%",
-    marginTop: 20,
+    paddingHorizontal: '8%',
   },
   newUserText: {
     fontSize: 18,
@@ -221,7 +214,6 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   signInButton: {
-    marginHorizontal: 40,
     marginTop: 20,
     justifyContent: "center",
     alignSelf: "center",

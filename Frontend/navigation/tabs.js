@@ -51,12 +51,11 @@ export const HomeTabs = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
             backgroundColor: '#BDE3FF',
-            height: 80, // increased height to allow for padding
-            paddingTop: 15, // added padding at the top
-            paddingBottom: 20, // added padding at the bottom
+            height: 70, 
+            paddingTop: 15, 
+            paddingBottom: 15, 
         },
         tabBarActiveTintColor: 'black',
-        //tabBarInactiveTintColor: 'red',
         tabBarIcon: ({focused, color, size}) => {
             let IconName; 
             if (route.name === 'Home') {
@@ -76,7 +75,7 @@ export const HomeTabs = () => {
     })}>
         
       <Tab.Screen name="Home" component={HomeStackScreen} options={{headerShown: false}}/>
-      <Tab.Screen name="Search" component={SearchPage} options={{headerShown: false}} />
+      <Tab.Screen name="Search" component={SearchPage} options={{headerShown: true, ...headerStyle, title: ''}} />
       <Tab.Screen name="Tickets" component={TicketPage} options= {{title: "My Tickets", ...headerStyle, headerLeft: null}}/>
       <Tab.Screen name="ProfileStack" component={MyProfileScreen} options={{headerShown: false}}
       />
@@ -91,7 +90,7 @@ const studentHomePageStyle = {
     borderBottomColor: 'black', paddingHorizontal: 20}, 
     headerStyle: { backgroundColor: '#B8E3FF' },
     headerTitleAlign: 'center',
-    headerBackTitle: '',
+    headerBackTitle: null,
   };
 
 const headerStyle = {
@@ -99,7 +98,7 @@ const headerStyle = {
     headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
     headerStyle: { backgroundColor: '#B8E3FF' },
     headerTitleAlign: 'center',
-    headerBackTitle: '',
+    headerBackTitle: null,
     headerBackImage: () => (
         <Ionicons
           name="chevron-back"

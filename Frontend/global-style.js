@@ -54,6 +54,15 @@ const GlobalStyles = StyleSheet.create({
     marginTop: "6%",
     borderRadius: 125,
   },
+  inputComponent: {
+    width: "100%",
+    marginTop: 10,
+    paddingHorizontal: 30,
+  },
+  inputContainer: {
+    width: "100%",
+    marginTop: 20,
+  },
 });
 
 export default GlobalStyles;

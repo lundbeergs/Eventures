@@ -43,7 +43,7 @@ export default function FirstPage() {
     } finally {
       setTimeout(() => {
         setIsLoading(false);
-      }, 8000); // Wait for 8 seconds before setting isLoading to false
+      }, 4000); // Wait for 8 seconds before setting isLoading to false
     }
   };
 
@@ -86,7 +86,7 @@ export default function FirstPage() {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    padding: 40,
+    padding: '8%',
   },
   itemContainer: {
     width: "63.5%",

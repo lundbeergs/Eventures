@@ -64,10 +64,6 @@ const CreatePage = () => {
 
     return (
         <SafeAreaView style={GlobalStyles.container}>
-            <View style={GlobalStyles.topOfPage} />
-            <View style={styles.headerContainer}>
-                <Text style={GlobalStyles.header}> Create Eventure </Text>
-            </View>
 
             <ScrollView style={styles.createEventArea}>
 
