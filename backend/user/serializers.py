@@ -96,6 +96,7 @@ class UserLoginSerializer(TokenObtainPairSerializer):
     password = serializers.CharField(max_length=128, write_only=True)
     access_token = serializers.CharField(max_length=255, read_only=True)
     refresh_token = serializers.CharField(max_length=255, read_only=True)
+    user_type = serializers.CharField(max_length=255, read_only=True)
 
     def validate(self, data):
         email = data.get("email", None)
@@ -106,7 +107,15 @@ class UserLoginSerializer(TokenObtainPairSerializer):
         if not user.is_active:
             raise serializers.ValidationError('User account is disabled.')
         refresh_token = RefreshToken.for_user(user)
+
+        if user.is_student == True:
+            user_type = "is_student"
+        elif user.is_organization == True:
+            user_type = "is_organization"
+        else:
+            user_type = "Is not a student or organization"
         return {
+            'user_type': user_type,
             'email': user.email,
             'access': str(refresh_token.access_token),
             'refresh': str(refresh_token),

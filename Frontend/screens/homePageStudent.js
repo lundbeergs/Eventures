@@ -11,7 +11,7 @@ const HomePageStudent = ({route}) => {
 
   const fetchData = async () => {
     try {
-      const response = await API_BASE_URL.get('api/organizations/');
+      const response = await API_BASE_URL.get('api/student/home/');
       setData(response.data);
     } catch (error) {
       console.error(error);
