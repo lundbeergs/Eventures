@@ -31,12 +31,14 @@ class ReadOnly(BasePermission):
     
 class StudentEventView(APIView):
     permission_classes = (IsAuthenticated|ReadOnly)
+    authentication_classes = [JWTAuthentication]
     
     # För studenthomepage se alla event
     def get(self, request):
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
    
         
     # Ska vi göra så att events för en viss org visas för student när klickar på den org? 

@@ -4,6 +4,9 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SearchEventList from '../components/search-event-list';
 import OrgList from '../components/org-list';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from '../axios.js';
+
 
 const SearchPage = () => {
   const navigation = useNavigation();
@@ -11,25 +14,47 @@ const SearchPage = () => {
 
   const [currentSelection, setCurrentSelection] = useState('events');
 
-  const [data, setData] = useState([])
+  const [orgData, setOrgData] = useState([]);
+  const [eventData, setEventData] = useState([]);
+
   useEffect(() => {
     fetchOrgData()
+    fetchEventData()
   }, [] )
 
-const fetchOrgData = async() => {
-    const response = await fetch('http://130.243.237.33:8000/api/organizations/')
-    const data = await response.json()
-    setData(data)
-}
 
-useEffect(() => {
-  fetchEventData();
-}, []);
+  const fetchOrgData = async () => {
+    try {
+      console.log('hej')
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      console.log(accessToken)
+      console.log('hejsan')
+      const response = await API_BASE_URL.get(`/api/organizations/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setOrgData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-const fetchEventData = async() => {
-  const response = await fetch('http://example.com/api/additional-data/');
-  const data = await response.json();
-  setAdditionalData(data);
+const fetchEventData = async () => {
+  try {
+    console.log('hej')
+    const accessToken = await AsyncStorage.getItem("accessToken");
+    console.log(accessToken)
+    console.log('hejsan')
+    const response = await API_BASE_URL.get(`/api/events/`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    setEventData(response.data);
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 
@@ -68,14 +93,14 @@ const fetchEventData = async() => {
   {currentSelection === 'events' && (
     <FlatList
       data={[{key: 'event'}]}
-      renderItem={({ item }) => <SearchEventList/>}
+      renderItem={({ item }) => <SearchEventList data={eventData}/>}
       keyExtractor={item => item.key}
     />
   )}
   {currentSelection === 'organizations' && (
     <FlatList
       data={[{key: 'org'}]}
-      renderItem={({ item }) => <OrgList data={data}/>}
+      renderItem={({ item }) => <OrgList data={orgData}/>}
       keyExtractor={item => item.key}
     />
   )}

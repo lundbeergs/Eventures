@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, Image, SafeAreaView } from "react-native";
 
 import axios from "axios";
 import GlobalStyles from "../global-style";
