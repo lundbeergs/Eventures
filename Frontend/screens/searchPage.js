@@ -112,12 +112,10 @@ const fetchEventData = async () => {
 
 const styles = StyleSheet.create({
   topOfPage: {
-    height: 120,
     justifyContent: 'center',
     alignItems: 'center'
   },
   searchContainer: {
-    marginTop: 20,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',

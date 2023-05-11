@@ -14,7 +14,6 @@ import {
   export default function ForgotPasswordScreen() {
     const navigation = useNavigation();
 
-  
     return (
       <SafeAreaView style={GlobalStyles.container}>
         <StatusBar barStyle="dark-content"/>
@@ -42,7 +41,7 @@ import {
   
   const styles = StyleSheet.create({
     contentContainer: {
-      padding: 40,
+      padding: '8%',
     },
     itemContainer: {
       width: "63.5%",
@@ -50,7 +49,7 @@ import {
 
     contentContainer: {
         marginTop: "20%",
-        padding: 40,
+        padding: '8%',
       },
       contentContainer2: {
         marginTop: "45%",

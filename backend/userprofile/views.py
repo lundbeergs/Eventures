@@ -30,7 +30,7 @@ class ReadOnly(BasePermission):
         return request.method in SAFE_METHODS
     
 class StudentEventView(APIView):
-    permission_classes = (IsAuthenticated, ReadOnly)
+    permission_classes = (IsAuthenticated|ReadOnly)
     authentication_classes = [JWTAuthentication]
     
     # För studenthomepage se alla event

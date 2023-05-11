@@ -1,19 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MyProfilePage from '../screens/myProfilePage';
 import {Ionicons} from '@expo/vector-icons';
-import { createStackNavigator } from '@react-navigation/stack';
 import OrganizationProfilePage from '../screens/organizationProfilePage';
 import CreatePage from '../screens/createPage';
-
-const HomeStack = createStackNavigator();
-
-function OrgStackScreen() {
-    return (
-        <HomeStack.Navigator screenOptions={{headerShown: false}}>
-        <HomeStack.Screen name='OrgTabs' component={CreatePage} />
-        </HomeStack.Navigator>
-    );
-}
 
 const Tab = createBottomTabNavigator();
 
@@ -22,10 +10,12 @@ export const OrgTabs = () => {
     <Tab.Navigator
       initialRouteName="Profile"  // This sets the initial screen to be OrganizationProfilePage
       screenOptions={({ route }) => ({
-        headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: '#BDE3FF',
+          height: 70, 
+            paddingTop: 15, 
+            paddingBottom: 15, 
         },
         tabBarActiveTintColor: 'black',
         tabBarIcon: ({ focused, color, size }) => {
@@ -39,8 +29,24 @@ export const OrgTabs = () => {
         },
       })}
     >
-      <Tab.Screen name="Profile" component={OrganizationProfilePage} />
-      <Tab.Screen name="Create" component={OrgStackScreen} />
+      <Tab.Screen name="Profile" component={OrganizationProfilePage} options= {{title: "My profile", ...headerStyle, headerLeft: null}}/>
+      <Tab.Screen name="Create" component={CreatePage} options= {{title: "Create Eventure", ...headerStyle, headerLeft: null}}/>
     </Tab.Navigator>
   );
+};
+
+const headerStyle = {
+    headerTintColor: 'black',
+    headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
+    headerStyle: { backgroundColor: '#B8E3FF' },
+    headerTitleAlign: 'center',
+    headerBackTitle: null,
+    headerBackImage: () => (
+        <Ionicons
+          name="chevron-back"
+          size={30}
+          color="black"
+          style={{ marginLeft: 10 }}
+        />
+      ),
 };

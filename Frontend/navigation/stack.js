@@ -1,14 +1,11 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { HomeTabs } from './tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import {TouchableOpacity } from 'react-native';
 import FirstPage from '../screens/firstScreen';
 import StudentLoginPage from '../screens/studentLoginPage';
 import OrganizationLoginPage from '../screens/organizationLoginPage';
-import SignUp from '../screens/signUpPage';
 import ForgotPasswordScreen from '../screens/forgotPasswordScreen';
-import TestLoginPage from '../screens/TestLoginPage';
+import StudentSignUp from '../screens/StudentSignUp';
 import { OrgTabs } from './org_tabs';
 
 
@@ -24,7 +21,7 @@ export const FirstStack = () => {
       />
       <Stack.Screen name="HomeStackStudent" component={HomeTabs} options={{ headerShown: false }}/>
   
-      <Stack.Screen name="HomePageOrganization" component={OrgTabs} />
+      <Stack.Screen name="HomePageOrganization" component={OrgTabs} options={{ headerShown: false }}/>
       <Stack.Screen name="StudentLoginPage" component={StudentLoginPage}
       options={{title: 'Student Account', ...commonHeaderStyle}}/>
 
@@ -35,10 +32,8 @@ export const FirstStack = () => {
       options={{title: 'Organization Account', ...commonHeaderStyle
       }}/>
 
-      <Stack.Screen name="TestLoginPage" component={TestLoginPage}
+      <Stack.Screen name="StudentSignUp" component={StudentSignUp}
       options={{title: 'Register', ...commonHeaderStyle}}/>
-
-      <Stack.Screen name="SignUp" component={SignUp}/>
 
     </Stack.Navigator>
   );

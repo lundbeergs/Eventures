@@ -107,7 +107,7 @@ const MyProfilePage = () => {
             </View>
           </View>
         </ImageBackground>
-
+        <View style={styles.lowerWhiteBoxContainer}>
         <View style={styles.infotextContainer}>
           <Text style={styles.header}>
             {firstName} {lastName}
@@ -115,20 +115,23 @@ const MyProfilePage = () => {
           <Text style={styles.text}>First name: {firstName}</Text>
           <Text style={styles.text}>Last name: {lastName}</Text>
           <Text style={styles.text}>Allergies: {allergies}</Text>
-          <TouchableOpacity
-            style={styles.editIconContainer}
-            onPress={handleEditProfile}
-          >
-            <Ionicons name="create-outline" size={30} color="black" />
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          style={styles.editIconContainer}
+          onPress={handleEditProfile}
+        >
+          <Ionicons name="create-outline" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
       </View>
 
-      <View>
-        <View style={{ marginHorizontal: 40, marginTop: 20 }}>
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View style={{ marginHorizontal: "8%", marginTop: 20 }}>
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My memberships</Text>
           </View>
+        </View>
+        <View style={styles.buttonContainer}>
           <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
         </View>
       </View>
@@ -138,9 +141,10 @@ const MyProfilePage = () => {
 
 const styles = StyleSheet.create({
   whiteBox: {
+    height: '43%',
     backgroundColor: "white",
     borderRadius: 4,
-    marginHorizontal: 20,
+    marginHorizontal: "8%",
     padding: "2%",
   },
   lowerWhiteBoxContainer: {
@@ -193,19 +197,16 @@ const styles = StyleSheet.create({
     fontWeight: "regular",
   },
   editIconContainer: {
-    
+    justifyContent: 'center',
+    marginTop: '20%',
   },
-  inputHeader: {
-    marginVertical: "1%",
-    fontWeight: 400,
-  },
-  inputComponent: {
+  buttonContainer: {
     width: "100%",
-    marginTop: 10,
-    paddingHorizontal: 40,
+    bottom: "2%",
+    paddingHorizontal: "8%",
   },
   myMembershipsField: {
-    padding: 8,
+    paddingVertical: 8,
     width: "100%",
     backgroundColor: "rgba(255, 255, 255, 0.45)",
     borderRadius: 10,
@@ -220,3 +221,22 @@ const styles = StyleSheet.create({
 });
 
 export default MyProfilePage;
+
+/* 
+<View style={styles.lowerWhiteBoxContainer}>
+        <View style={styles.infotextContainer}>
+          <Text style={styles.header}>
+            {firstName} {lastName}
+          </Text>
+          <Text style={styles.text}>First name: {firstName}</Text>
+          <Text style={styles.text}>Last name: {lastName}</Text>
+          <Text style={styles.text}>Allergies: {allergies}</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.editIconContainer}
+          onPress={handleEditProfile}
+        >
+          <Ionicons name="create-outline" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
+      */
