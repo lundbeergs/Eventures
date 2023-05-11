@@ -66,7 +66,6 @@ export default function OrganizationLoginPage() {
     }
   };
 
-
   const loginHandler = async () => {
     try {
       const response = await API_BASE_URL.post("/api/signin/", {
@@ -122,7 +121,7 @@ export default function OrganizationLoginPage() {
       <View style={styles.contentContainer}>
         <Header text={"Sign In"} />
 
-        <View style={styles.inputContainer}>
+        <View style={GlobalStyles.inputContainer}>
           <TextInput
             placeholder="Email"
             placeholderTextColor={"grey"}
@@ -132,7 +131,7 @@ export default function OrganizationLoginPage() {
           ></TextInput>
         </View>
 
-        <View style={styles.inputContainer}>
+        <View style={GlobalStyles.inputContainer}>
           <TextInput
             secureTextEntry={true}
             placeholder="Password"
@@ -157,7 +156,7 @@ export default function OrganizationLoginPage() {
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 40,
-          marginTop: 20,
+          marginTop: '10%',
         }}
       >
         <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
@@ -196,13 +195,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#B8E3FF",
   },
-  headerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    top: 10,
-    marginBottom: 20,
-    marginHorizontal: 40,
-  },
   newUsersContainer: {
     margin: 40,
     flexDirection: "row",
@@ -212,11 +204,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     marginTop: 20,
-    paddingHorizontal: 40,
-  },
-  inputContainer: {
-    width: "100%",
-    marginTop: 20,
+    paddingHorizontal: '8%',
   },
   newUserText: {
     fontSize: 18,

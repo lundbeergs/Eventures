@@ -51,7 +51,7 @@ const TicketPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'red',
+    backgroundColor: '#B8E3FF',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   },
   qrCodeContainer: {
     alignItems: 'center',
+    justifyContent: 'center'
   },
   qrCodeText: {
     marginTop: 10,
