@@ -4,10 +4,8 @@ import {
   View,
   StyleSheet,
   Image,
-  TouchableOpacity,
   ScrollView,
   Modal,
-  Button,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PurpleButton from "../components/PurpleButton";
