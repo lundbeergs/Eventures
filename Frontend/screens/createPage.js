@@ -5,6 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
 import * as ImagePicker from 'expo-image-picker';
+import jwtDecode from "jwt-decode";
+import { API_BASE_URL } from "../axios.js";
 
 const CreatePage = () => {
     const [title, setTitle] = useState("");
@@ -20,6 +22,33 @@ const CreatePage = () => {
     const [imageUri, setImageUri] = useState('');
     const [information, setInformation] = useState("");
     const [price, setPrice] = useState("");
+
+    const handleSubmit = async () => {
+        try {
+            const body = {
+                event_name: title,
+                event_desc: information,
+                event_price: price,
+                event_datetime: date,
+                event_release: releaseDate,
+                event_org: organizationId,
+              };
+      
+              console.log("HEJHEJ")
+          const response = await API_BASE_URL.post(`/organizations/${organizationId}/events/`, body);
+          const state = {
+            userToken: response.data.token, 
+          };
+      
+          console.log("HEJ")
+      
+        } catch (error) {
+          console.log(error);
+          setError("There was an error processing your request.");
+          // Hantera fel här
+        }
+      };
+           
 
     const handleDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -63,7 +92,7 @@ const CreatePage = () => {
 
 
     return (
-        <SafeAreaView style={GlobalStyles.container}>
+        <SafeAreaView style={styles.container}>
 
             <ScrollView style={styles.createEventArea}>
 
@@ -205,11 +234,10 @@ const CreatePage = () => {
                         placeholder="Enter event price"
                         keyboardType="numeric"
                     />
+                    
                 </View>
-
-
                 <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8 }]} >
-                    <Text style={GlobalStyles.buttonText} onPress={() => console.log(`Title: ${title}, Location: ${location}, Date: ${date}, Time: ${time}, Image: ${imageUri}, Info: ${information},Price: ${price}`)} >Create Eventure</Text>
+                    <Text style={GlobalStyles.buttonText} onPress={handleSubmit} >Create Eventure</Text>
                 </Pressable>
             </ScrollView>
         </SafeAreaView>
@@ -223,6 +251,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         width: "auto",
     },
+    container: {
+        flex: 1,
+        backgroundColor: "#B8E3FF",
+      },
     createEventArea: {
         flex: 1,
     },

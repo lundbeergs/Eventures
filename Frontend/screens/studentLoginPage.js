@@ -25,6 +25,7 @@ export default function StudentLoginPage() {
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
   const navigation = useNavigation();
+  const [isStudent, setIsStudent ] = useState(true);
 
   useEffect(() => {
     getTokenFromStorage();
@@ -69,15 +70,20 @@ export default function StudentLoginPage() {
         email: email,
         password: password,
       });
-      console.log(response.data)
-      const { access, refresh } = response.data;
+      const { access, refresh} = response.data;
+      console.log(access);
       if (!access || !refresh) {
         throw new Error("Tokens not found in response data");
       }
-
       setToken(access);
       storeTokenInStorage(access);
-      navigation.navigate("HomeStackStudent", { userData: jwtDecode(access) });
+      setIsStudent(true);     
+      console.log(isStudent);
+      if (isStudent) {
+        navigation.navigate("HomeStackStudent", { userData: jwtDecode(access) });}
+      else {
+        console.log("Not a student!");
+      }
     } catch (error) {
       console.log("Error logging in:", error);
       togglePopUpModal();

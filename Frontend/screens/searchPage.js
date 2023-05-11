@@ -16,7 +16,6 @@ const SearchPage = () => {
     fetchOrgData()
   }, [] )
 
-
 const fetchOrgData = async() => {
     const response = await fetch('http://130.243.237.33:8000/api/organizations/')
     const data = await response.json()
