@@ -24,29 +24,6 @@ const CreatePage = () => {
     const [price, setPrice] = useState("");
 
     const handleSubmit = async () => {
-        try {
-            const body = {
-                event_name: title,
-                event_desc: information,
-                event_price: price,
-                event_datetime: date,
-                event_release: releaseDate,
-                event_org: organizationId,
-              };
-      
-              console.log("HEJHEJ")
-          const response = await API_BASE_URL.post(`/organizations/${organizationId}/events/`, body);
-          const state = {
-            userToken: response.data.token, 
-          };
-      
-          console.log("HEJ")
-      
-        } catch (error) {
-          console.log(error);
-          setError("There was an error processing your request.");
-          // Hantera fel här
-        }
       };
            
 
