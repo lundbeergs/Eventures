@@ -36,7 +36,9 @@ const SearchEventItem = ({
         <View style={styles.eventInfo}>
           <Image style={styles.eventPic} source={eventPic} />
           <View style={styles.eventTextInfo}>
-            <Text style={{ fontWeight: 'bold' }}>{eventTitle}</Text>
+            <Text style={{ marginLeft: '3%' }}>{date}</Text>
+            <Text style={{ marginRight: '12%', fontWeight: 'bold' }}>{eventTitle}</Text>
+            <Text style={{ marginRight: '3%' }}>{price}</Text>
           </View>
         </View>
       </View>
@@ -68,10 +70,10 @@ const styles = StyleSheet.create({
   },
 
   eventTextInfo: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 1,
-    paddingHorizontal: '3%'
+    marginBottom: 10
   }
 });
 

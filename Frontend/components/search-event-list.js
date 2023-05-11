@@ -1,27 +1,26 @@
 import { View, Text, FlatList, RefreshControl } from "react-native";
-import { DUMMY_DATA } from "../data/dummy";
+//import { DUMMY_DATA } from "../data/dummy";
 import SearchEventItem from "./search-event-item";
 
-const SearchEventList = () => {
+const SearchEventList = ({data}) => {
     const renderItem = ({item}) => {
         return <SearchEventItem 
-        id={item.id} 
         organization={item.organization} 
         orgIcon={item.orgIcon} 
         orgProfilePic={item.orgProfilePic} 
         organizationInformation={item.organizationInformation} 
-        eventTitle={item.eventTitle}
+        eventTitle={item.event_name}
         eventPic={item.eventPic}
-        eventInformation={item.eventInformation}
+        eventInformation={item.event_desc}
         location={item.location}
-        date={item.date}
-        price={item.price}
+        date={item.event_datetime}
+        price={item.event_price + 'kr'}
         />
     }
     return (
         <View>
             <FlatList
-                data = {DUMMY_DATA}
+                data = {data}
                 keyExtractor = {item => item.id}
                 renderItem = {renderItem}
                 refreshControl = {
