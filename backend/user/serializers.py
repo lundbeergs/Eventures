@@ -51,6 +51,11 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = '__all__' 
 
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ['id', 'event', 'student', 'date_bought']
+
 class OrganizationRegistrationSerializer(serializers.ModelSerializer):
 
     profile = OrganizationSerializer(required=False)
