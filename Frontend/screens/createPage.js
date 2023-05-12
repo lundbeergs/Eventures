@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import {React, useState, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Image, ScrollView, Pressable } from "react-native";
 import GlobalStyles from "../global-style";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,64 +7,104 @@ import { format } from "date-fns";
 import * as ImagePicker from 'expo-image-picker';
 import jwtDecode from "jwt-decode";
 import { API_BASE_URL } from "../axios.js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CreatePage = () => {
-    const [title, setTitle] = useState("");
-    const [location, setLocation] = useState("");
-    const [date, setDate] = useState(new Date());
+    const [event_name, setTitle] = useState("");
+    //const [location, setLocation] = useState("");
+    const [event_desc, setInformation] = useState("");
+    const [event_price, setPrice] = useState("");
+    const [event_date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [time, setTime] = useState(new Date());
+    const [event_time, setTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
-    const [releaseDate, setReleaseDate] = useState(new Date());
+    const [release_date, setReleaseDate] = useState(new Date());
     const [showReleaseDatePicker, setShowReleaseDatePicker] = useState(false);
-    const [releaseTime, setReleaseTime] = useState(new Date());
+    const [release_time, setReleaseTime] = useState(new Date());
     const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
     const [imageUri, setImageUri] = useState('');
-    const [information, setInformation] = useState("");
-    const [price, setPrice] = useState("");
+    const [tickets_left, setTicketsLeft] = useState(300);
+    const [organization, setOrganizationID] = useState(" ");
+
+    useEffect(() => {
+        getOrganizationProfile();
+        console.log(organization)
+      }, []);
+
+    const getOrganizationProfile = async () => {
+        try {
+          const accessToken = await AsyncStorage.getItem("accessToken");
+          const response = await API_BASE_URL.get("/api/profile/", {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+          });
+          const { data: userProfile } = response.data;
+    
+          if (userProfile && userProfile.length > 0) {
+            const {id } = userProfile[0];
+            setOrganizationID(id);
+            console.log("org hej" + id);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+    };
+    
 
     const handleSubmit = async () => {
+        if (!event_name /* || !location */ || !event_desc || !event_price || !event_date|| !event_time || !tickets_left) {
+          setError("Please fill in all the required fields to create Eventure");
+          setModalVisible(true);
+          return;
+        }
+        try {
+               const body = {
+                event_name: event_name,
+                event_desc: event_desc,
+                event_price: event_price,
+                event_date: event_date,
+                event_time: event_time,
+                release_date: release_date,
+                release_time: release_time,
+                tickets_left: tickets_left
+            
+          };
+          const response = await API_BASE_URL.post(`/api/organization/${organization}/events/`, body);
+          const state = {
+            userToken: response.data.token, 
+          };
+          navigation.navigate("StudentLoginPage"); 
+        } catch (error) {
+          console.log(error);
+          setError("There was an error processing your request.");
+        }
       };
            
 
     const handleDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
+        const currentDate = selectedDate || event_date;
         setShowDatePicker(Platform.OS === "ios");
         setDate(currentDate);
     };
 
     const handleTimeChange = (event, selectedTime) => {
-        const currentTime = selectedTime || time;
+        const currentTime = selectedTime || event_time;
         setShowTimePicker(Platform.OS === "ios");
         setTime(currentTime);
     };
     const handleReleaseDateChange = (event, selectedReleaseDate) => {
-        const currentReleaseDate = selectedReleaseDate || releaseDate;
+        const currentReleaseDate = selectedReleaseDate || release_date;
         setShowReleaseDatePicker(Platform.OS === "ios");
         setReleaseDate(currentReleaseDate);
     };
 
     const handleReleaseTimeChange = (event, selectedReleaseTime) => {
-        const currentReleaseTime = selectedReleaseTime || releaseTime;
+        const currentReleaseTime = selectedReleaseTime || release_time;
         setShowReleaseTimePicker(Platform.OS === "ios");
         setReleaseTime(currentReleaseTime);
     };
-    const handleImageSelect = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!');
-            return;
-        }
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-        if (!result.canceled) {
-            setImageUri(result.uri);
-        }
-    };
+
 
 
 
@@ -78,12 +118,12 @@ const CreatePage = () => {
                     <TextInput
                         style={styles.inputField}
                         onChangeText={(text) => setTitle(text)}
-                        value={title}
+                        value={event_name}
                         placeholder="Enter event title"
                     />
                 </View>
 
-                <View style={styles.inputContainer}>
+               {/*  <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Location:</Text>
                     <TextInput
                         style={styles.inputField}
@@ -91,7 +131,7 @@ const CreatePage = () => {
                         value={location}
                         placeholder="Enter event location"
                     />
-                </View>
+                </View> */}
                 
                 <Text style={{fontSize: 13, marginTop: 8, marginLeft: '2%'}}>Eventure date:</Text>
                 <View style={styles.dateAndTime}>
@@ -100,14 +140,14 @@ const CreatePage = () => {
                             <Ionicons name="calendar" size={30} color="black" />
                             <View style={styles.dateText}>
                                 <Text style={{ marginLeft: '5%' }}>Date:</Text>
-                                <Text style={styles.dateAndTimeText}>{format(date, "do 'of' MMMM yyyy")}</Text>
+                                <Text style={styles.dateAndTimeText}>{format(event_date, "do 'of' MMMM yyyy")}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
                     {showDatePicker && (
                         <DateTimePicker
                             testID="dateTimePicker"
-                            value={date}
+                            value={event_date}
                             mode="date"
                             is24Hour={true}
                             display="default"
@@ -119,14 +159,14 @@ const CreatePage = () => {
                             <Ionicons name="time" size={30} color="black" />
                             <View style={styles.dateText}>
                                 <Text style={{ marginLeft: '5%' }}>Time:</Text>
-                                <Text style={styles.dateAndTimeText}>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
+                                <Text style={styles.dateAndTimeText}>{event_time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
                     {showTimePicker && (
                         <DateTimePicker
                             testID="dateTimePicker"
-                            value={time}
+                            value={event_time}
                             mode="time"
                             is24Hour={true}
                             display="default"
@@ -142,14 +182,14 @@ const CreatePage = () => {
                             <Ionicons name="calendar" size={30} color="black" />
                             <View style={styles.dateText}>
                                 <Text style={{ marginLeft: '5%' }}>Date:</Text>
-                                <Text style={styles.dateAndTimeText}>{format(releaseDate, "do 'of' MMMM yyyy")}</Text>
+                                <Text style={styles.dateAndTimeText}>{format(release_date, "do 'of' MMMM yyyy")}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
                     {showReleaseDatePicker && (
                         <DateTimePicker
                             testID="dateTimePicker"
-                            value={releaseDate}
+                            value={release_date}
                             mode="date"
                             is24Hour={true}
                             display="default"
@@ -161,14 +201,14 @@ const CreatePage = () => {
                             <Ionicons name="time" size={30} color="black" />
                             <View style={styles.dateText}>
                                 <Text style={{ marginLeft: '5%' }}>Time:</Text>
-                                <Text style={styles.dateAndTimeText}>{releaseTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
+                                <Text style={styles.dateAndTimeText}>{release_time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
                     {showReleaseTimePicker && (
                         <DateTimePicker
                             testID="dateTimePicker"
-                            value={releaseTime}
+                            value={release_time}
                             mode="time"
                             is24Hour={true}
                             display="default"
@@ -177,23 +217,13 @@ const CreatePage = () => {
                     )}
                 </View>
 
-                <TouchableOpacity style={styles.inputContainer} onPress={handleImageSelect}>
-                    <Text style={styles.inputLabel}>Eventure Picture:</Text>
-                    {imageUri !== '' ? (
-                        <Image source={{ uri: imageUri }} style={{ width: '99%', height: 200, margin: '0.5%', borderRadius: 5 }} />
-                    ) : (
-                        <View style={styles.inputPictureField}>
-                            <Text style={{ color: 'grey', textAlign: 'center', alignSelf: 'center' }}>Select an image...</Text>
-                        </View>
-                    )}
-                </TouchableOpacity>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Eventure information:</Text>
                     <TextInput
                         style={[styles.inputField, { height: 140, textAlignVertical: 'top' }]}
                         onChangeText={(text) => setInformation(text)}
-                        value={information}
+                        value={event_desc}
                         placeholder="Enter event info"
                     />
                 </View>
@@ -207,7 +237,7 @@ const CreatePage = () => {
                                 setPrice(text);
                             }
                         }}
-                        value={price}
+                        value={event_price}
                         placeholder="Enter event price"
                         keyboardType="numeric"
                     />
