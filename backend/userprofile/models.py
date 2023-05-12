@@ -1,7 +1,6 @@
 import uuid
 from django.db import models
 from user.models import User
-from phone_field import PhoneField
 
 class StudentProfile(models.Model):
 
@@ -85,10 +84,9 @@ class Event(models.Model):
 	event_time = models.TimeField(auto_now=False, auto_now_add=False, null=True)
 	release_date = models.DateField(blank=True, null=True)
 	release_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-	tickets_left = models.CharField(max_length=50, unique=False, blank=True)
 	# event_pic = models.ImageField(upload_to='event_pics/', blank=True, null=True)
 	event_org = models.ForeignKey(OrganizationProfile, on_delete=models.CASCADE, related_name='event') 
-	max_tickets = models.PositiveIntegerField(default=10000)
+	tickets_left = models.PositiveIntegerField(default=10000)
 	# event_org_members är det inte bättre om medlemmar kollas genom eve t_org ist? 
 
 	# @property							# FÖR FRONTEND gör såhär: <img src="{{ event.org_icon.url }}" alt="Organization Icon">
