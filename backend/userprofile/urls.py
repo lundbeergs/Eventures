@@ -41,6 +41,26 @@ urlpatterns = [
         #   - PUT vid ändring av events attribut
         #   - DELETE av event
 
+    # This view returns the list of all tickets bought for a particular event by the members of the organization. 
+    path('events/<uuid:event_id>/tickets/', EventTicketsListView.as_view(), name='event-tickets-list'),
+        # för:
+        # - GET 
+
+    # This view returns the list of all tickets bought by the logged-in student user.
+    path('student-tickets/', StudentTicketsListView.as_view(), name='student-tickets-list'),
+        # för:
+        # - GET
+
+    #This view returns the details of a particular ticket bought for an event by a member of the organization
+    path('events/<uuid:event_id>/tickets/<uuid:ticket_id>/', EventTicketsDetailView.as_view(), name='event-ticket-detail'),
+        # för:
+        # - GET
+
+
+    path('events/<uuid:event_id>/buy/', BuyTicketView.as_view(), name ='buy_tickets')
+        # för:
+        # - POST en student köper en biljett från en specifikt event.
+
 
    
 ]	# path('organizations/', OrganizationViewSet.as_view({'get': 'list'})
