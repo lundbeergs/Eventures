@@ -8,23 +8,29 @@ import * as ImagePicker from 'expo-image-picker';
 import jwtDecode from "jwt-decode";
 import { API_BASE_URL } from "../axios.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import PopUpModal from "../components/PopUpModal.js";
 
 const CreatePage = () => {
     const [event_name, setTitle] = useState("");
     //const [location, setLocation] = useState("");
     const [event_desc, setInformation] = useState("");
     const [event_price, setPrice] = useState("");
-    const [event_date, setDate] = useState(new Date());
+/*     const [event_date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [event_time, setTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [release_date, setReleaseDate] = useState(new Date());
     const [showReleaseDatePicker, setShowReleaseDatePicker] = useState(false);
-    const [release_time, setReleaseTime] = useState(new Date());
+    const [release_time, setReleaseTime] = useState(new Date()); */
+    const event_date = '2023-06-17';
+    const event_time = "11:14:05";
+    const release_date = "2023-05-12";
+    const release_time ="11:13:58";
     const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
     const [imageUri, setImageUri] = useState('');
-    const [tickets_left, setTicketsLeft] = useState(300);
+    const [tickets_left, setTicketsLeft] = useState('300');
     const [organization, setOrganizationID] = useState(" ");
+    
 
     useEffect(() => {
         getOrganizationProfile();
@@ -67,10 +73,17 @@ const CreatePage = () => {
                 event_time: event_time,
                 release_date: release_date,
                 release_time: release_time,
-                tickets_left: tickets_left
+                tickets_left: tickets_left,
+                event_org: organization
             
           };
-          const response = await API_BASE_URL.post(`/api/organization/${organization}/events/`, body);
+          console.log(body)
+          const accessToken = await AsyncStorage.getItem("accessToken");
+          const response = await API_BASE_URL.post(`/api/organizations/${organization}/events/`, body, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+          });;
           const state = {
             userToken: response.data.token, 
           };
@@ -133,7 +146,7 @@ const CreatePage = () => {
                     />
                 </View> */}
                 
-                <Text style={{fontSize: 13, marginTop: 8, marginLeft: '2%'}}>Eventure date:</Text>
+               {/*  <Text style={{fontSize: 13, marginTop: 8, marginLeft: '2%'}}>Eventure date:</Text>
                 <View style={styles.dateAndTime}>
                     <TouchableOpacity style={styles.datePickerButton} onPress={() => setShowDatePicker(true)}>
                         <View style={styles.buttonContent}>
@@ -215,7 +228,7 @@ const CreatePage = () => {
                             onChange={handleReleaseTimeChange}
                         />
                     )}
-                </View>
+                </View> */}
 
 
                 <View style={styles.inputContainer}>
@@ -246,6 +259,7 @@ const CreatePage = () => {
                 <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8 }]} >
                     <Text style={GlobalStyles.buttonText} onPress={handleSubmit} >Create Eventure</Text>
                 </Pressable>
+                
             </ScrollView>
         </SafeAreaView>
     );
