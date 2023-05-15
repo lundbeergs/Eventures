@@ -112,7 +112,7 @@ export default function StudentLoginPage() {
       if (!refreshToken) {
         throw new Error("Refresh token not found in storage");
       }
-      const response = await API_BASE_URL.post("/api/refresh/", {
+      const response = await API_BASE_URL.post("/api/token/refresh/", {
         refreshToken,
       });
       const { accessToken, refreshToken: newRefreshToken } = response.data;
