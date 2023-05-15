@@ -15,17 +15,17 @@ const CreatePage = () => {
     //const [location, setLocation] = useState("");
     const [event_desc, setInformation] = useState("");
     const [event_price, setPrice] = useState("");
-/*     const [event_date, setDate] = useState(new Date());
+    const [event_date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [cut_date_string, setCutDate] = useState('')
     const [event_time, setTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
+    const [cut_time_string, setCutTime] = useState('')
     const [release_date, setReleaseDate] = useState(new Date());
     const [showReleaseDatePicker, setShowReleaseDatePicker] = useState(false);
-    const [release_time, setReleaseTime] = useState(new Date()); */
-    const event_date = '2023-06-17';
-    const event_time = "11:14:05";
-    const release_date = "2023-05-12";
-    const release_time ="11:13:58";
+    const [cut_release_date_string, setCutReleaseDate] = useState('')
+    const [release_time, setReleaseTime] = useState(new Date()); 
+    const [cut_release_time_string, setCutReleaseTime] = useState('')
     const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
     const [imageUri, setImageUri] = useState('');
     const [tickets_left, setTicketsLeft] = useState('300');
@@ -60,7 +60,6 @@ const CreatePage = () => {
 
     const handleSubmit = async () => {
         if (!event_name /* || !location */ || !event_desc || !event_price || !event_date|| !event_time || !tickets_left) {
-          setError("Please fill in all the required fields to create Eventure");
           setModalVisible(true);
           return;
         }
@@ -69,10 +68,10 @@ const CreatePage = () => {
                 event_name: event_name,
                 event_desc: event_desc,
                 event_price: event_price,
-                event_date: event_date,
-                event_time: event_time,
-                release_date: release_date,
-                release_time: release_time,
+                event_date: cut_date_string,
+                event_time: cut_time_string,
+                release_date: cut_release_date_string,
+                release_time: cut_release_time_string,
                 tickets_left: tickets_left,
                 event_org: organization
             
@@ -90,32 +89,47 @@ const CreatePage = () => {
           navigation.navigate("StudentLoginPage"); 
         } catch (error) {
           console.log(error);
-          setError("There was an error processing your request.");
         }
       };
            
 
-    const handleDateChange = (event, selectedDate) => {
+      const handleDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || event_date;
         setShowDatePicker(Platform.OS === "ios");
         setDate(currentDate);
-    };
-
-    const handleTimeChange = (event, selectedTime) => {
+        const event_date_string = currentDate.toLocaleDateString('sv-SE');
+        setCutDate(event_date_string.slice(0, 10));
+        console.log(event_date_string)
+      };
+      
+    
+      const handleTimeChange = (event, selectedTime) => {
         const currentTime = selectedTime || event_time;
         setShowTimePicker(Platform.OS === "ios");
         setTime(currentTime);
-    };
+        const event_time_string = currentTime.toLocaleTimeString('sv-SE');
+        setCutTime(event_time_string);
+        console.log(event_time_string)
+
+      };
+      
+
     const handleReleaseDateChange = (event, selectedReleaseDate) => {
         const currentReleaseDate = selectedReleaseDate || release_date;
         setShowReleaseDatePicker(Platform.OS === "ios");
         setReleaseDate(currentReleaseDate);
+        const event_release_date_string = currentReleaseDate.toLocaleDateString('sv-SE');
+        setCutReleaseDate(event_release_date_string.slice(0, 10));
+        console.log(event_release_date_string)
     };
 
     const handleReleaseTimeChange = (event, selectedReleaseTime) => {
         const currentReleaseTime = selectedReleaseTime || release_time;
         setShowReleaseTimePicker(Platform.OS === "ios");
         setReleaseTime(currentReleaseTime);
+        const event_release_time_string = currentReleaseTime.toLocaleTimeString('sv-SE');
+        setCutReleaseTime(event_release_time_string);
+        console.log(event_release_time_string)
     };
 
 
@@ -146,7 +160,7 @@ const CreatePage = () => {
                     />
                 </View> */}
                 
-               {/*  <Text style={{fontSize: 13, marginTop: 8, marginLeft: '2%'}}>Eventure date:</Text>
+                <Text style={{fontSize: 13, marginTop: 8, marginLeft: '2%'}}>Eventure date:</Text>
                 <View style={styles.dateAndTime}>
                     <TouchableOpacity style={styles.datePickerButton} onPress={() => setShowDatePicker(true)}>
                         <View style={styles.buttonContent}>
@@ -228,7 +242,7 @@ const CreatePage = () => {
                             onChange={handleReleaseTimeChange}
                         />
                     )}
-                </View> */}
+                </View>
 
 
                 <View style={styles.inputContainer}>
