@@ -6,7 +6,6 @@ import {
     TextInput
   } from "react-native";
   import { useNavigation } from "@react-navigation/native";
-  
   import GlobalStyles from "../global-style";
   import PurpleButton from "../components/PurpleButton";
   import { StatusBar } from "expo-status-bar";

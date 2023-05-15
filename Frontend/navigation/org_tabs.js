@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {Ionicons} from '@expo/vector-icons';
 import OrganizationProfilePage from '../screens/organizationProfilePage';
 import CreatePage from '../screens/createPage';
+import RequestPage from '../screens/requestPage';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,12 +26,16 @@ export const OrgTabs = () => {
           } else if (route.name === 'Profile') {
             IconName = focused ? 'person' : 'person-outline';
           }
+          else if (route.name === 'Requests') {
+            IconName = focused ? 'person' : 'person-outline';
+          }
           return <Ionicons name={IconName} size={focused ? 35 : size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Profile" component={OrganizationProfilePage} options= {{title: "My profile", ...headerStyle, headerLeft: null}}/>
       <Tab.Screen name="Create" component={CreatePage} options= {{title: "Create Eventure", ...headerStyle, headerLeft: null}}/>
+      <Tab.Screen name="Requests" component={RequestPage} options= {{title: "Membership requests", ...headerStyle, headerLeft: null}}/>
     </Tab.Navigator>
   );
 };

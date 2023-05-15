@@ -10,6 +10,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PurpleButton from "../components/PurpleButton";
 import QRCode from "react-native-qrcode-svg";
+import GlobalStyles from "../global-style";
 
 const EventPage = () => {
   const navigation = useNavigation();
@@ -34,13 +35,13 @@ const EventPage = () => {
   };
 
   return (
-    <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
+    <View style={GlobalStyles.container}>
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, backgroundColor: "#BDE3FF" }}
+        style={{ flexGrow: 1, backgroundColor: "#BDE3FF" }}
       >
-        <View style={[styles.container]}>
+        <View style={styles.container}>
           <View
-            style={[styles.informationContainer, { maxHeight: maxHeight }]}
+            style={styles.informationContainer}
           >
             <Image
               style={styles.eventPic}
@@ -110,8 +111,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
+    marginHorizontal: '8%'
   },
   informationContainer: {
+    flex: 1,
+    width: '100%', // Set the width to 100%
     minHeight: 470,
     maxHeight: 9999,
     marginRight: 15,
