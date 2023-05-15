@@ -23,18 +23,21 @@ export default function StudentLoginPage() {
   const [popUpModalVisible, setPopUpModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userType, setUserType] = useState("");
   const [token, setToken] = useState("");
+  const [error, setError] = useState("");
   const navigation = useNavigation();
 
   useEffect(() => {
     getTokenFromStorage();
-  }, []);
+  }, [userType]);
 
   const getTokenFromStorage = async () => {
     try {
       const storedToken = await AsyncStorage.getItem("accessToken");
       if (storedToken) {
         const decodedToken = jwtDecode(storedToken);
+        
         if (decodedToken.exp * 1000 > Date.now()) {
           setToken(storedToken);
           navigation.navigate("HomeStackStudent", { userData: decodedToken });
@@ -91,8 +94,10 @@ export default function StudentLoginPage() {
         email: email,
         password: password,
       });
-      const { access, refresh } = response.data;
+      const { access, refresh, user_type } = response.data;
       console.log(access);
+      setUserType(user_type);
+      console.log(user_type);
       if (!access || !refresh) {
         throw new Error("Tokens not found in response data");
       }
@@ -102,6 +107,7 @@ export default function StudentLoginPage() {
       navigation.navigate("HomeStackStudent", { userData: jwtDecode(access) });
     } catch (error) {
       console.log("Error logging in:", error);
+      setError("Wrong email or password. Please try again!")
       togglePopUpModal();
     }
   };
@@ -188,7 +194,7 @@ export default function StudentLoginPage() {
 
       <PopUpModal
         isVisible={popUpModalVisible}
-        text="Invalid email or password. Please try again!"
+        text={error}
         buttonText={"OK"}
         closeModal={togglePopUpModal}
       />

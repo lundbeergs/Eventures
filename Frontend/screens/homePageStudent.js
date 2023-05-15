@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from '../axios.js';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const HomePageStudent = ({route}) => {
+const HomePageStudent = () => {
   const [data, setData] = useState([])
   useEffect(() => {
     fetchData()
@@ -19,6 +19,7 @@ const HomePageStudent = ({route}) => {
         },
       });
       setData(response.data);
+      console.log(data);
     } catch (error) {
       console.error(error);
     }

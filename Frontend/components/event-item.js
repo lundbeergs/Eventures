@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from "react-native-gesture-handler";
 
 const EventItem = ({
-    id,
+    eventId,
     orgIcon,
     orgProfilePic,
     eventTitle,
@@ -26,6 +26,7 @@ const EventItem = ({
       
         const onPressHandler2 = () => {
         navigation.navigate('EventPage', {
+          eventId: eventId,
           eventPic: eventPic,
           eventTitle: eventTitle,
           eventInformation: eventInformation,
@@ -34,7 +35,6 @@ const EventItem = ({
           date: date,
           price: price
         });
-        console.log(organization);
       };
 
     return (

@@ -5,6 +5,7 @@ import EventItem from './event-item';
 const EventList = ({data}) => {
     const renderItem = ({item}) => {
         return <EventItem 
+        eventId = {item.id}
         organization={item.event_org} 
         orgIcon={item.orgIcon} 
         orgProfilePic={item.orgProfilePic} 

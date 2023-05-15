@@ -30,6 +30,7 @@ const CreatePage = () => {
     const [imageUri, setImageUri] = useState('');
     const [tickets_left, setTicketsLeft] = useState('300');
     const [organization, setOrganizationID] = useState(" ");
+    const [error, setError] = useState("");
     
 
     useEffect(() => {

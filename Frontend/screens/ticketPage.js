@@ -1,88 +1,113 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, TextInput } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
+import QRCode from "react-native-qrcode-svg";
+import { API_BASE_URL } from "../axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import GlobalStyles from "../global-style";
 
 const TicketPage = () => {
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
-  const [qrCodes, setQrCodes] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const addQrCode = () => {
-    if (text && title) {
-      setQrCodes([...qrCodes, { title, text }]);
-      setTitle('');
-      setText('');
+  useEffect(() => {
+    fetchEventData();
+    fetchTickets();
+  }, []);
+
+  const fetchEventData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get(`/api/events/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      setEvents(response.data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const renderQrCodes = () => {
-    return qrCodes.map((qrCode, index) => (
-      <View key={index} style={styles.qrCodesRow}>
-        <View style={styles.qrCodeContainer}>
-          <QRCode value={qrCode.text} size={150} />
-          <Text style={styles.qrCodeText}>{qrCode.title}</Text>
-        </View>
+  const fetchTickets = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/student-tickets/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setTickets(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getEventById = (eventId) => {
+    return events.find((event) => event.id === eventId);
+  };
+
+  const renderTicket = ({ item }) => {
+    const event = getEventById(item.event);
+    return (
+      <View style={styles.ticketContainer}>
+        <Text style={styles.eventTitle}>{event?.event_name}</Text>
+        <QRCode
+          value={item.ticket_code}
+          size={200}
+          color="black"
+          backgroundColor="white"
+          style={styles.qrCode}
+        />
       </View>
-    ));
+    );
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchEventData();
+    fetchTickets();
+    setRefreshing(false);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter title"
-          value={title}
-          onChangeText={setTitle}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter text"
-          value={text}
-          onChangeText={setText}
-        />
-        <Button title="Add QR Code" onPress={addQrCode} />
-      </View>
-      <ScrollView style={styles.scrollContainer}>{renderQrCodes()}</ScrollView>
+    <View style={GlobalStyles.container}>
+      <FlatList
+        data={tickets}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderTicket}
+        contentContainerStyle={styles.flatListContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} progressBackgroundColor={'white'} progressViewOffset={-20}/>
+  }
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#B8E3FF',
+  flatListContent: {
+    alignItems: "center",
+    width: '100%',
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginRight: 10,
-    paddingLeft: 10,
-  },
-  scrollContainer: {
-    padding: 10,
-  },
-  qrCodesRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  ticketContainer: {
+    alignItems: "center",
     marginBottom: 20,
+    backgroundColor: 'white',
+    borderRadius: 4,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
   },
-  qrCodeContainer: {
-    alignItems: 'center',
-    justifyContent: 'center'
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
-  qrCodeText: {
-    marginTop: 10,
+  qrCode: {
+    marginVertical: 10,
+    
   },
 });
 
 export default TicketPage;
+

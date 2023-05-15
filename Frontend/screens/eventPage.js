@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -11,6 +11,10 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import PurpleButton from "../components/PurpleButton";
 import QRCode from "react-native-qrcode-svg";
 import GlobalStyles from "../global-style";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "../axios";
+import PopUpModal from "../components/PopUpModal";
+
 
 const EventPage = () => {
   const navigation = useNavigation();
@@ -18,6 +22,17 @@ const EventPage = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [maxHeight, setMaxHeight] = useState(185); // Initial max height of eventInformation
   const [showModal, setShowModal] = useState(false);
+  const [eventId, setEventId] = useState("");
+  const [error, setError] = useState("");
+  const [popUpModalVisible, setPopUpModalVisible] = useState(false);
+
+  useEffect(() => {
+    fetchEventID();
+  }, [eventId]);
+
+  const togglePopUpModal = () => {
+    setPopUpModalVisible(!popUpModalVisible);
+  };
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -25,14 +40,63 @@ const EventPage = () => {
     setMaxHeight(isExpanded ? 185 : 9999);
   };
 
-  const buyTicketHandler = () => {
-    console.log("buy ticket");
-    setShowModal(true);
+  const fetchEventID = () => {
+    setEventId(route.params.eventId);
+    console.log(eventId);
+  }
+
+  const checkIfHasTicket = async (eventId) => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/student-tickets/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+  
+      const userTickets = response.data;
+      const hasTicket = userTickets.some((ticket) => ticket.event_id === eventId);
+  
+      return hasTicket;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   };
+
+  const buyTicketHandler = async () => {
+    const body = { event_id: eventId };
+    try {
+      if (checkIfHasTicket(eventId)) {
+        setError("You already have a ticket for this event. Find it in 'My Tickets.");
+        togglePopUpModal();
+        // You can show an alert or display a message to the user indicating that they already have a ticket.
+      } else {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        const buyResponse = await API_BASE_URL.post(
+          `/api/events/${eventId}/buy/`,
+          body,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        console.log("hej" + body);
+        console.log(buyResponse.data);
+        setShowModal(true);
+      }
+    } catch (error) {
+      setError(error);
+      console.log(error);
+    }
+  };
+  
 
   const closeModalHandler = () => {
     setShowModal(false);
   };
+  
 
   return (
     <View style={GlobalStyles.container}>
@@ -75,8 +139,15 @@ const EventPage = () => {
         </View>
       </ScrollView>
       <View style={{marginHorizontal: 20}}>
-      <PurpleButton onPress={buyTicketHandler} text={"Buy Ticket"} />
+      <PurpleButton onPress={buyTicketHandler} text={"Buy Ticket"}
+  />
       </View>
+      <PopUpModal
+        isVisible={popUpModalVisible}
+        text={error}
+        buttonText={"OK"}
+        closeModal={togglePopUpModal}
+      />
       <Modal
         visible={showModal}
         animationType="fade"
@@ -139,6 +210,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     position: 'absolute'
   },
+  
   eventInformation: {
     marginTop: '5%', 
     marginLeft: '5%',
