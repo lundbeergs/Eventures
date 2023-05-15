@@ -12,10 +12,7 @@ const HomePageStudent = ({route}) => {
 
   const fetchData = async () => {
     try {
-      console.log('hej')
       const accessToken = await AsyncStorage.getItem("accessToken");
-      console.log(accessToken)
-      console.log('hejsan')
       const response = await API_BASE_URL.get(`/api/events/`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,

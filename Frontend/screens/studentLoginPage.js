@@ -25,7 +25,6 @@ export default function StudentLoginPage() {
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
   const navigation = useNavigation();
-  const [isStudent, setIsStudent ] = useState(true);
 
   useEffect(() => {
     getTokenFromStorage();
@@ -64,26 +63,43 @@ export default function StudentLoginPage() {
     }
   };
 
+  const getProfile = async (accessToken) => {
+    try {
+      const response = await API_BASE_URL.get("/api/profile/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const { data: userProfile } = response.data;
+
+      if (userProfile && userProfile.length > 0) {
+        const { first_name, last_name, allergies, id } = userProfile[0];
+        await AsyncStorage.setItem("firstName", first_name);
+        await AsyncStorage.setItem("lastName", last_name);
+        await AsyncStorage.setItem("allergies", allergies);
+        await AsyncStorage.setItem("studentId", id);
+        console.log("Data saved in AsyncStorage.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const loginHandler = async () => {
     try {
       const response = await API_BASE_URL.post("/api/signin/", {
         email: email,
         password: password,
       });
-      const { access, refresh} = response.data;
+      const { access, refresh } = response.data;
       console.log(access);
       if (!access || !refresh) {
         throw new Error("Tokens not found in response data");
       }
       setToken(access);
+      getProfile(access);
       storeTokenInStorage(access);
-      setIsStudent(true);     
-      console.log(isStudent);
-      if (isStudent) {
-        navigation.navigate("HomeStackStudent", { userData: jwtDecode(access) });}
-      else {
-        console.log("Not a student!");
-      }
+      navigation.navigate("HomeStackStudent", { userData: jwtDecode(access) });
     } catch (error) {
       console.log("Error logging in:", error);
       togglePopUpModal();
@@ -160,7 +176,7 @@ export default function StudentLoginPage() {
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 40,
-          marginTop: '10%'
+          marginTop: "10%",
         }}
       >
         <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
@@ -199,7 +215,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     top: 10,
     marginBottom: 20,
-    marginHorizontal: '8%',
+    marginHorizontal: "8%",
   },
   newUsersContainer: {
     flexDirection: "row",
@@ -208,7 +224,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     marginTop: 20,
-    paddingHorizontal: '8%',
+    paddingHorizontal: "8%",
   },
   newUserText: {
     fontSize: 18,

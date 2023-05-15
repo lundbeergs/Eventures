@@ -19,6 +19,7 @@ const MyProfilePage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [allergies, setAllergies] = useState("");
+  const [id, setId] = useState("");
   const route = useRoute();
   const initial_first_name = firstName.charAt(0);
   const initial_last_name = lastName.charAt(0);
@@ -31,12 +32,14 @@ const MyProfilePage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const { data: userProfile } = response.data;
+      const { data: userProfile} = response.data;
+
       if (userProfile && userProfile.length > 0) {
-        const { first_name, last_name, allergies } = userProfile[0];
+        const { first_name, last_name, allergies, id } = userProfile[0];
         setFirstName(first_name);
         setLastName(last_name);
         setAllergies(allergies);
+        setId(id);
       }
     } catch (error) {
       console.error(error);

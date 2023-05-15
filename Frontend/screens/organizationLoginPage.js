@@ -71,6 +71,7 @@ export default function OrganizationLoginPage() {
 
       setToken(access);
       storeTokenInStorage(access);
+      console.log('Här är min token'+ access)
       navigation.navigate("HomePageOrganization", { userData: jwtDecode(access) });
     } catch (error) {
       console.log("Error logging in:", error);
