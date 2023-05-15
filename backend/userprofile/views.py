@@ -13,6 +13,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
+from rest_framework import permissions
 
 
 # Eventsidadiskussion 
@@ -87,6 +88,63 @@ class OrganizationEventView(APIView):
 
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class BuyTicketView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication] 
+    def post(self, request, event_id):
+        try:
+        # retrieve the event
+            event = Event.objects.get(pk=event_id)
+            # check if there are available tickets
+            if event.tickets_left <= 0:
+                return Response({'error': 'No more tickets available for this event.'}, status=status.HTTP_400_BAD_REQUEST)
+        # retrieve the student profile of the user
+            student_profile = request.user.student_profile
+        # create a new ticket
+            ticket = Ticket.objects.create(event=event, student=student_profile)
+        # decrement the number of available tickets for the event
+            event.tickets_left -= 1
+            event.save()
+        # return the created ticket
+            serializer = TicketSerializer(ticket)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Event.DoesNotExist:
+            return Response({'error': 'Event not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+#This view returns the list of all tickets bought for a particular event by the members of the organization. 
+class EventTicketsListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = TicketSerializer
+
+    def get_queryset(self):
+        event_id = self.kwargs['event_id']
+        return Ticket.objects.filter(event_id=event_id)
+
+# This view returns the list of all tickets bought by the logged-in student user.
+class StudentTicketsListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = TicketSerializer
+
+    def get_queryset(self):
+        return Ticket.objects.filter(student_id=self.request.user.student_profile.id)
+
+
+#This view returns the details of a particular ticket bought for an event by a member of the organization
+class EventTicketsDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication] 
+    serializer_class = TicketSerializer
+
+    def get_object(self):
+        ticket_id = self.kwargs['ticket_id']
+        return Ticket.objects.get(id=ticket_id)
+
 
 # class StudentHomePageView(viewsets.ModelViewSet):
 #     serializer_class = EventSerializer
