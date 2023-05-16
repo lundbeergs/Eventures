@@ -28,7 +28,7 @@ const CreatePage = () => {
     const [cut_release_time_string, setCutReleaseTime] = useState('')
     const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
     const [imageUri, setImageUri] = useState('');
-    const [tickets_left, setTicketsLeft] = useState('300');
+    const [tickets_left, setTicketsLeft] = useState('');
     const [organization, setOrganizationID] = useState(" ");
     const [error, setError] = useState("");
     
@@ -271,6 +271,23 @@ const CreatePage = () => {
                     />
                     
                 </View>
+
+                <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Amount of tickets:</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        onChangeText={(text) => {
+                            if (/^\d+$/.test(text)) {
+                                setTicketsLeft(text);
+                            }
+                        }}
+                        value={tickets_left}
+                        placeholder="Enter ticket amount"
+                        keyboardType="numeric"
+                    />
+                    
+                </View>
+
                 <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8 }]} >
                     <Text style={GlobalStyles.buttonText} onPress={handleSubmit} >Create Eventure</Text>
                 </Pressable>
