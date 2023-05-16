@@ -13,7 +13,8 @@ const SearchEventItem = ({
   organizationInformation,
   location,
   date,
-  price
+  price,
+  ticketsLeft
 }) => {
   const navigation = useNavigation();
 
@@ -36,7 +37,7 @@ const SearchEventItem = ({
         <View style={styles.eventInfo}>
           <Image style={styles.eventPic} source={eventPic} />
           <View style={styles.eventTextInfo}>
-            <Text style={{ marginLeft: '3%' }}>{date}</Text>
+            <Text style={{ marginLeft: '3%' }}>{ticketsLeft}</Text>
             <Text style={{ marginRight: '12%', fontWeight: 'bold' }}>{eventTitle}</Text>
             <Text style={{ marginRight: '3%' }}>{price}</Text>
           </View>

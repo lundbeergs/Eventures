@@ -15,6 +15,7 @@ const SearchEventList = ({data}) => {
         location={item.location}
         date={item.event_datetime}
         price={item.event_price + 'kr'}
+        ticketsLeft={item.tickets_left}
         />
     }
     return (

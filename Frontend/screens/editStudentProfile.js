@@ -12,12 +12,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import PurpleButton from "../components/PurpleButton";
 import PopUpModal from "../components/PopUpModal";
+import { Picker } from "@react-native-picker/picker";
+
+const drinkOptions = [
+  "Alkoholfritt",
+  "Öl & Vitt vin",
+  "Öl & Rött vin",
+  "Cider & Vitt vin",
+  "Cider & Rött vin"
+];
 
 export default function EditStudentProfileScreen() {
   const navigation = useNavigation();
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [allergies, setAllergies] = useState("");
+  const [drinkpref, setDrinkPref] = useState('')
   const [error, setError] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -31,6 +41,7 @@ export default function EditStudentProfileScreen() {
       first_name: first_name,
       last_name: last_name,
       allergies: allergies,
+      drinkpref: drinkpref,
     };
     
     try {
@@ -59,10 +70,11 @@ export default function EditStudentProfileScreen() {
       });
       const { data: userProfile } = response.data;
       if (userProfile && userProfile.length > 0) {
-        const { first_name, last_name, allergies } = userProfile[0];
+        const { first_name, last_name, allergies, drinkpref } = userProfile[0];
         setFirstName(first_name);
         setLastName(last_name);
         setAllergies(allergies);
+        setDrinkPref(drinkpref);
       }
     } catch (error) {
       console.error(error);
@@ -109,6 +121,18 @@ export default function EditStudentProfileScreen() {
               value={allergies}
               onChangeText={(text) => setAllergies(text)}
             ></TextInput>
+          </View>
+          <View style={GlobalStyles.inputComponent}>
+            <Text style={styles.inputHeader}>Drink Preference</Text>
+            <Picker
+              selectedValue={drinkpref}
+              onValueChange={(itemValue) => setDrinkPref(itemValue)}
+              style={GlobalStyles.inputText}
+            >
+              {drinkOptions.map((option, index) => (
+                <Picker.Item label={option} value={option} key={index} />
+              ))}
+            </Picker>
           </View>
           <View style={styles.buttonContainer}> 
           <PurpleButton onPress={handleSave} text={'Save'}/>

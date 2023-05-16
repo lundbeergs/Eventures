@@ -19,6 +19,7 @@ const MyProfilePage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [allergies, setAllergies] = useState("");
+  const [drinkpref, setDrinkPref] = useState([])
   const [id, setId] = useState("");
   const route = useRoute();
   const initial_first_name = firstName.charAt(0);
@@ -35,10 +36,11 @@ const MyProfilePage = () => {
       const { data: userProfile} = response.data;
 
       if (userProfile && userProfile.length > 0) {
-        const { first_name, last_name, allergies, id } = userProfile[0];
+        const { first_name, last_name, allergies, drinkpref, id } = userProfile[0];
         setFirstName(first_name);
         setLastName(last_name);
         setAllergies(allergies);
+        setDrinkPref(drinkpref)
         setId(id);
       }
     } catch (error) {
@@ -118,6 +120,7 @@ const MyProfilePage = () => {
           <Text style={styles.text}>First name: {firstName}</Text>
           <Text style={styles.text}>Last name: {lastName}</Text>
           <Text style={styles.text}>Allergies: {allergies}</Text>
+          <Text style={styles.text}>Drink preferences: {drinkpref}</Text>
         </View>
         <TouchableOpacity
           style={styles.editIconContainer}
