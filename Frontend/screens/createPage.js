@@ -1,5 +1,5 @@
-import {React, useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Image, ScrollView, Pressable } from "react-native";
+import { React, useState, useEffect } from "react";
+import { View, Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Image, ScrollView, Pressable, Modal } from "react-native";
 import GlobalStyles from "../global-style";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -14,6 +14,7 @@ const CreatePage = () => {
     const [event_name, setTitle] = useState("");
     //const [location, setLocation] = useState("");
     const [event_desc, setInformation] = useState("");
+    const [event_pic, setEventPic] = useState('');
     const [event_price, setPrice] = useState("");
     const [event_date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -24,50 +25,70 @@ const CreatePage = () => {
     const [release_date, setReleaseDate] = useState(new Date());
     const [showReleaseDatePicker, setShowReleaseDatePicker] = useState(false);
     const [cut_release_date_string, setCutReleaseDate] = useState('')
-    const [release_time, setReleaseTime] = useState(new Date()); 
+    const [release_time, setReleaseTime] = useState(new Date());
     const [cut_release_time_string, setCutReleaseTime] = useState('')
     const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
     const [imageUri, setImageUri] = useState('');
     const [tickets_left, setTicketsLeft] = useState('');
     const [organization, setOrganizationID] = useState(" ");
     const [error, setError] = useState("");
-    
+
 
     useEffect(() => {
         getOrganizationProfile();
         console.log(organization)
-      }, []);
+    }, []);
+
+    const [showModal, setShowModal] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const availableImages = [
+        require("../assets/favicon.png"),
+        require("../assets/favicon.png"),
+        require("../assets/favicon.png"),
+    ];
+
+    const handleImagePicker = () => {
+        setShowModal(true);
+    };
+
+    const handleImageSelection = (image) => {
+        setSelectedImage(image);
+        setShowModal(false);
+        setEventPic(image);
+        console.log(image)
+    };
 
     const getOrganizationProfile = async () => {
         try {
-          const accessToken = await AsyncStorage.getItem("accessToken");
-          const response = await API_BASE_URL.get("/api/profile/", {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            },
-          });
-          const { data: userProfile } = response.data;
-    
-          if (userProfile && userProfile.length > 0) {
-            const {id } = userProfile[0];
-            setOrganizationID(id);
-            console.log("org hej" + id);
-          }
+            const accessToken = await AsyncStorage.getItem("accessToken");
+            const response = await API_BASE_URL.get("/api/profile/", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+            });
+            const { data: userProfile } = response.data;
+
+            if (userProfile && userProfile.length > 0) {
+                const { id } = userProfile[0];
+                setOrganizationID(id);
+                console.log("org hej" + id);
+            }
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
     };
-    
+
 
     const handleSubmit = async () => {
-        if (!event_name /* || !location */ || !event_desc || !event_price || !event_date|| !event_time || !tickets_left) {
-          setModalVisible(true);
-          return;
+        if (!event_name /* || !location */ || !event_desc || !event_pic || !event_price || !event_date || !event_time || !tickets_left) {
+            setModalVisible(true);
+            return;
         }
         try {
-               const body = {
+            const body = {
                 event_name: event_name,
                 event_desc: event_desc,
+                event_pic: event_pic,
                 event_price: event_price,
                 event_date: cut_date_string,
                 event_time: cut_time_string,
@@ -75,36 +96,36 @@ const CreatePage = () => {
                 release_time: cut_release_time_string,
                 tickets_left: tickets_left,
                 event_org: organization
-            
-          };
-          console.log(body)
-          const accessToken = await AsyncStorage.getItem("accessToken");
-          const response = await API_BASE_URL.post(`/api/organizations/${organization}/events/`, body, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            },
-          });;
-          const state = {
-            userToken: response.data.token, 
-          };
-          navigation.navigate("StudentLoginPage"); 
-        } catch (error) {
-          console.log(error);
-        }
-      };
-           
 
-      const handleDateChange = (event, selectedDate) => {
+            };
+            console.log(body + event_pic)
+            const accessToken = await AsyncStorage.getItem("accessToken");
+            const response = await API_BASE_URL.post(`/api/organizations/${organization}/events/`, body, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+            });;
+            const state = {
+                userToken: response.data.token,
+            };
+            navigation.navigate("StudentLoginPage");
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+
+    const handleDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || event_date;
         setShowDatePicker(Platform.OS === "ios");
         setDate(currentDate);
         const event_date_string = currentDate.toLocaleDateString('sv-SE');
         setCutDate(event_date_string.slice(0, 10));
         console.log(event_date_string)
-      };
-      
-    
-      const handleTimeChange = (event, selectedTime) => {
+    };
+
+
+    const handleTimeChange = (event, selectedTime) => {
         const currentTime = selectedTime || event_time;
         setShowTimePicker(Platform.OS === "ios");
         setTime(currentTime);
@@ -112,8 +133,8 @@ const CreatePage = () => {
         setCutTime(event_time_string);
         console.log(event_time_string)
 
-      };
-      
+    };
+
 
     const handleReleaseDateChange = (event, selectedReleaseDate) => {
         const currentReleaseDate = selectedReleaseDate || release_date;
@@ -151,7 +172,7 @@ const CreatePage = () => {
                     />
                 </View>
 
-               {/*  <View style={styles.inputContainer}>
+                {/*  <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Location:</Text>
                     <TextInput
                         style={styles.inputField}
@@ -160,8 +181,8 @@ const CreatePage = () => {
                         placeholder="Enter event location"
                     />
                 </View> */}
-                
-                <Text style={{fontSize: 13, marginTop: 8, marginLeft: '2%'}}>Eventure date:</Text>
+
+                <Text style={{ fontSize: 13, marginTop: 8, marginLeft: '2%' }}>Eventure date:</Text>
                 <View style={styles.dateAndTime}>
                     <TouchableOpacity style={styles.datePickerButton} onPress={() => setShowDatePicker(true)}>
                         <View style={styles.buttonContent}>
@@ -203,7 +224,7 @@ const CreatePage = () => {
                     )}
                 </View>
 
-                <Text style={{fontSize: 13, marginTop: 8, marginLeft: '2%'}}>Ticket release:</Text>
+                <Text style={{ fontSize: 13, marginTop: 8, marginLeft: '2%' }}>Ticket release:</Text>
                 <View style={styles.dateAndTime}>
                     <TouchableOpacity style={styles.datePickerButton} onPress={() => setShowReleaseDatePicker(true)}>
                         <View style={styles.buttonContent}>
@@ -245,6 +266,37 @@ const CreatePage = () => {
                     )}
                 </View>
 
+                <View style={styles.container}>
+
+                    {selectedImage ? (
+                        <Image source={selectedImage} style={styles.selectedImage} />
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.imagePickerButton}
+                            onPress={handleImagePicker}
+                        >
+                            <Text style={styles.imagePickerButtonText}>
+                                Choose Eventure Pic
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+
+                    <Modal visible={showModal} transparent={true}>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.imagePickerContainer}>
+                                {availableImages.map((image, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={styles.imagePickerItem}
+                                        onPress={() => handleImageSelection(image)}
+                                    >
+                                        <Image source={image} style={styles.imagePickerImage} />
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Eventure information:</Text>
@@ -269,7 +321,7 @@ const CreatePage = () => {
                         placeholder="Enter event price"
                         keyboardType="numeric"
                     />
-                    
+
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -285,13 +337,13 @@ const CreatePage = () => {
                         placeholder="Enter ticket amount"
                         keyboardType="numeric"
                     />
-                    
+
                 </View>
 
                 <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8 }]} >
                     <Text style={GlobalStyles.buttonText} onPress={handleSubmit} >Create Eventure</Text>
                 </Pressable>
-                
+
             </ScrollView>
         </SafeAreaView>
     );
@@ -307,7 +359,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#B8E3FF",
-      },
+    },
     createEventArea: {
         flex: 1,
     },
