@@ -2,6 +2,13 @@ import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
+const imagePaths = {
+  24: require("../assets/favicon.png"),
+  25: require("../assets/favicon.png"),
+  26: require("../assets/favicon.png"),
+  // Add more mappings as needed
+};
+
 const SearchEventItem = ({
   id,
   orgIcon,
@@ -16,10 +23,12 @@ const SearchEventItem = ({
   price,
   ticketsLeft
 }) => {
+  const eventPicSource = imagePaths[eventPic];
   const navigation = useNavigation();
 
   const goToEvent = () => {
     navigation.navigate('EventPage', {
+      organization: organization,
       eventPic: eventPic,
       eventTitle: eventTitle,
       eventInformation: eventInformation,
@@ -28,14 +37,14 @@ const SearchEventItem = ({
       date: date,
       price: price
     });
-    console.log(organization);
+    console.log(organization + 'hej' + eventPic);
   };
 
   return (
     <TouchableOpacity onPress={goToEvent}>
       <View style={styles.eventContainer}>
         <View style={styles.eventInfo}>
-          <Image style={styles.eventPic} source={eventPic} />
+          <Image style={styles.eventPic} source={eventPicSource} />
           <View style={styles.eventTextInfo}>
             <Text style={{ marginLeft: '3%' }}>{ticketsLeft}</Text>
             <Text style={{ marginRight: '12%', fontWeight: 'bold' }}>{eventTitle}</Text>

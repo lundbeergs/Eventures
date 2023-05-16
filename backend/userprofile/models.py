@@ -84,16 +84,6 @@ class MembershipRequest(models.Model):
 	# 	unique_together = ['organization', 'student']
 
 class Event(models.Model):
-	PICTURE_CHOICES = (
-        ('Fin fest 1', 'Fin fest 1'),
-        ('Fin fest 2', 'Fin fest 2'),
-        ('Ful fest 1', 'Ful fest 1'),
-        ('Ful fest 2', 'Ful fest 2'),
-        ('Företag 1', 'Företag 1'),
-		('Företag 2', 'Företag 2'),
-		('Sport 1', 'Sport 1'),
-		('Sport 2', 'Sport 2')
-    )
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)	
 	event_name = models.CharField(max_length=50, unique=False)
@@ -103,8 +93,7 @@ class Event(models.Model):
 	event_time = models.TimeField(auto_now=False, auto_now_add=False, null=True)
 	release_date = models.DateField(blank=True, null=True)
 	release_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-	event_pic = models.CharField(max_length=50, default='Fin fest 1', choices=PICTURE_CHOICES)
-	# event_pic = models.ImageField(upload_to='event_pics/', blank=True, null=True)
+	event_pic = models.PositiveIntegerField(default=10000)	# event_pic = models.ImageField(upload_to='event_pics/', blank=True, null=True)
 	event_org = models.ForeignKey(OrganizationProfile, on_delete=models.CASCADE, related_name='event') 
 	event_location = models.CharField(max_length=100, blank=True, unique=False)
 	tickets_left = models.PositiveIntegerField(default=10000)
