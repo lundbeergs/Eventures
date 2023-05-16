@@ -25,6 +25,20 @@ const EventPage = () => {
   const [eventId, setEventId] = useState("");
   const [error, setError] = useState("");
   const [popUpModalVisible, setPopUpModalVisible] = useState(false);
+  const eventPic = route.params.eventPic
+
+  const imagePaths = {
+    101: require("../assets/1.png"),
+    102: require("../assets/2.png"),
+    103: require("../assets/3.png"),
+    104: require("../assets/4.png"),
+    105: require("../assets/5.png"),
+    106: require("../assets/6.png"),
+    107: require("../assets/7.png"),
+    108: require("../assets/8.png"),
+  };
+
+  const eventPicSource = imagePaths[eventPic];
 
   useEffect(() => {
     fetchEventID();
@@ -109,7 +123,7 @@ const EventPage = () => {
           >
             <Image
               style={styles.eventPic}
-              source={route.params.eventPic}
+              source={eventPicSource}
             />
             <Text
               style={{

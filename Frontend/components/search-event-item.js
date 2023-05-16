@@ -3,10 +3,14 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
 const imagePaths = {
-  24: require("../assets/favicon.png"),
-  25: require("../assets/favicon.png"),
-  26: require("../assets/favicon.png"),
-  // Add more mappings as needed
+  101: require("../assets/1.png"),
+  102: require("../assets/2.png"),
+  103: require("../assets/3.png"),
+  104: require("../assets/4.png"),
+  105: require("../assets/5.png"),
+  106: require("../assets/6.png"),
+  107: require("../assets/7.png"),
+  108: require("../assets/8.png"),
 };
 
 const SearchEventItem = ({

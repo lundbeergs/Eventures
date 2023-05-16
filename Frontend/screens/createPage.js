@@ -42,20 +42,24 @@ const CreatePage = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const availableImages = [
-        require("../assets/favicon.png"),
-        require("../assets/favicon.png"),
-        require("../assets/favicon.png"),
+        require("../assets/1.png"),
+        require("../assets/2.png"),
+        require("../assets/3.png"),
+        require("../assets/4.png"),
+        require("../assets/5.png"),
+        require("../assets/6.png"),
+        require("../assets/7.png"),
+        require("../assets/8.png"),
     ];
 
     const handleImagePicker = () => {
         setShowModal(true);
     };
 
-    const handleImageSelection = (image) => {
+    const handleImageSelection = (image, index) => {
         setSelectedImage(image);
         setShowModal(false);
-        setEventPic(image);
-        console.log(image)
+        setEventPic(index + 100);
     };
 
     const getOrganizationProfile = async () => {
@@ -269,7 +273,7 @@ const CreatePage = () => {
                 <View style={styles.container}>
 
                     {selectedImage ? (
-                        <Image source={selectedImage} style={styles.selectedImage} />
+                        <Image source={selectedImage} style={[styles.selectedImage, { width: '95%', height: 200, margin: '2.5%', borderRadius: 5 }]} />
                     ) : (
                         <TouchableOpacity
                             style={styles.imagePickerButton}
@@ -288,11 +292,12 @@ const CreatePage = () => {
                                     <TouchableOpacity
                                         key={index}
                                         style={styles.imagePickerItem}
-                                        onPress={() => handleImageSelection(image)}
+                                        onPress={() => handleImageSelection(image, index)}
                                     >
                                         <Image source={image} style={styles.imagePickerImage} />
                                     </TouchableOpacity>
                                 ))}
+
                             </View>
                         </View>
                     </Modal>
@@ -343,9 +348,13 @@ const CreatePage = () => {
                 <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8 }]} >
                     <Text style={GlobalStyles.buttonText} onPress={handleSubmit} >Create Eventure</Text>
                 </Pressable>
+                <View style={{ height: 50 }}>
+            </View>
 
             </ScrollView>
+
         </SafeAreaView>
+
     );
 };
 
@@ -425,6 +434,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: '5%',
         fontSize: 15.5
+    },
+    imagePickerImage: {
+        height: 120,
+        width: '45%',
+        marginLeft: '2%',
+        resizeMode: 'contain',
     },
 });
 
