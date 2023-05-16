@@ -3,12 +3,20 @@ from django.db import models
 from user.models import User
 
 class StudentProfile(models.Model):
+	DRINK_CHOICES = (
+        ('Öl & Vitt vin', 'Öl & Vitt vin'),
+        ('Öl & Rött vin', 'Öl & Rött vin'),
+        ('Cider & Vitt vin', 'Cider & Vitt vin'),
+        ('Cider & Rött vin', 'Cider & Rött vin'),
+        ('Alkoholfritt', 'Alkoholfritt')
+    )
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
 	first_name = models.CharField(max_length=50, unique=False)
 	last_name = models.CharField(max_length=50, unique=False)
 	allergies = models.TextField(max_length=100, unique=False)
+	drinkpref = models.CharField(max_length=50, default='Alkoholfritt', choices=DRINK_CHOICES)
 
 
 	class Meta:

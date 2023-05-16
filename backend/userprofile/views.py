@@ -373,6 +373,7 @@ class UserProfileView(RetrieveAPIView):
                         'first_name': user_profile.first_name,
                         'last_name': user_profile.last_name,
                         'allergies': user_profile.allergies,
+                        'drinkpref': user_profile.drinkpref,
                     }]
                 }
             if request.user.is_organization == True:
