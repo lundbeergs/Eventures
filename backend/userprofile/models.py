@@ -86,6 +86,7 @@ class Event(models.Model):
 	release_time = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
 	# event_pic = models.ImageField(upload_to='event_pics/', blank=True, null=True)
 	event_org = models.ForeignKey(OrganizationProfile, on_delete=models.CASCADE, related_name='event') 
+	event_location = models.CharField(max_length=100, blank=True, unique=False)
 	tickets_left = models.PositiveIntegerField(default=10000)
 	# event_org_members är det inte bättre om medlemmar kollas genom eve t_org ist? 
 
