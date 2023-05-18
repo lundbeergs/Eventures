@@ -51,8 +51,7 @@ export const HomeTabs = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
             backgroundColor: '#BDE3FF',
-            height: 70, 
-            paddingTop: 15, 
+            height: 80, 
             paddingBottom: 15, 
         },
         tabBarActiveTintColor: 'black',

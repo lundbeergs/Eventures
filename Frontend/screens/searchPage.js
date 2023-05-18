@@ -167,7 +167,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000000',
   },
-
+  compArea: {
+  flex: 1
+  },
   selectionContainer: {
     marginTop: 10,
     flexDirection: 'row',

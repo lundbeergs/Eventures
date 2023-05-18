@@ -109,10 +109,10 @@ const CreatePage = () => {
                     Authorization: `Bearer ${accessToken}`
                 },
             });;
+            console.log('Event created');
             const state = {
                 userToken: response.data.token,
             };
-            navigation.navigate("StudentLoginPage");
         } catch (error) {
             console.log(error);
         }
@@ -346,7 +346,7 @@ const CreatePage = () => {
                 </View>
 
                 <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8 }]} >
-                    <Text style={GlobalStyles.buttonText} onPress={handleSubmit} >Create Eventure</Text>
+                    <Text style={GlobalStyles.buttonText} onPress={handleSubmit} > Create Eventure</Text>
                 </Pressable>
                 <View style={{ height: 50 }}>
             </View>

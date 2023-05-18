@@ -56,10 +56,6 @@ const EventPage = () => {
     setMaxHeight(isExpanded ? 185 : 9999);
   };
 
-  const togglePopUpModal = () => {
-    setPopUpModalVisible(!popUpModalVisible);
-  };
-
   const fetchEventID = () => {
     setEventId(route.params.eventId);
   };
