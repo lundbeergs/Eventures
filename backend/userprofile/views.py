@@ -354,6 +354,20 @@ class OrganizationStudentView(APIView):
 #             qs =  qs.filter(org_name__icontains=org_name)
 # 		return qs
 
+class DrinkPrefView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        try:
+            student_profile = StudentProfile.objects.get(user=request.user)
+            drink_pref = student_profile.drinkpref
+            response_data = {'drink_pref': drink_pref}
+            return Response(response_data)
+        except StudentProfile.DoesNotExist:
+            response_data = {'error': 'Student profile not found.'}
+            return Response(response_data, status=404)
+
 class UserProfileView(RetrieveAPIView):
 
     permission_classes = (IsAuthenticated,)
@@ -373,6 +387,7 @@ class UserProfileView(RetrieveAPIView):
                         'first_name': user_profile.first_name,
                         'last_name': user_profile.last_name,
                         'allergies': user_profile.allergies,
+                        'drinkpref': user_profile.drinkpref,
                     }]
                 }
             if request.user.is_organization == True:

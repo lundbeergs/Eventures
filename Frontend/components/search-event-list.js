@@ -10,11 +10,12 @@ const SearchEventList = ({data}) => {
         orgProfilePic={item.orgProfilePic} 
         organizationInformation={item.organizationInformation} 
         eventTitle={item.event_name}
-        eventPic={item.eventPic}
+        eventPic={item.event_pic}
         eventInformation={item.event_desc}
         location={item.location}
         date={item.event_datetime}
         price={item.event_price + 'kr'}
+        ticketsLeft={item.tickets_left}
         />
     }
     return (

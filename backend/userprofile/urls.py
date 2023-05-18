@@ -10,6 +10,7 @@ from userprofile.views import *
 
 urlpatterns = [
 	path('profile/',UserProfileView.as_view()),
+    path('drinkpref/', DrinkPrefView.as_view()),
     path('membership/request/', MembershipRequestView.as_view()), # FUNKAR INTE OBS
 
     # Sjsjsjs

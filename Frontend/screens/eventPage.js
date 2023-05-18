@@ -27,6 +27,28 @@ const EventPage = () => {
   const [popUpModalVisible, setPopUpModalVisible] = useState(false);
   const [hasTicket, setHasTicket] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const eventPic = route.params.eventPic
+
+  const imagePaths = {
+    101: require("../assets/1.png"),
+    102: require("../assets/2.png"),
+    103: require("../assets/3.png"),
+    104: require("../assets/4.png"),
+    105: require("../assets/5.png"),
+    106: require("../assets/6.png"),
+    107: require("../assets/7.png"),
+    108: require("../assets/8.png"),
+  };
+
+  const eventPicSource = imagePaths[eventPic];
+
+  useEffect(() => {
+    fetchEventID();
+  }, [eventId]);
+
+  const togglePopUpModal = () => {
+    setPopUpModalVisible(!popUpModalVisible);
+  };
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -120,8 +142,13 @@ const EventPage = () => {
         }
       >
         <View style={styles.container}>
-          <View style={styles.informationContainer}>
-            <Image style={styles.eventPic} source={route.params.eventPic} />
+          <View
+            style={styles.informationContainer}
+          >
+            <Image
+              style={styles.eventPic}
+              source={eventPicSource}
+            />
             <Text
               style={{
                 marginTop: "55%",
@@ -209,20 +236,20 @@ const styles = StyleSheet.create({
   },
   informationContainer: {
     flex: 1,
-    width: "100%", // Set the width to 100%
+    width: "100%",
     minHeight: 470,
     maxHeight: 9999,
     marginRight: 15,
     marginLeft: 15,
     backgroundColor: "white",
     borderRadius: 5,
-    overflow: "hidden",
+    overflow: "hidden"
   },
   greenFrame: {
     backgroundColor: "rgba(144, 238, 144, 0.5)",
     margin: 10,
     borderRadius: 20,
-    overflow: "hidden", // clip the corners of inner view
+    overflow: "hidden"
   },
   eventPic: {
     height: 190,
