@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -16,54 +17,55 @@ import whiteCirkle from "../assets/images/whiteCirkle.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 
+
 import destinationUnknown from "../assets/images/destinationUnknown.jpg";
 
 const OrganizationPage = () => {
-  const navigation = useNavigation();
   const route = useRoute();
-  const [student, setStudentID] = useState(" ");
-  const [isMember, setIsMember] = useState(false);
-  const [myMemberships, setMyMemberships] = useState([]);
   const organization = route.params.organization;
+  const [isMember, setIsMember] = useState("");
+  const [student, setStudent] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
+  useEffect(() => {
+    checkMembership();
+  }, [isMember]);
 
-  const getStudentID = async () => {
-    try {
-      const studentId = await AsyncStorage.getItem("studentId");
-      setStudentID(studentId);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleRefresh = () => {
+    setRefreshing(true);
+    checkMembership();
+    setRefreshing(false);
   };
 
-  const fetchMemberships = async () => {
+  const checkMembership = async () => {
     try {
+      setStudent(await AsyncStorage.getItem("studentId"));
       const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await API_BASE_URL.get("/api/memberships/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const memberships = response.data;
-      console.log("Memberships:", memberships); // Log the memberships array
 
-      setMyMemberships(memberships.map(
-        (membership) => membership.organization
-      ));
-    
+      const membershipData = response.data;
+      console.log(membershipData);
+      console.log('org: '+organization);
+
+      const isOrganizationMember = membershipData.find(
+        (membership) => membership.organization === organization,
+      );
+
+      if (isOrganizationMember) {
+        setIsMember(true);
+      } else {
+        setIsMember(false);
+      }
+      console.log(isMember);
+      console.log("student " + student);
     } catch (error) {
       console.error(error);
     }
   };
-
-  const checkMemberhip = () => {
-    console.log('check memberships' + myMemberships);
-    console.log('check isMember' + isMember);
-    if (myMemberships.includes(organization)) {
-      setIsMember(true);
-      console.log('isMember: '+isMember);
-    }
-  }
 
   const becomeMember = async () => {
     const body = {
@@ -82,22 +84,28 @@ const OrganizationPage = () => {
             },
           }
         );
-        console.log(response.data);
+        console.log("Become member" + response.data);
+      } else {
+        console.log("Already a member");
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  useEffect(() => {
-      getStudentID();
-      fetchMemberships();
-      checkMemberhip();
-  }, [organization]);
-
   return (
     <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
-      <ScrollView>
+      <ScrollView 
+        onRefresh={handleRefresh}
+        refreshing={refreshing}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={["#9Bd35A", "#689F38"]}
+            progressBackgroundColor="#fff"
+          />
+        }>
         <View style={styles.informationContainer}>
           <Image
             style={styles.orgProfilePic}
@@ -122,7 +130,6 @@ const OrganizationPage = () => {
               isMember && styles.memberButton,
             ]}
             onPress={!isMember ? becomeMember : undefined}
-            disabled={isMember}
           >
             <Text style={styles.buttonText}>
               {isMember ? "Member" : "Become member"}
@@ -264,3 +271,4 @@ const styles = StyleSheet.create({
 });
 
 export default OrganizationPage;
+
