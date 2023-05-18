@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, RefreshControl} from "react-native";
 import EventList from "../components/event-list";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from '../axios.js';
@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomePageStudent = () => {
   const [data, setData] = useState([])
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     fetchData()
   }, [] )
@@ -19,18 +20,25 @@ const HomePageStudent = () => {
         },
       });
       setData(response.data);
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+    setRefreshing(false);
+  };
+
   return (
     <View style={{ backgroundColor: '#BDE3FF', flex: 1 }}>
       <FlatList
-        data={[]}
+        data={[data]}
         keyExtractor={(index) => index.toString()}
         ListHeaderComponent={<EventList data={data}/>}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} progressBackgroundColor={'white'} progressViewOffset={-20}/>
+      }
       />
     </View>
   );
