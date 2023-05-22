@@ -4,11 +4,11 @@ from user.models import User
 
 class StudentProfile(models.Model):
 	DRINK_CHOICES = (
-        ('Öl & Vitt vin', 'Öl & Vitt vin'),
-        ('Öl & Rött vin', 'Öl & Rött vin'),
-        ('Cider & Vitt vin', 'Cider & Vitt vin'),
-        ('Cider & Rött vin', 'Cider & Rött vin'),
-        ('Alkoholfritt', 'Alkoholfritt')
+        ('Beer & White wine', 'Beer & White wine'),
+        ('Beer & Red wine', 'Beer & Red wine'),
+        ('Cider & White wine', 'Cider & White wine'),
+        ('Cider & Red wine', 'Cider & Red wine'),
+        ('Non-alcoholic', 'Non-alcoholic')
     )
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -13,17 +13,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import GlobalStyles from "../global-style";
 import { API_BASE_URL } from "../axios";
 import PurpleButton from "../components/PurpleButton";
+import OrgList from "../components/org-list";
 
 const MyProfilePage = () => {
   const navigation = useNavigation();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [allergies, setAllergies] = useState("");
-  const [drinkpref, setDrinkPref] = useState([])
+  const [drinkpref, setDrinkPref] = useState([]);
   const [id, setId] = useState("");
   const route = useRoute();
-  const initial_first_name = firstName.charAt(0);
-  const initial_last_name = lastName.charAt(0);
+  const initial_first_name = firstName.charAt(0).toUpperCase();
+  const initial_last_name = lastName.charAt(0).toUpperCase();
+  const [membership, setMembership] = useState([]);
+  const [orgData, setOrgData] = useState([]);
+  const [myMemberships, setMyMemberships] = useState([]);
 
   const getProfile = async () => {
     try {
@@ -33,15 +37,17 @@ const MyProfilePage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const { data: userProfile} = response.data;
+      const { data: userProfile } = response.data;
 
       if (userProfile && userProfile.length > 0) {
-        const { first_name, last_name, allergies, drinkpref, id } = userProfile[0];
+        const { first_name, last_name, allergies, drinkpref, id } =
+          userProfile[0];
         setFirstName(first_name);
         setLastName(last_name);
         setAllergies(allergies);
-        setDrinkPref(drinkpref)
+        setDrinkPref(drinkpref);
         setId(id);
+        await MyMembershipHandler();
       }
     } catch (error) {
       console.error(error);
@@ -66,6 +72,50 @@ const MyProfilePage = () => {
 
   const handleEditProfile = () => {
     navigation.navigate("EditStudentProfilePage");
+  };
+
+  const MyMembershipHandler = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/memberships/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const { data } = response;
+      setMyMemberships(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchOrgData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/organizations/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const data = response.data;
+      setOrgData(data); // Update the organization data here
+
+      // Create a map of organization IDs to names
+      const orgMap = {};
+      data.forEach((org) => {
+        orgMap[org.id] = org.org_name;
+      });
+
+      // Update the membership data with organization names
+      const updatedMemberships = myMemberships.map((membership) => ({
+        ...membership,
+        org_name: orgMap[membership.organization] || "Unknown Organization",
+      }));
+
+      setMyMemberships(updatedMemberships);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const logOutHandler = async () => {
@@ -97,6 +147,12 @@ const MyProfilePage = () => {
     }
   };
 
+  useEffect(() => {
+    if (myMemberships.length > 0) {
+      fetchOrgData();
+    }
+  }, [myMemberships]);
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <View style={styles.whiteBox}>
@@ -113,28 +169,34 @@ const MyProfilePage = () => {
           </View>
         </ImageBackground>
         <View style={styles.lowerWhiteBoxContainer}>
-        <View style={styles.infotextContainer}>
-          <Text style={styles.header}>
-            {firstName} {lastName}
-          </Text>
-          <Text style={styles.text}>First name: {firstName}</Text>
-          <Text style={styles.text}>Last name: {lastName}</Text>
-          <Text style={styles.text}>Allergies: {allergies}</Text>
-          <Text style={styles.text}>Drink preferences: {drinkpref}</Text>
+          <View style={styles.infotextContainer}>
+            <Text style={styles.header}>
+              {firstName} {lastName}
+            </Text>
+            <Text style={styles.text}>First name: {firstName}</Text>
+            <Text style={styles.text}>Last name: {lastName}</Text>
+            <Text style={styles.text}>Allergies: {allergies}</Text>
+            <Text style={styles.text}>Drink preferences: {drinkpref}</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.editIconContainer}
+            onPress={handleEditProfile}
+          >
+            <Ionicons name="create-outline" size={30} color="black" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.editIconContainer}
-          onPress={handleEditProfile}
-        >
-          <Ionicons name="create-outline" size={30} color="black" />
-        </TouchableOpacity>
       </View>
-      </View>
-
       <View style={{ flex: 1, justifyContent: "space-between" }}>
         <View style={{ marginHorizontal: "8%", marginTop: 20 }}>
           <View style={styles.myMembershipsField}>
-            <Text style={styles.myMembershipsText}>My memberships</Text>
+            <Text style={styles.myMembershipsText}>My Memberships</Text>
+          </View>
+          <View style={styles.membershipField}>
+            {myMemberships.map((membership) => (
+              <View key={membership.id}>
+                <Text style={styles.membershipText}>{membership.org_name}</Text>
+              </View>
+            ))}
           </View>
         </View>
         <View style={styles.buttonContainer}>
@@ -147,7 +209,7 @@ const MyProfilePage = () => {
 
 const styles = StyleSheet.create({
   whiteBox: {
-    height: '43%',
+    height: "48%",
     backgroundColor: "white",
     borderRadius: 4,
     marginHorizontal: "8%",
@@ -203,8 +265,8 @@ const styles = StyleSheet.create({
     fontWeight: "regular",
   },
   editIconContainer: {
-    justifyContent: 'center',
-    marginTop: '20%',
+    justifyContent: "center",
+    marginTop: "20%",
   },
   buttonContainer: {
     width: "100%",
@@ -224,6 +286,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
   },
+  membershipField: {
+    paddingVertical: 8,
+    padding: "10%",
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: 10,
+  },
+  membershipText: {
+    fontSize: 14,
+    color: "rgba(0, 0, 0, 1)",
+  }
 });
 
 export default MyProfilePage;
