@@ -14,14 +14,12 @@ const imagePaths = {
 };
 
 const SearchEventItem = ({
-  id,
-  orgIcon,
-  orgProfilePic,
   eventTitle,
   eventPic,
   eventInformation,
-  organization,
-  organizationInformation,
+  orgName,
+  eventId,
+  orgId,
   location,
   date,
   price,
@@ -32,16 +30,16 @@ const SearchEventItem = ({
 
   const goToEvent = () => {
     navigation.navigate('EventPage', {
-      organization: organization,
+      orgName: orgName,
+      orgId: orgId,
+      eventId: eventId,
       eventPic: eventPic,
       eventTitle: eventTitle,
       eventInformation: eventInformation,
-      organization: organization,
       location: location,
       date: date,
-      price: price
+      price: price,
     });
-    console.log(organization + 'hej' + eventPic);
   };
 
   return (
@@ -50,7 +48,7 @@ const SearchEventItem = ({
         <View style={styles.eventInfo}>
           <Image style={styles.eventPic} source={eventPicSource} />
           <View style={styles.eventTextInfo}>
-            <Text style={{ marginLeft: '3%' }}>{ticketsLeft}</Text>
+            <Text style={{ marginLeft: '3%' }}>{'Tickets: ' + ticketsLeft}</Text>
             <Text style={{ marginRight: '12%', fontWeight: 'bold' }}>{eventTitle}</Text>
             <Text style={{ marginRight: '3%' }}>{price}</Text>
           </View>

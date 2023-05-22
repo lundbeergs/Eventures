@@ -42,10 +42,6 @@ const EventPage = () => {
 
   const eventPicSource = imagePaths[eventPic];
 
-  useEffect(() => {
-    fetchEventID();
-  }, [eventId]);
-
   const togglePopUpModal = () => {
     setPopUpModalVisible(!popUpModalVisible);
   };
@@ -58,6 +54,7 @@ const EventPage = () => {
 
   const fetchEventID = () => {
     setEventId(route.params.eventId);
+    console.log(route.params.eventId)
   };
 
   const checkIfHasTicket = async () => {
@@ -70,9 +67,9 @@ const EventPage = () => {
       });
 
       const eventIds = response.data.map((ticket) => ticket.event);
-      console.log(eventIds);
+      console.log('Event ids: '+ eventIds);
       const searchTickets = eventIds.includes(eventId);
-      console.log(searchTickets);
+      console.log('Search tickets: '+ searchTickets);
       setHasTicket(searchTickets);
     } catch (error) {
       console.log(error);
@@ -164,12 +161,6 @@ const EventPage = () => {
               {isExpanded ? "Read less..." : "Read more..."}
             </Text>
           </View>
-
-          <View style={styles.video}>
-            <Text style={{ textAlign: "center", fontSize: 17 }}>
-              {route.params.organization}s släppfilm här
-            </Text>
-          </View>
         </View>
       </ScrollView>
       <View style={{ marginHorizontal: 20 }}>
@@ -212,7 +203,7 @@ const EventPage = () => {
                   backgroundColor="white"
                 />
               </View>
-              <View>
+              <View style={styles.modalButton}>
                 <PurpleButton onPress={closeModalHandler} text={"Close"} />
               </View>
             </View>
@@ -301,27 +292,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 30,
     borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalTitle: {
     fontWeight: "bold",
     fontSize: 20,
-    marginVertical: 10, // add top margin to the header
+    marginBottom: 20, 
     textAlign: "center",
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 10,
   },
   modalButton: {
-    backgroundColor: "#6B48D3",
-    padding: 10,
-    borderRadius: 5,
-  },
-  modalButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
+    width: '100%',
   },
   outerModalContainer: {
     flex: 1,
