@@ -1,14 +1,27 @@
-import { Text, View, ScrollView, StyleSheet, Button, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  StyleSheet,
+  Button,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { Ionicons } from "@expo/vector-icons";
+import GlobalStyles from "../global-style";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const RequestPage = () => {
   const [organization, setOrganizationID] = useState("");
   const [students, setStudents] = useState([]);
+
+  const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   const getRequests = async () => {
     try {
@@ -122,27 +135,35 @@ const RequestPage = () => {
   };
 
   return (
-    <ScrollView>
-      {students.map((student) => (
-        <View style={styles.studentContainer} key={student.id}>
-          <Text
-            style={styles.studentName}
-          >{`${student.first_name} ${student.last_name}`}</Text>
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() => acceptRequest(student.id)}
-          >
-            <Ionicons name="checkmark-circle-outline" size={24} color="green" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() => deleteRequest(student.id)}
-          >
-            <Ionicons name="close-circle-outline" size={24} color="red" />
-          </TouchableOpacity>
-        </View>
-      ))}
-    </ScrollView>
+    <SafeAreaView style={GlobalStyles.container}>
+      <ScrollView>
+        {students.map((student) => (
+          <View style={styles.studentContainer} key={student.id}>
+            <Text style={styles.studentName}>
+              {`${capitalizeFirstLetter(
+                student.first_name
+              )} ${capitalizeFirstLetter(student.last_name)}`}
+            </Text>
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => acceptRequest(student.id)}
+            >
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={24}
+                color="green"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => deleteRequest(student.id)}
+            >
+              <Ionicons name="close-circle-outline" size={24} color="red" />
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -151,11 +172,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 10,
+    backgroundColor: "white",
+    padding: "2%",
+    margin: "2%",
+    borderRadius: 10,
   },
   studentName: {
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
+    fontWeight: "bold",
   },
   iconContainer: {
     paddingHorizontal: 10,

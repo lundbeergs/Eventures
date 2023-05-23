@@ -26,7 +26,7 @@ export const OrgTabs = () => {
             IconName = focused ? 'person' : 'person-outline';
           }
           else if (route.name === 'Requests') {
-            IconName = focused ? 'person' : 'person-outline';
+            IconName = focused ? 'person-add' : 'person-add-outline';
           }
           return <Ionicons name={IconName} size={focused ? 35 : size} color={color} />;
         },
