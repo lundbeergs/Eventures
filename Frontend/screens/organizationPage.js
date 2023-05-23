@@ -22,7 +22,6 @@ import destinationUnknown from "../assets/images/destinationUnknown.jpg";
 const OrganizationPage = () => {
   const route = useRoute();
   const orgId = route.params.orgId;
-  const organization = route.params.organization;
   const [isMember, setIsMember] = useState("");
   const [student, setStudent] = useState("");
   const [orgData, setOrgData] = useState([]);
@@ -83,7 +82,7 @@ const OrganizationPage = () => {
 
   const becomeMember = async () => {
     const body = {
-      organization: organization,
+      organization: orgId,
       student: student,
     };
     try {

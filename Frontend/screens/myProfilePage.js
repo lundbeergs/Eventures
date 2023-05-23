@@ -118,6 +118,23 @@ const MyProfilePage = () => {
     }
   };
 
+  const deleteMembership = async (organizationId, studentId) => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      await API_BASE_URL.delete(
+        `/api/membership/organization/${organizationId}/${studentId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      await fetchOrgData(); // Refresh organization data after deleting membership
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const logOutHandler = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
@@ -194,7 +211,25 @@ const MyProfilePage = () => {
           <View style={styles.membershipField}>
             {myMemberships.map((membership) => (
               <View key={membership.id}>
-                <Text style={styles.membershipText}>{membership.org_name}</Text>
+                <View style={styles.membershipContainer}>
+                  <Text style={styles.membershipText}>
+                    {membership.org_name}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      deleteMembership(
+                        membership.organization,
+                        membership.student
+                      )
+                    }
+                  >
+                    <Ionicons
+                      name="close-circle-outline"
+                      size={24}
+                      color="red"
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
             ))}
           </View>
@@ -296,8 +331,16 @@ const styles = StyleSheet.create({
   membershipText: {
     fontSize: 14,
     color: "rgba(0, 0, 0, 1)",
-  }
+  },
+  membershipContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
 });
+
+
 
 export default MyProfilePage;
 
