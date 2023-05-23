@@ -99,10 +99,10 @@ const OrganizationProfilePage = () => {
       </View>
       <View style={styles.buttonContainer}>
         <PurpleButton
-          onPress={membershipRequestHandler}
+          onPress={requestHandler}
           text={"Membership requests"}
         />
-        <PurpleButton onPress={membershipHandler} text={"Memberships"} />
+        <PurpleButton onPress={memberHandler} text={"Memberships"} />
       </View>
 
       <View style={{ flex: 1, justifyContent: "space-between" }}>

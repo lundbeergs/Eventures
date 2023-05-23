@@ -7,8 +7,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { Ionicons } from "@expo/vector-icons";
@@ -137,31 +135,31 @@ const RequestPage = () => {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <ScrollView>
-        {students.map((student) => (
-          <View style={styles.studentContainer} key={student.id}>
-            <Text style={styles.studentName}>
-              {`${capitalizeFirstLetter(
-                student.first_name
-              )} ${capitalizeFirstLetter(student.last_name)}`}
-            </Text>
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={() => acceptRequest(student.id)}
-            >
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={24}
-                color="green"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={() => deleteRequest(student.id)}
-            >
-              <Ionicons name="close-circle-outline" size={24} color="red" />
-            </TouchableOpacity>
-          </View>
-        ))}
+          {students.map((student) => (
+            <View style={styles.studentContainer} key={student.id}>
+              <Text style={styles.studentName}>
+                {`${capitalizeFirstLetter(
+                  student.first_name
+                )} ${capitalizeFirstLetter(student.last_name)}`}
+              </Text>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => acceptRequest(student.id)}
+              >
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={24}
+                  color="green"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => deleteRequest(student.id)}
+              >
+                <Ionicons name="close-circle-outline" size={24} color="red" />
+              </TouchableOpacity>
+            </View>
+          ))}
       </ScrollView>
     </SafeAreaView>
   );
