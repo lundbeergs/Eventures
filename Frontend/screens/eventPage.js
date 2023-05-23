@@ -8,6 +8,7 @@ import {
   Modal,
   Pressable,
   RefreshControl,
+  SafeAreaView,
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import PurpleButton from "../components/PurpleButton";
@@ -27,7 +28,8 @@ const EventPage = () => {
   const [popUpModalVisible, setPopUpModalVisible] = useState(false);
   const [hasTicket, setHasTicket] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const eventPic = route.params.eventPic
+  const [ticketModalVisible, setTicketModalVisible] = useState(false);
+  const eventPic = route.params.eventPic;
 
   const imagePaths = {
     101: require("../assets/1.png"),
@@ -42,20 +44,10 @@ const EventPage = () => {
 
   const eventPicSource = imagePaths[eventPic];
 
-  const togglePopUpModal = () => {
-    setPopUpModalVisible(!popUpModalVisible);
-  };
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-    // Update the max height based on the expanded state
-    setMaxHeight(isExpanded ? 185 : 9999);
-  };
-
-  const fetchEventID = () => {
+  useEffect(() => {
     setEventId(route.params.eventId);
-    console.log(route.params.eventId)
-  };
+    checkIfHasTicket();
+  }, [eventId]);
 
   const checkIfHasTicket = async () => {
     try {
@@ -67,19 +59,15 @@ const EventPage = () => {
       });
 
       const eventIds = response.data.map((ticket) => ticket.event);
-      console.log('Event ids: '+ eventIds);
+      console.log("Event ids: " + eventIds);
       const searchTickets = eventIds.includes(eventId);
-      console.log('Search tickets: '+ searchTickets);
+      console.log("Search tickets: " + searchTickets);
       setHasTicket(searchTickets);
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    fetchEventID();
-    checkIfHasTicket();
-  }, [eventId]);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -119,10 +107,24 @@ const EventPage = () => {
     setShowModal(false);
   };
 
+  const toggleTicketModal = () => {
+    setTicketModalVisible(!ticketModalVisible);
+  };
+
+  const togglePopUpModal = () => {
+    setPopUpModalVisible(!popUpModalVisible);
+  };
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+    // Update the max height based on the expanded state
+    setMaxHeight(isExpanded ? 185 : 9999);
+  };
+
   return (
-    <View style={GlobalStyles.container}>
+    <SafeAreaView style={GlobalStyles.container}>
       <ScrollView
-        style={{ flexGrow: 1, backgroundColor: "#BDE3FF" }}
+        style={GlobalStyles.container}
         onRefresh={handleRefresh}
         refreshing={refreshing}
         refreshControl={
@@ -134,32 +136,30 @@ const EventPage = () => {
           />
         }
       >
-        <View style={styles.container}>
-          <View
-            style={styles.informationContainer}
-          >
-            <Image
-              style={styles.eventPic}
-              source={eventPicSource}
-            />
-            <Text
-              style={{
-                marginTop: "55%",
-                textAlign: "center",
-                fontWeight: "bold",
-                fontSize: 20,
-              }}
-            >
-              {route.params.eventTitle}
-            </Text>
-
-            <Text style={[styles.eventInformation, { maxHeight: maxHeight }]}>
-              {route.params.eventInformation}
-            </Text>
-
-            <Text style={styles.readMore} onPress={toggleExpand}>
-              {isExpanded ? "Read less..." : "Read more..."}
-            </Text>
+        <View style={styles.whiteBox}>
+          <Image style={styles.eventPic} source={eventPicSource} />
+          <View style={styles.lowerWhiteBoxContainer}>
+            <View style={{ marginBottom: "3%" }}>
+              <Text style={styles.header}>{route.params.eventTitle}</Text>
+              <Text style={styles.text}>{route.params.eventInformation}</Text>
+            </View>
+            <View style={{ marginBottom: "3%" }}>
+              <Text style={styles.text}>Host: {route.params.orgName}</Text>
+            </View>
+            <View style={{ marginBottom: "3%" }}>
+              <Text style={styles.text}>Location: {route.params.location}</Text>
+              <Text style={styles.text}>Date: {route.params.date}</Text>
+              <Text style={styles.text}>Time: {route.params.time.substring(0,5)}</Text>
+              <Text style={styles.text}>Price: {route.params.price}</Text>
+            </View>
+            <View style={{ marginBottom: "3%" }}>
+              <Text style={styles.text}>
+                Release date: {route.params.releaseDate}
+              </Text>
+              <Text style={styles.text}>
+                Release time: {route.params.releaseTime.substring(0,5)}
+              </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -170,7 +170,7 @@ const EventPage = () => {
             pressed && { opacity: 0.8 },
             hasTicket && styles.ticketButton,
           ]}
-          onPress={buyTicketHandler}
+          onPress={!hasTicket ? buyTicketHandler : toggleTicketModal}
         >
           <Text style={styles.buttonText}>
             {hasTicket ? "Show Ticket" : "Buy Ticket"}
@@ -183,6 +183,7 @@ const EventPage = () => {
         buttonText={"OK"}
         closeModal={togglePopUpModal}
       />
+
       <Modal
         visible={showModal}
         animationType="fade"
@@ -210,17 +211,62 @@ const EventPage = () => {
           </View>
         </View>
       </Modal>
-    </View>
+
+      <Modal
+        visible={ticketModalVisible}
+        animationType="fade"
+        transparent={true}
+        statusBarTranslucent={true}
+      >
+        <View style={styles.outerModalContainer}>
+          <View style={styles.pinkFrame}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>{route.params.eventTitle}</Text>
+              <View style={styles.qrCodeContainer}>
+                <QRCode
+                  value={route.params.eventTitle}
+                  size={200}
+                  color="black"
+                  backgroundColor="white"
+                />
+              </View>
+              <View style={styles.modalButton}>
+                <PurpleButton onPress={toggleTicketModal} text={"Close"} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginHorizontal: "8%",
+  whiteBox: {
+    height: "100%",
+    backgroundColor: "white",
+    borderRadius: 4,
+    marginHorizontal: "4%",
+    padding: "2%",
   },
+  lowerWhiteBoxContainer: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+
+  header: {
+    fontSize: 20,
+    justifyContent: "center",
+    alignSelf: "center",
+    fontWeight: "bold",
+    marginVertical: "2%",
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "regular",
+  },
+
   informationContainer: {
     flex: 1,
     width: "100%",
@@ -230,22 +276,27 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     backgroundColor: "white",
     borderRadius: 5,
-    overflow: "hidden"
+    overflow: "hidden",
   },
   greenFrame: {
     backgroundColor: "rgba(144, 238, 144, 0.5)",
     margin: 10,
     borderRadius: 20,
-    overflow: "hidden"
+    overflow: "hidden",
+  },
+  pinkFrame: {
+    backgroundColor: "rgba(255, 20, 147, 0.4)",
+    margin: 10,
+    borderRadius: 20,
+    overflow: "hidden",
   },
   eventPic: {
-    height: 190,
-    width: 340,
-    marginTop: "3%",
-    marginLeft: "3%",
-    marginRight: "1.5%",
-    zIndex: 1,
-    position: "absolute",
+    borderRadius: 4,
+    overflow: "hidden",
+    width: "100%",
+    height: 160,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   button: {
@@ -298,11 +349,11 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontWeight: "bold",
     fontSize: 20,
-    marginBottom: 20, 
+    marginBottom: 20,
     textAlign: "center",
   },
   modalButton: {
-    width: '100%',
+    width: "100%",
   },
   outerModalContainer: {
     flex: 1,

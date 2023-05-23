@@ -204,7 +204,7 @@ const MyProfilePage = () => {
         </View>
       </View>
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View style={{ marginHorizontal: "8%", marginTop: 20 }}>
+        <View style={{marginHorizontal: 15}}>
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My Memberships</Text>
           </View>
@@ -225,7 +225,7 @@ const MyProfilePage = () => {
                   >
                     <Ionicons
                       name="close-circle-outline"
-                      size={24}
+                      size={30}
                       color="red"
                     />
                   </TouchableOpacity>
@@ -244,10 +244,10 @@ const MyProfilePage = () => {
 
 const styles = StyleSheet.create({
   whiteBox: {
-    height: "48%",
+    height: "47%",
     backgroundColor: "white",
     borderRadius: 4,
-    marginHorizontal: "8%",
+    marginHorizontal: "4%",
     padding: "2%",
   },
   lowerWhiteBoxContainer: {
@@ -306,13 +306,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     bottom: "2%",
-    paddingHorizontal: "8%",
+    paddingHorizontal: "4%",
   },
   myMembershipsField: {
-    paddingVertical: 8,
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.45)",
-    borderRadius: 10,
+    height: 50,
+    marginVertical: '3%',
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    borderRadius: 5,
   },
   myMembershipsText: {
     fontSize: 14,
@@ -323,20 +324,20 @@ const styles = StyleSheet.create({
   },
   membershipField: {
     paddingVertical: 8,
-    padding: "10%",
     width: "100%",
     backgroundColor: "white",
-    borderRadius: 10,
+    borderRadius: 4,
   },
   membershipText: {
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: 'bold',
     color: "rgba(0, 0, 0, 1)",
   },
   membershipContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginHorizontal: '2%'
   },
 });
 

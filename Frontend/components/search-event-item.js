@@ -14,31 +14,44 @@ const imagePaths = {
 };
 
 const SearchEventItem = ({
+  orgId,
+  orgName,
+  orgIcon,
+  orgProfilePic,
+  organizationInformation,
+  eventId,
   eventTitle,
   eventPic,
   eventInformation,
-  orgName,
-  eventId,
-  orgId,
   location,
   date,
+  time,
   price,
-  ticketsLeft
+  releaseDate,
+  releaseTime,
+  ticketsLeft,
 }) => {
   const eventPicSource = imagePaths[eventPic];
   const navigation = useNavigation();
 
   const goToEvent = () => {
     navigation.navigate('EventPage', {
-      orgName: orgName,
       orgId: orgId,
+      orgName: orgName,
+      orgIcon: orgIcon,
+      orgProfilePic,
+      organizationInformation: organizationInformation,
       eventId: eventId,
-      eventPic: eventPic,
       eventTitle: eventTitle,
+      eventPic: eventPic,
       eventInformation: eventInformation,
       location: location,
       date: date,
+      time: time,
       price: price,
+      releaseDate: releaseDate,
+      releaseTime: releaseTime,
+      ticketsLeft: ticketsLeft
     });
   };
 

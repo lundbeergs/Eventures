@@ -21,7 +21,7 @@ function HomeStackScreen() {
     return (
         <HomeStack.Navigator screenOptions={{headerShown: true}}>
         <HomeStack.Screen name='HomePageStudent' component={HomePageStudent}
-        options= {{title: "Following", ...studentHomePageStyle, headerLeft: null}} />
+        options= {{title: "Following", ...studentHomePageStyle, headerLeft: null}}/>
         <HomeStack.Screen name='EventPage' component={EventPage} options= {{title: "", ...headerStyle}}/>
         <HomeStack.Screen name='OrganizationPage' component={OrganizationPage} 
          options= {{title: "Organization page", ...headerStyle}}/>
