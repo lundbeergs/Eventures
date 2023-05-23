@@ -14,6 +14,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from rest_framework import permissions
+from userprofile.permissions import *
 
 
 # Eventsidadiskussion 
@@ -31,7 +32,7 @@ class ReadOnly(BasePermission):
         return request.method in SAFE_METHODS
     
 class StudentEventView(APIView):
-    
+
     # För studenthomepage se alla event
     def get(self, request):
         events = Event.objects.all()
@@ -46,7 +47,7 @@ class StudentEventView(APIView):
 
 # OBS ALLA ARGUMENT SOM organization_id, event_id osv MÅSTE FINNAS I URL!!! k
 class OrganizationEventView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, EventViewPermission)
     authentication_classes = [JWTAuthentication] 
 
     # För att se en orgs events  
@@ -176,6 +177,9 @@ class EventTicketsDetailView(RetrieveAPIView):
 
 #DEN HÄR FINKAR!!!!! --------
 class StudentHomePageView(APIView):
+     permission_classes = [IsAuthenticated]
+     authentication_classes = [JWTAuthentication] 
+
      def get(self, request):
          # Get the current user
          user = request.user
@@ -299,7 +303,7 @@ class OrganizationMembershipView(APIView):
         organization = OrganizationProfile.objects.get(id=organization_id)
         student = StudentProfile.objects.get(id=student_id)
 
-        membership = MembershipRequest.objects.filter(
+        membership = Membership.objects.filter(
             organization=organization, student=student).first()
         if not membership:
             return Response({'detail': 'Membership does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
