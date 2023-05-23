@@ -284,8 +284,31 @@ class OrganizationMembershipRequestsView(APIView):
         membership_request.delete()
 
         return Response({'detail': 'Membership request deleted.'})
+    
+class OrganizationMembershipView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
 
+    def get(self, request, organization_id):     
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        memberships = Membership.objects.filter(organization=organization)
+        serializer = MembershipSerializer(memberships, many=True)
+        return Response(serializer.data)
 
+    def delete(self, request, organization_id, student_id):
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        student = StudentProfile.objects.get(id=student_id)
+
+        membership = MembershipRequest.objects.filter(
+            organization=organization, student=student).first()
+        if not membership:
+            return Response({'detail': 'Membership does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        membership.delete()
+
+        return Response({'detail': 'Membership deleted.'})
+
+# För student att se vilka medlemskap den har.
 class StudentMembershipView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -295,9 +318,9 @@ class StudentMembershipView(APIView):
             student=request.user.student_profile)
         serializer = MembershipSerializer(memberships, many=True)
         return Response(serializer.data)
-
-
-class OrganizationMembershipView(APIView):
+    
+#For the student to check weather the student is a member of this organizatio or not
+class CheckMembershipView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
 
@@ -310,6 +333,8 @@ class OrganizationMembershipView(APIView):
         serializer = MembershipSerializer(memberships, many=True)
         return Response(serializer.data)
 
+
+# Allows a student user to delete their membership.
 class MembershipDeleteView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -330,6 +355,7 @@ class MembershipDeleteView(APIView):
         membership.delete()
 
         return Response({'detail': 'Membership deleted.'})
+
 
 class OrganizationListView(APIView):
     permission_classes = [IsAuthenticated|ReadOnly]

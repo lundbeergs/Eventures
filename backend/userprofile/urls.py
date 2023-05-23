@@ -16,13 +16,23 @@ urlpatterns = [
     # Sjsjsjs
 	path('membership/request/<uuid:organization_id>/<uuid:student_id>/', MembershipRequestView.as_view()), # ANVÄND DENNA <3
 
-    # Hahahah
+    # För organisationen att se sina membership requests, och ändra dessa.
     path('membership/requests/<uuid:organization_id>/', OrganizationMembershipRequestsView.as_view()),
 	path('membership/requests/<uuid:organization_id>/<uuid:student_id>/', OrganizationMembershipRequestsView.as_view()),
+
+    #För organisationen att få en lista på sina medlemmar, samt möjlighet att radera. 
+    path('membership/organization/<uuid:organization_id>/', OrganizationMembershipView.as_view(), name='organization_membership_list'),
+        # för: 
+        #   - GET
+    path('membership/organization/<uuid:organization_id>/<uuid:student_id>/', OrganizationMembershipView.as_view(), name='membership_delete'),
+        # för: 
+        #   - DELETE
+
 	# path('membership/request/organization/<uuid:organization_id>/<uuid:student_id>/', MembershipDeleteView.as_view(), name='membership_delete'),
     path('memberships/', StudentMembershipView.as_view(), name='student-memberships'),
-    path('memberships/<uuid:organization_id>/', OrganizationMembershipView.as_view(), name='organization-memberships'),
-	path('membership/organization/<uuid:organization_id>/<uuid:student_id>/', MembershipDeleteView.as_view(), name='membership_delete'),
+    path('memberships/<uuid:organization_id>/', CheckMembershipView.as_view(), name='organization-memberships'),
+	path('membership/student/<uuid:organization_id>/<uuid:student_id>/', MembershipDeleteView.as_view(), name='membership_delete'),
+
     path('students/', StudentListView.as_view()),
     path('organizations/', OrganizationListView.as_view()),
     path('organizations/<uuid:organization_id>/', OrganizationStudentView.as_view()),
