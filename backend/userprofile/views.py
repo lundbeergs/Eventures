@@ -14,6 +14,7 @@ from rest_framework import generics
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from rest_framework import permissions
+from userprofile.permissions import *
 
 
 # Eventsidadiskussion 
@@ -31,7 +32,7 @@ class ReadOnly(BasePermission):
         return request.method in SAFE_METHODS
     
 class StudentEventView(APIView):
-    
+
     # För studenthomepage se alla event
     def get(self, request):
         events = Event.objects.all()
@@ -46,7 +47,7 @@ class StudentEventView(APIView):
 
 # OBS ALLA ARGUMENT SOM organization_id, event_id osv MÅSTE FINNAS I URL!!! k
 class OrganizationEventView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, EventViewPermission)
     authentication_classes = [JWTAuthentication] 
 
     # För att se en orgs events  
@@ -176,6 +177,9 @@ class EventTicketsDetailView(RetrieveAPIView):
 
 #DEN HÄR FINKAR!!!!! --------
 class StudentHomePageView(APIView):
+     permission_classes = [IsAuthenticated]
+     authentication_classes = [JWTAuthentication] 
+
      def get(self, request):
          # Get the current user
          user = request.user
@@ -284,8 +288,31 @@ class OrganizationMembershipRequestsView(APIView):
         membership_request.delete()
 
         return Response({'detail': 'Membership request deleted.'})
+    
+class OrganizationMembershipView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [JWTAuthentication]
 
+    def get(self, request, organization_id):     
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        memberships = Membership.objects.filter(organization=organization)
+        serializer = MembershipSerializer(memberships, many=True)
+        return Response(serializer.data)
 
+    def delete(self, request, organization_id, student_id):
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        student = StudentProfile.objects.get(id=student_id)
+
+        membership = Membership.objects.filter(
+            organization=organization, student=student).first()
+        if not membership:
+            return Response({'detail': 'Membership does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        membership.delete()
+
+        return Response({'detail': 'Membership deleted.'})
+
+# För student att se vilka medlemskap den har.
 class StudentMembershipView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -295,9 +322,9 @@ class StudentMembershipView(APIView):
             student=request.user.student_profile)
         serializer = MembershipSerializer(memberships, many=True)
         return Response(serializer.data)
-
-
-class OrganizationMembershipView(APIView):
+    
+#For the student to check weather the student is a member of this organizatio or not
+class CheckMembershipView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
 
@@ -310,6 +337,8 @@ class OrganizationMembershipView(APIView):
         serializer = MembershipSerializer(memberships, many=True)
         return Response(serializer.data)
 
+
+# Allows a student user to delete their membership.
 class MembershipDeleteView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -330,6 +359,7 @@ class MembershipDeleteView(APIView):
         membership.delete()
 
         return Response({'detail': 'Membership deleted.'})
+
 
 class OrganizationListView(APIView):
     permission_classes = [IsAuthenticated|ReadOnly]

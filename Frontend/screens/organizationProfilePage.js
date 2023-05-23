@@ -23,13 +23,13 @@ const OrganizationProfilePage = () => {
   const [eventData, setEventData] = useState([]);
   const [Id, setId] = useState("");
 
-  const membershipHandler = async () => {
-    //navigation.navigate("RequestPage");
+  const requestHandler = async () => {
+      navigation.navigate("Requests");
   };
 
-  const membershipRequestHandler = async () => {
-    //navigation.navigate("RequestPage");
-  };
+  const memberHandler = async () => {
+    navigation.navigate("Members");
+};
 
   const getProfile = async () => {
     try {

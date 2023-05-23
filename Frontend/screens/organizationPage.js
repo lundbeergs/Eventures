@@ -6,30 +6,30 @@ import {
   StyleSheet,
   Pressable,
   RefreshControl,
+  FlatList,
+  ImageBackground,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import OrganizationEventComp from "../components/firstPageComp/OrganizationEventComp";
-import eventures from "../assets/images/eventures.png";
-import psychotech from "../assets/images/psychotech.jpg";
-import stsKV from "../assets/images/stsKV.jpg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
-
-
-import destinationUnknown from "../assets/images/destinationUnknown.jpg";
+import OnlyEventItem from "../components/only-events-item";
+import EventuresBackground from "../assets/images/eventures_background.png";
 
 const OrganizationPage = () => {
   const route = useRoute();
   const orgId = route.params.orgId;
+  const [orgBio, setOrgBio] = useState("");
   const [isMember, setIsMember] = useState("");
   const [student, setStudent] = useState("");
   const [orgData, setOrgData] = useState([]);
+  const [eventData, setEventData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    checkMembership();
     fetchOrgData();
+    fetchEventData();
+    checkMembership();
   }, [isMember]);
 
   const handleRefresh = () => {
@@ -40,13 +40,40 @@ const OrganizationPage = () => {
 
   const fetchOrgData = async () => {
     try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
+      const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await API_BASE_URL.get(`/api/organizations/${orgId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      setOrgData(response.data);
+      const orgData = [
+        {
+          id: response.data.id,
+          org_name: response.data.org_name,
+        },
+      ];
+      setOrgBio(response.data.org_bio);
+      setOrgData(orgData);
+      console.log(orgData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchEventData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get(`/api/events/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const filteredEvents = response.data.filter(
+        (event) => event.event_org === orgId
+      );
+
+      setEventData(filteredEvents);
+      console.log(eventData);
     } catch (error) {
       console.error(error);
     }
@@ -63,9 +90,8 @@ const OrganizationPage = () => {
       });
 
       const membershipData = response.data;
-
       const isOrganizationMember = membershipData.find(
-        (membership) => membership.organization === orgId,
+        (membership) => membership.organization === orgId
       );
 
       if (isOrganizationMember) {
@@ -73,8 +99,6 @@ const OrganizationPage = () => {
       } else {
         setIsMember(false);
       }
-      console.log(isMember);
-      console.log("student " + student);
     } catch (error) {
       console.error(error);
     }
@@ -106,34 +130,71 @@ const OrganizationPage = () => {
     }
   };
 
+  const renderEventItem = ({ item }) => {
+    const org_name = orgData.orgname;
+    const org_id = orgData.id;
+
+    const {
+      orgId,
+      orgName,
+      organizationInformation,
+      event_org,
+      orgIcon,
+      orgProfilePic,
+      id,
+      event_name,
+      event_pic,
+      event_desc,
+      event_location,
+      event_date,
+      event_time,
+      event_price,
+      release_date,
+      release_time,
+      tickets_left,
+    } = item;
+
+    console.log(item);
+
+    return (
+      <OnlyEventItem
+      orgId= {event_org}
+      orgIcon={orgIcon} 
+      orgProfilePic={orgProfilePic} 
+      organizationInformation={organizationInformation} 
+      eventId = {id}
+      eventTitle={event_name}
+      eventPic={event_pic}
+      eventInformation={event_desc}
+      location={event_location}
+      date = {event_date}
+      time={event_time}
+      price={event_price + ' kr'}
+      releaseDate = {release_date}
+      releaseTime = {release_time}
+      ticketsLeft={tickets_left}
+      />
+    );
+  };
+
   return (
     <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
-      <ScrollView 
-        onRefresh={handleRefresh}
-        refreshing={refreshing}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={["#9Bd35A", "#689F38"]}
-            progressBackgroundColor="#fff"
-          />
-        }>
-        <View style={styles.informationContainer}>
-          <Image
-            style={styles.orgProfilePic}
-            source={route.params.orgProfilePic}
-          />
-          <Text
-            style={{
-              marginTop: "55%",
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: 20,
-            }}
+      <View>
+        <View style={styles.whiteBox}>
+          <ImageBackground
+            source={EventuresBackground}
+            style={styles.imageBackground}
           >
-            {route.params.orgName}
-          </Text>
+            <View style={styles.initialsBackground}>
+              <Text style={styles.initials}>{route.params.orgName}</Text>
+            </View>
+          </ImageBackground>
+          <View style={styles.lowerWhiteBoxContainer}>
+            <View style={styles.infotextContainer}>
+              <Text style={styles.header}>{route.params.orgName}</Text>
+              <Text style={styles.text}>{orgBio}</Text>
+            </View>
+          </View>
           <Pressable
             style={({ pressed }) => [
               styles.button,
@@ -146,10 +207,6 @@ const OrganizationPage = () => {
               {isMember ? "Member" : "Become member"}
             </Text>
           </Pressable>
-
-          <Text style={{ marginTop: "5%", marginLeft: "5%" }}>
-            {orgData.org_bio}
-          </Text>
         </View>
 
         <View style={styles.orgEventures}>
@@ -158,63 +215,104 @@ const OrganizationPage = () => {
             {route.params.orgName}s eventures{" "}
           </Text>
         </View>
-
-        <View>
-          <ScrollView>
-            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-              <OrganizationEventComp
-                orgIcon={stsKV}
-                eventTitle="Psychotech"
-                eventPic={psychotech}
-                organization="STS-klubbverk"
-                location="V-dala"
-                date="2023-05-12"
-                price="450kr"
-              />
-              <OrganizationEventComp
-                orgIcon={eventures}
-                eventTitle="Destination unknown"
-                eventPic={destinationUnknown}
-                organization="STS-sektionen"
-                location="Destination? Unknown"
-                date="2023-10-27"
-                price="1500kr"
-              />
-              <OrganizationEventComp
-                orgIcon={eventures}
-                eventTitle="It's OktoberfeSTS"
-                organization="STS-klubbverk & I-klubbverk"
-                location="Bridgens"
-                date="2023-10-12"
-                price="110kr"
-              />
-              <OrganizationEventComp
-                orgIcon={eventures}
-                eventTitle="It's OktoberfeSTS"
-                eventPic={destinationUnknown}
-                organization="STS-klubbverk & I-klubbverk"
-                location="Bridgens"
-                date="2023-10-12"
-                price="110kr"
-              />
-            </View>
-          </ScrollView>
-        </View>
-      </ScrollView>
+        <FlatList
+          data={eventData}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderEventItem}
+          contentContainerStyle={styles.eventListContainer}
+          // Add additional FlatList props as needed
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  topOfPage: {
-    height: 30,
+  whiteBox: {
+    height: "35%",
+    backgroundColor: "white",
+    borderRadius: 4,
+    marginHorizontal: "4%",
+    padding: "2%",
   },
-
-  backArrow: {
-    height: 25,
-    width: 25,
-    marginLeft: 15,
-    marginBottom: 15,
+  lowerWhiteBoxContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  imageBackground: {
+    borderRadius: 4,
+    overflow: "hidden",
+    width: "100%",
+    height: 160,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  initialsBackground: {
+    paddingHorizontal: '4%',
+    paddingVertical: '4%',
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
+    borderRadius: 45,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  initials: {
+    fontSize: 40,
+    color: "white",
+    fontWeight: 800,
+  },
+  headerContainer: {
+    marginTop: "2%",
+  },
+  infotextContainer: {
+    marginVertical: "2%",
+  },
+  header: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "regular",
+  },
+  editIconContainer: {
+    justifyContent: "center",
+    marginTop: "20%",
+  },
+  buttonContainer: {
+    width: "100%",
+    bottom: "2%",
+    paddingHorizontal: "8%",
+  },
+  myMembershipsField: {
+    paddingVertical: 8,
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.45)",
+    borderRadius: 10,
+  },
+  myMembershipsText: {
+    fontSize: 14,
+    color: "rgba(0, 0, 0, 1)",
+    fontWeight: 600,
+    justifyContent: "center",
+    alignSelf: "center",
+  },
+  membershipField: {
+    paddingVertical: 8,
+    padding: "10%",
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: 10,
+  },
+  membershipText: {
+    fontSize: 14,
+    color: "rgba(0, 0, 0, 1)",
+  },
+  membershipContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
   },
   button: {
     width: "100%",
@@ -241,45 +339,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
-  orgProfilePic: {
-    height: 190,
-    width: 340,
-    marginTop: "3%",
-    marginLeft: "3%",
-    marginRight: "1.5%",
-    zIndex: 1,
-    position: "absolute",
+  background: {
+    borderRadius: 4,
+    overflow: "hidden",
+    width: "100%",
+    height: 160,
+    justifyContent: "center",
+    alignItems: "center",
   },
-
-  orgIconBackground: {
-    height: 100,
-    width: 100,
-    zIndex: 2,
-    position: "absolute",
-    top: "43%",
-    left: "1.8%",
-  },
-
-  orgIcon: {
-    height: 45,
-    width: 45,
-    borderRadius: 30,
-    zIndex: 3,
-    position: "absolute",
-    top: "51.2%",
-    left: "10%",
-  },
-
   orgEventures: {
     height: 50,
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
-    marginRight: 15,
-    marginLeft: 15,
+    marginHorizontal: 15,
     margin: "3%",
     borderRadius: 5,
   },
 });
 
 export default OrganizationPage;
-

@@ -21,18 +21,21 @@ const imagePaths = {
 };
 
 const EventItem = ({
-  eventId,
+  orgId,
+  orgName,
   orgIcon,
   orgProfilePic,
+  organizationInformation,
+  eventId,
   eventTitle,
   eventPic,
   eventInformation,
-  orgName,
-  orgId,
-  organizationInformation,
   location,
   date,
+  time,
   price,
+  releaseDate,
+  releaseTime,
   ticketsLeft,
 }) => {
   const eventPicSource = imagePaths[eventPic];
@@ -40,15 +43,22 @@ const EventItem = ({
 
   const goToEvent = () => {
     navigation.navigate("EventPage", {
-      orgName: orgName,
       orgId: orgId,
+      orgName: orgName,
+      orgIcon: orgIcon,
+      orgProfilePic,
+      organizationInformation: organizationInformation,
       eventId: eventId,
-      eventPic: eventPic,
       eventTitle: eventTitle,
+      eventPic: eventPic,
       eventInformation: eventInformation,
       location: location,
       date: date,
+      time: time,
       price: price,
+      releaseDate: releaseDate,
+      releaseTime: releaseTime,
+      ticketsLeft: ticketsLeft
     });
   };
 
@@ -95,9 +105,8 @@ const styles = StyleSheet.create({
   infoContainer: {
     height: "auto",
     marginBottom: 10,
-    marginHorizontal: 15,
+    marginHorizontal: "4%",
   },
-
   eventContainer: {
     height: "auto",
     marginBottom: 15,
@@ -107,7 +116,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     margin: "2%",
   },
-
   overhead: {
     flexDirection: "row",
     alignItems: "center",
@@ -117,12 +125,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flex: 2,
     flexDirection: "column",
-  },
-
-  orgIcon: {
-    height: 30,
-    width: 30,
-    borderRadius: 30,
   },
 
   eventTextInfo: {
