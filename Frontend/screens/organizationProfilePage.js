@@ -1,21 +1,27 @@
 import React from "react";
-import { useRoute} from '@react-navigation/native';
+import { useRoute } from "@react-navigation/native";
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
-import stsKV from '../assets/images/stsKV.jpg'
-import whiteCirkle from '../assets/images/whiteCirkle.png'
+import stsKV from "../assets/images/stsKV.jpg";
+import whiteCirkle from "../assets/images/whiteCirkle.png";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
-import { useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
-const orgInfo = {orginfo_name: 'STS-sektionen', orginfo_information:'Välkommen till STS-sektionen'}; 
-
+const orgInfo = {
+  orginfo_name: "STS-sektionen",
+  orginfo_information: "Välkommen till STS-sektionen",
+};
 
 //<Image style={styles.orgIcon} source={route.params.orgIcon} />
 
 const OrganizationProfilePage = () => {
-  const route = useRoute(); 
+  const route = useRoute();
   const navigation = useNavigation();
+
+  const membershipHandler = async () => {
+      navigation.navigate("RequestPage");
+  };
 
   const logOutHandler = async () => {
     try {
@@ -45,31 +51,45 @@ const OrganizationProfilePage = () => {
       console.error(error);
     }
   };
-  
+
   return (
-    
-    <View style={{ backgroundColor: '#BDE3FF', flex: 1 }}>
-
+    <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
       <ScrollView>
-      <View style={styles.informationContainer}>
-      <Image style={styles.orgProfilePic} source={stsKV} />
-      <Image style={styles.orgIconBackground} source={whiteCirkle} />
-      <Text style={{ marginTop: '55%', textAlign: 'center', fontWeight: 'bold', fontSize: 20 }}>{orgInfo.orginfo_name}
-      </Text>
-      <Text style={{ marginTop: '5%', marginLeft: '5%' }}>{orgInfo.orginfo_information}</Text>
-      </View>
-
-      <View style={styles.orgEventures}>
-      <Text style={{textAlign: 'center', fontSize: 17}}> {orgInfo.orginfo_name}s eventures </Text>
-      </View>
-      </ScrollView>
-      <View style={styles.buttonContainer}>
-          <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
+        <View style={styles.informationContainer}>
+          <Image style={styles.orgProfilePic} source={stsKV} />
+          <Image style={styles.orgIconBackground} source={whiteCirkle} />
+          <Text
+            style={{
+              marginTop: "55%",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: 20,
+            }}
+          >
+            {orgInfo.orginfo_name}
+          </Text>
+          <Text style={{ marginTop: "5%", marginLeft: "5%" }}>
+            {orgInfo.orginfo_information}
+          </Text>
+          <View style={{ marginHorizontal: 10 }}>
+            <PurpleButton
+              onPress={membershipHandler}
+              text={"Membership requests"}
+            ></PurpleButton>
+          </View>
         </View>
 
-
+        <View style={styles.orgEventures}>
+          <Text style={{ textAlign: "center", fontSize: 17 }}>
+            {" "}
+            {orgInfo.orginfo_name}s eventures{" "}
+          </Text>
+        </View>
+      </ScrollView>
+      <View style={{ marginHorizontal: 20 }}>
+        <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
+      </View>
     </View>
-
   );
 };
 
@@ -82,11 +102,11 @@ const styles = StyleSheet.create({
   },
   informationContainer: {
     height: 350,
-    marginRight: '3%',
-    marginLeft: '3%',
+    marginRight: "3%",
+    marginLeft: "3%",
     marginVertical: 10,
-    backgroundColor: 'white',
-    borderRadius: 5
+    backgroundColor: "white",
+    borderRadius: 5,
   },
   text: {
     fontSize: 24,
@@ -101,31 +121,31 @@ const styles = StyleSheet.create({
   orgProfilePic: {
     height: 190,
     width: 340,
-    marginTop: '3%',
-    marginLeft: '3%',
-    marginRight: '1.5%',
+    marginTop: "3%",
+    marginLeft: "3%",
+    marginRight: "1.5%",
     zIndex: 1,
-    position: 'absolute'
-    },
+    position: "absolute",
+  },
 
-    orgIconBackground: {
-      height: 100,
-      width: 100,
-      zIndex: 2,
-      position: 'absolute',
-      top: '43%',
-      left: '1.8%'
-    },
-  
-    orgIcon: {
-      height: 45,
-      width: 45,
-      borderRadius: 30,
-      zIndex: 3,
-      position: 'absolute',
-      top: '51.2%',
-      left: '10%'
-    },
+  orgIconBackground: {
+    height: 100,
+    width: 100,
+    zIndex: 2,
+    position: "absolute",
+    top: "43%",
+    left: "1.8%",
+  },
+
+  orgIcon: {
+    height: 45,
+    width: 45,
+    borderRadius: 30,
+    zIndex: 3,
+    position: "absolute",
+    top: "51.2%",
+    left: "10%",
+  },
   profileTextContainer: {
     flex: 1,
   },
