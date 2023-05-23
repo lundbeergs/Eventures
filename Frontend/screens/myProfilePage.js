@@ -122,7 +122,7 @@ const MyProfilePage = () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       await API_BASE_URL.delete(
-        `/api/membership/organization/${organizationId}/${studentId}/`,
+        `/api/membership/organization/${organizationId}/${studentId}/`, // OBS OBS ÄNDRA HÄR TILL `/api/membership/student/${organizationId}/${studentId}/`
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
