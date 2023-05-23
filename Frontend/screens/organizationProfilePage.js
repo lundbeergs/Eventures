@@ -19,9 +19,13 @@ const OrganizationProfilePage = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
-  const membershipHandler = async () => {
-      navigation.navigate("RequestPage");
+  const requestHandler = async () => {
+      navigation.navigate("Requests");
   };
+
+  const memberHandler = async () => {
+    navigation.navigate("Members");
+};
 
   const logOutHandler = async () => {
     try {
@@ -73,9 +77,13 @@ const OrganizationProfilePage = () => {
           </Text>
           <View style={{ marginHorizontal: 10 }}>
             <PurpleButton
-              onPress={membershipHandler}
+              onPress={requestHandler}
               text={"Membership requests"}
-            ></PurpleButton>
+            />
+            <PurpleButton
+              onPress={memberHandler}
+              text={"Members"}
+            />
           </View>
         </View>
 
@@ -101,7 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   informationContainer: {
-    height: 350,
+    height: 'auto',
     marginRight: "3%",
     marginLeft: "3%",
     marginVertical: 10,

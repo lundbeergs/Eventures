@@ -3,6 +3,7 @@ import {Ionicons} from '@expo/vector-icons';
 import OrganizationProfilePage from '../screens/organizationProfilePage';
 import CreatePage from '../screens/createPage';
 import RequestPage from '../screens/requestPage';
+import MemberPage from '../screens/memberPage';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
@@ -15,6 +16,7 @@ function OrganizationProfileScreen() {
       <OrganizationProfileStack.Navigator screenOptions={{headerShown: true}}>
       <OrganizationProfileStack.Screen name="Profile" component={OrganizationProfilePage} options= {{title: "My profile", ...headerStyle, headerLeft: null}}/>
        <OrganizationProfileStack.Screen name="Requests" component={RequestPage} options= {{title: "Membership requests", ...headerStyle}}/>
+       <OrganizationProfileStack.Screen name="Members" component = {MemberPage} options= {{title: "Members", ...headerStyle}}/>
       </OrganizationProfileStack.Navigator>
   );
 }
