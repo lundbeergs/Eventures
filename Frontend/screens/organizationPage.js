@@ -13,7 +13,6 @@ import OrganizationEventComp from "../components/firstPageComp/OrganizationEvent
 import eventures from "../assets/images/eventures.png";
 import psychotech from "../assets/images/psychotech.jpg";
 import stsKV from "../assets/images/stsKV.jpg";
-import whiteCirkle from "../assets/images/whiteCirkle.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 
@@ -22,13 +21,15 @@ import destinationUnknown from "../assets/images/destinationUnknown.jpg";
 
 const OrganizationPage = () => {
   const route = useRoute();
-  const organization = route.params.organization;
+  const orgId = route.params.orgId;
   const [isMember, setIsMember] = useState("");
   const [student, setStudent] = useState("");
+  const [orgData, setOrgData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     checkMembership();
+    fetchOrgData();
   }, [isMember]);
 
   const handleRefresh = () => {
@@ -37,22 +38,34 @@ const OrganizationPage = () => {
     setRefreshing(false);
   };
 
+  const fetchOrgData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const response = await API_BASE_URL.get(`/api/organizations/${orgId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setOrgData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const checkMembership = async () => {
     try {
       setStudent(await AsyncStorage.getItem("studentId"));
       const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get("/api/memberships/", {
+      const response = await API_BASE_URL.get(`/api/memberships/`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
       const membershipData = response.data;
-      console.log(membershipData);
-      console.log('org: '+organization);
 
       const isOrganizationMember = membershipData.find(
-        (membership) => membership.organization === organization,
+        (membership) => membership.organization === orgId,
       );
 
       if (isOrganizationMember) {
@@ -69,14 +82,14 @@ const OrganizationPage = () => {
 
   const becomeMember = async () => {
     const body = {
-      organization: organization,
+      organization: orgId,
       student: student,
     };
     try {
       if (isMember == false) {
         const accessToken = await AsyncStorage.getItem("accessToken");
         const response = await API_BASE_URL.post(
-          `/api/membership/request/${organization}/${student}/`,
+          `/api/membership/request/${orgId}/${student}/`,
           body,
           {
             headers: {
@@ -111,8 +124,6 @@ const OrganizationPage = () => {
             style={styles.orgProfilePic}
             source={route.params.orgProfilePic}
           />
-          <Image style={styles.orgIconBackground} source={whiteCirkle} />
-          <Image style={styles.orgIcon} source={route.params.orgIcon} />
           <Text
             style={{
               marginTop: "55%",
@@ -121,7 +132,7 @@ const OrganizationPage = () => {
               fontSize: 20,
             }}
           >
-            {route.params.organization}
+            {route.params.orgName}
           </Text>
           <Pressable
             style={({ pressed }) => [
@@ -137,14 +148,14 @@ const OrganizationPage = () => {
           </Pressable>
 
           <Text style={{ marginTop: "5%", marginLeft: "5%" }}>
-            {route.params.organizationInformation}
+            {orgData.org_bio}
           </Text>
         </View>
 
         <View style={styles.orgEventures}>
           <Text style={{ textAlign: "center", fontSize: 17 }}>
             {" "}
-            {route.params.organization}s eventures{" "}
+            {route.params.orgName}s eventures{" "}
           </Text>
         </View>
 

@@ -15,11 +15,11 @@ import PopUpModal from "../components/PopUpModal";
 import { Picker } from "@react-native-picker/picker";
 
 const drinkOptions = [
-  "Alkoholfritt",
-  "Öl & Vitt vin",
-  "Öl & Rött vin",
-  "Cider & Vitt vin",
-  "Cider & Rött vin"
+  "Non-alcoholic",
+  "Beer & White wine",
+  "Beer & Red wine",
+  "Cider & White wine",
+  "Cider & Red wine"
 ];
 
 export default function EditStudentProfileScreen() {

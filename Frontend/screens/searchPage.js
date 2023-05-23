@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   TextInput,
   FlatList,
   ScrollView,
@@ -20,8 +19,8 @@ const SearchPage = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const [currentSelection, setCurrentSelection] = useState('events');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [currentSelection, setCurrentSelection] = useState("events");
+  const [searchQuery, setSearchQuery] = useState("");
   const [orgData, setOrgData] = useState([]);
   const [eventData, setEventData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -37,14 +36,13 @@ const SearchPage = () => {
 
   const fetchOrgData = async () => {
     try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      const response = await API_BASE_URL.get('/api/organizations/', {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/organizations/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const data = response.data;
-      setOrgData(data);
+      setOrgData(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -52,33 +50,31 @@ const SearchPage = () => {
 
   const fetchEventData = async () => {
     try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      const response = await API_BASE_URL.get('/api/events/', {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/events/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const data = response.data;
-      setEventData(data);
+      setEventData(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
   const filterData = () => {
-    if (currentSelection === 'events' && eventData) {
+    if (currentSelection === "events" && eventData) {
       const filteredEvents = eventData.filter((event) =>
         event.event_name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredData(filteredEvents);
-    } else if (currentSelection === 'organizations' && orgData) {
+    } else if (currentSelection === "organizations" && orgData) {
       const filteredOrgs = orgData.filter((org) =>
         org.org_name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredData(filteredOrgs);
     }
   };
-
 
   return (
     <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
@@ -88,9 +84,9 @@ const SearchPage = () => {
           <TextInput
             style={styles.searchInput}
             placeholder={
-              currentSelection === 'events'
-                ? 'Search events...'
-                : 'Search organizations...'
+              currentSelection === "events"
+                ? "Search events..."
+                : "Search organizations..."
             }
             value={searchQuery}
             onChangeText={(text) => setSearchQuery(text)}
@@ -99,12 +95,21 @@ const SearchPage = () => {
         <View style={styles.selectionContainer}>
           <TouchableOpacity
             style={StyleSheet.compose(
-              [styles.selectionButton, currentSelection === 'events' && styles.activeSelectionButton],
+              [
+                styles.selectionButton,
+                currentSelection === "events" && styles.activeSelectionButton,
+              ],
               { paddingHorizontal: 40 }
             )}
             onPress={() => setCurrentSelection("events")}
           >
-            <Text style={[styles.selectionButtonText, currentSelection === 'events' && styles.activeSelectionButtonText]}>
+            <Text
+              style={[
+                styles.selectionButtonText,
+                currentSelection === "events" &&
+                  styles.activeSelectionButtonText,
+              ]}
+            >
               Events
             </Text>
           </TouchableOpacity>
@@ -116,7 +121,13 @@ const SearchPage = () => {
             ]}
             onPress={() => setCurrentSelection("organizations")}
           >
-            <Text style={[styles.selectionButtonText, currentSelection === 'organizations' && styles.activeSelectionButtonText]}>
+            <Text
+              style={[
+                styles.selectionButtonText,
+                currentSelection === "organizations" &&
+                  styles.activeSelectionButtonText,
+              ]}
+            >
               Organizations
             </Text>
           </TouchableOpacity>
@@ -124,11 +135,10 @@ const SearchPage = () => {
       </View>
       <View style={styles.compArea}>
         {currentSelection
-
           === 'events' && (
             <FlatList
               data={[{ key: 'event' }]}
-              renderItem={({ item }) => <SearchEventList data={filteredData} />}
+              renderItem={({ item }) => <SearchEventList data={filteredData}/>}
               keyExtractor={(item) => item.key}
             />
           )}
@@ -145,19 +155,18 @@ const SearchPage = () => {
 };
 
 const styles = StyleSheet.create({
-
   topOfPage: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     borderRadius: 5,
     height: 40,
-    width: '92%',
+    width: "92%",
     marginBottom: 10,
   },
 
@@ -165,22 +174,22 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     fontSize: 16,
-    color: '#000000',
+    color: "#000000",
   },
   compArea: {
-  flex: 1
+    flex: 1,
   },
   selectionContainer: {
     marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
   },
 
   selectionButton: {
     paddingHorizontal: 22,
-    backgroundColor: '#BDE3FF',
-    borderBottomColor: 'black',
+    backgroundColor: "#BDE3FF",
+    borderBottomColor: "black",
   },
 
   activeSelectionButton: {
@@ -189,8 +198,8 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: '2%',
+    fontWeight: "bold",
+    marginBottom: "2%",
   },
 });
 

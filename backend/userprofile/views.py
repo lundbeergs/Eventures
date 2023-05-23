@@ -272,6 +272,19 @@ class OrganizationMembershipRequestsView(APIView):
 
         return Response({'detail': 'Membership changed to accepted.'})
 
+    def delete(self, request, organization_id, student_id):
+        organization = OrganizationProfile.objects.get(id=organization_id)
+        student = StudentProfile.objects.get(id=student_id)
+
+        membership_request = MembershipRequest.objects.filter(
+            organization=organization, student=student).first()
+        if not membership_request:
+            return Response({'detail': 'Membership request does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        membership_request.delete()
+
+        return Response({'detail': 'Membership request deleted.'})
+
 
 class StudentMembershipView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -325,6 +338,15 @@ class OrganizationListView(APIView):
     def get(self, request):
         organizations = OrganizationProfile.objects.all()
         serializer = OrganizationListSerializer(organizations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class StudentListView(APIView):
+    permission_classes = [IsAuthenticated|ReadOnly]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        students = StudentProfile.objects.all()
+        serializer = StudentListSerializer(students, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 #För en student att kunna få in fullständig information om Organization profile

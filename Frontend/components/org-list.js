@@ -3,19 +3,15 @@ import { DUMMY_DATA } from "../data/dummy";
 import OrgItem from "./org-item";
 
 const OrgList = ({data}) => {
+    console.log(data);
+
     const renderItem = ({item}) => {
         return <OrgItem 
-        id={item.id} 
-        organization={item.org_name} 
+        orgId={item.id} 
+        orgName={item.org_name} 
         orgIcon={item.orgIcon} 
         orgProfilePic={item.orgProfilePic} 
         organizationInformation={item.organizationInformation} 
-        eventTitle={item.eventTitle}
-        eventPic={item.eventPic}
-        eventInformation={item.eventInformation}
-        location={item.location}
-        date={item.date}
-        price={item.price}
         />
     }
     return (

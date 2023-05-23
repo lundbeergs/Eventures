@@ -13,6 +13,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const HomeStack = createStackNavigator();
 const MyProfileStack = createStackNavigator();
+const SearchStack = createStackNavigator();
 
 function HomeStackScreen() {
     const navigation = useNavigation();
@@ -40,6 +41,20 @@ function MyProfileScreen() {
         </MyProfileStack.Navigator>
     );
 }
+
+function SearchStackScreen() {
+    return (
+        <SearchStack.Navigator screenOptions={{headerShown: true}}>
+            <SearchStack.Screen name="SearchPage" component={SearchPage} options={{headerShown: true, ...headerStyle, title: '', headerLeft: null}}/>
+            <SearchStack.Screen name='EventPage' component={EventPage} options= {{title: "", ...headerStyle}}/>
+            <SearchStack.Screen name='OrganizationPage' component={OrganizationPage} 
+            options= {{title: "Organization page", ...headerStyle}}/>
+        
+
+        </SearchStack.Navigator>
+    )
+};
+
 
 const Tab = createBottomTabNavigator();
 
@@ -74,7 +89,7 @@ export const HomeTabs = () => {
     })}>
         
       <Tab.Screen name="Home" component={HomeStackScreen} options={{headerShown: false}}/>
-      <Tab.Screen name="Search" component={SearchPage} options={{headerShown: true, ...headerStyle, title: ''}} />
+      <Tab.Screen name="Search" component={SearchStackScreen} options={{headerShown: false}} />
       <Tab.Screen name="Tickets" component={TicketPage} options= {{title: "My Tickets", ...headerStyle, headerLeft: null}}/>
       <Tab.Screen name="ProfileStack" component={MyProfileScreen} options={{headerShown: false}}
       />

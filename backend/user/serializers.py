@@ -26,6 +26,11 @@ class StudentSerializer(serializers.ModelSerializer):
         model = StudentProfile
         fields = ('id','first_name', 'last_name', 'allergies', 'drinkpref')
 
+class StudentListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentProfile
+        fields = ['id', 'first_name', 'last_name']
+
 class OrganizationSerializer(serializers.ModelSerializer):
     memberships = MembershipSerializer(many=True, read_only=True, source='org_memberships')
     member_requests = MembershipRequestSerializer(many=True, read_only=True, source='org_memberrequests')

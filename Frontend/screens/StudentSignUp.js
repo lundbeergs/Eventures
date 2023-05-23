@@ -16,11 +16,11 @@ import PopUpModal from "../components/PopUpModal.js";
 import { Picker } from "@react-native-picker/picker";
 
 const drinkOptions = [
-  "Alkoholfritt",
-  "Öl & Vitt vin",
-  "Öl & Rött vin",
-  "Cider & Vitt vin",
-  "Cider & Rött vin"
+  "Non-alcoholic",
+  "Beer & White wine",
+  "Beer & Red wine",
+  "Cider & White wine",
+  "Cider & Red wine"
 ];
 
 const StudentSignUp = () => {
@@ -32,30 +32,32 @@ const StudentSignUp = () => {
   const [allergies, setAllergies] = useState("");
   const [drinkpref, setDrinkPref] = useState('');
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [isRegisteredModalVisible, setIsRegisteredModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
 
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
-    if (!email || !password || !first_name || !last_name || !allergies || !drinkpref) {
-      setError("Please fill in all the required fields to register");
+    if (!email || !password || !first_name || !last_name || !drinkpref) {
+      setError("Please fill in all the required fields to register!");
       setModalVisible(true);
       return;
     }
     if (!isEmailValid(email)) {
-      setError("Please enter a valid email address");
+      setError("Please enter a valid email address!");
       setModalVisible(true);
       return;
     }
     if (password !== reenterPassword) {
-      setError("Passwords do not match");
+      setError("Passwords does not match, please try again!");
       setPasswordMatch(false);
       setModalVisible(true);
       return;
     }
     if (!isPasswordValid(password)) {
-      setError("Password must be at least 8 characters long and contain at least one number");
+      setError("Password must be at least 8 characters long and contain at least one number.");
       setModalVisible(true);
       return;
     }
@@ -74,7 +76,8 @@ const StudentSignUp = () => {
       const state = {
         userToken: response.data.token,
       };
-      navigation.navigate("StudentLoginPage");
+      setMessage("You have registered successfully!");
+      setIsRegisteredModalVisible(true);
     } catch (error) {
       console.log(error);
       setError("There was an error processing your request.");
@@ -176,7 +179,7 @@ const StudentSignUp = () => {
             <Picker
               selectedValue={drinkpref}
               onValueChange={(itemValue) => setDrinkPref(itemValue)}
-              style={GlobalStyles.inputText}
+              style={styles.drinkInputText}
             >
               {drinkOptions.map((option, index) => (
                 <Picker.Item label={option} value={option} key={index} />
@@ -194,6 +197,12 @@ const StudentSignUp = () => {
         closeModal={closeModal}
         buttonText="OK"
       />
+      <PopUpModal
+        isVisible={isRegisteredModalVisible}
+        text={message}
+        buttonText={"OK"}
+        closeModal={() => navigation.navigate("StudentLoginPage")}
+      />
     </SafeAreaView>
   );
 };
@@ -208,10 +217,13 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
   },
-
+  drinkInputText: {
+      backgroundColor: "white",
+      borderRadius: 4,
+  },
   inputModalContainer: {
     width: "100%",
-    marginTop: 10,
+    marginVertical: 10,
   },
   inputTextError: {
     color: "red",
@@ -219,7 +231,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     paddingHorizontal: '8%',
-    bottom: '2%'
+    bottom: '0%'
   },
   inputHeader: {
     marginVertical: "1%",

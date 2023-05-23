@@ -3,12 +3,15 @@ import { View, Text, FlatList, RefreshControl } from "react-native";
 import SearchEventItem from "./search-event-item";
 
 const SearchEventList = ({data}) => {
+    console.log('SearchEventList');
+    console.log(data);
     const renderItem = ({item}) => {
         return <SearchEventItem 
-        organization={item.organization} 
+        orgId= {item.event_org}
         orgIcon={item.orgIcon} 
         orgProfilePic={item.orgProfilePic} 
         organizationInformation={item.organizationInformation} 
+        eventId= {item.id}
         eventTitle={item.event_name}
         eventPic={item.event_pic}
         eventInformation={item.event_desc}

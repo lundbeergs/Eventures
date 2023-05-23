@@ -1,17 +1,17 @@
-import { View, Text, StyleSheet, FlatList, RefreshControl} from "react-native";
+
+import { View, FlatList, RefreshControl} from "react-native";
 import EventList from "../components/event-list";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from '../axios.js';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomePageStudent = () => {
-  const [data, setData] = useState([])
+  const [eventData, setEventData] = useState([]);
+  const [orgData, setOrgData] = useState([]);
+  const [membershipData, setMembershipData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  useEffect(() => {
-    fetchData()
-  }, [] )
 
-  const fetchData = async () => {
+  const fetchEventData = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await API_BASE_URL.get(`/api/events/`, {
@@ -19,36 +19,69 @@ const HomePageStudent = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      setData(response.data);
-      console.log(response.data);
+      const filteredEvents = response.data.filter(event =>
+        membershipData.some(member => member.organization === event.event_org),
+      );
+      setEventData(filteredEvents);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleRefresh = () => {
+  const fetchOrgData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const response = await API_BASE_URL.get('/api/organizations/', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setOrgData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchMemershipData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const response = await API_BASE_URL.get('/api/memberships/', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const membershipData = response.data.map((item) => ({
+        organization: item.organization,
+      }));
+      setMembershipData(membershipData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMemershipData();
+    fetchOrgData();
+    fetchEventData();
+  }, [] )
+
+  const handleRefresh = async () => {
     setRefreshing(true);
-    fetchData();
+    await fetchEventData();
     setRefreshing(false);
   };
 
   return (
     <View style={{ backgroundColor: '#BDE3FF', flex: 1 }}>
       <FlatList
-        data={[data]}
-        keyExtractor={(index) => index.toString()}
-        ListHeaderComponent={<EventList data={data}/>}
+        data={[...eventData]}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={<EventList eventData={eventData} orgData={orgData}/>}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} progressBackgroundColor={'white'} progressViewOffset={-20}/>
       }
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  screen: {
-    padding: 20,
-  },
-})
 
 export default HomePageStudent;
