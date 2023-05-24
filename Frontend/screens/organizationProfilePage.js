@@ -73,7 +73,28 @@ const OrganizationProfilePage = () => {
 
   const logOutHandler = async () => {
     try {
-      // ...
+      const accessToken = await AsyncStorage.getItem("accessToken");
+
+      const response = await API_BASE_URL.post(
+        "/api/logout/",
+        {
+          all: true, // Set the 'all' key to true to blacklist all refresh tokens
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        await AsyncStorage.removeItem("accessToken");
+        await AsyncStorage.removeItem("refreshToken");
+
+        navigation.navigate("FirstPage");
+      } else {
+        console.error("Logout failed");
+      }
     } catch (error) {
       console.error(error);
     }
