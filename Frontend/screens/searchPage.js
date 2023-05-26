@@ -138,7 +138,7 @@ const SearchPage = () => {
           === 'events' && (
             <FlatList
               data={[{ key: 'event' }]}
-              renderItem={({ item }) => <SearchEventList data={filteredData}/>}
+              renderItem={({ item }) => <SearchEventList data={filteredData.reverse()}/>}
               keyExtractor={(item) => item.key}
             />
           )}

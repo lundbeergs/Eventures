@@ -164,6 +164,8 @@ const MyProfilePage = () => {
     }
   };
 
+  // BLIR EN INFINITY LOOP HÄR pga api/organizationz i denna funktion
+
   useEffect(() => {
     if (myMemberships.length > 0) {
       fetchOrgData();
@@ -208,31 +210,33 @@ const MyProfilePage = () => {
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My Memberships</Text>
           </View>
-          <View style={styles.membershipField}>
-            {myMemberships.map((membership) => (
-              <View key={membership.id}>
-                <View style={styles.membershipContainer}>
-                  <Text style={styles.membershipText}>
-                    {membership.org_name}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() =>
-                      deleteMembership(
-                        membership.organization,
-                        membership.student
-                      )
-                    }
-                  >
-                    <Ionicons
-                      name="close-circle-outline"
-                      size={30}
-                      color="red"
-                    />
-                  </TouchableOpacity>
+          {myMemberships.length > 0 ? (
+            <View style={styles.membershipField}>
+              {myMemberships.map((membership) => (
+                <View key={membership.id}>
+                  <View style={styles.membershipContainer}>
+                    <Text style={styles.membershipText}>
+                      {membership.org_name}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        deleteMembership(
+                          membership.organization,
+                          membership.student
+                        )
+                      }
+                    >
+                      <Ionicons
+                        name="close-circle-outline"
+                        size={30}
+                        color="red"
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          ) : null}
         </View>
         <View style={styles.buttonContainer}>
           <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
@@ -316,7 +320,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   myMembershipsText: {
-    fontSize: 14,
+    fontSize: 16,
     color: "rgba(0, 0, 0, 1)",
     fontWeight: 600,
     justifyContent: "center",

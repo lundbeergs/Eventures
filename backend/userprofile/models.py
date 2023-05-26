@@ -29,7 +29,7 @@ class OrganizationProfile(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='organization_profile')
 	org_name = models.CharField(max_length=50, unique=False)
-	org_bio = models.CharField(max_length=50, unique=False)
+	org_bio = models.CharField(max_length=500, unique=False)
 	# contact_email = models.EmailField(max_length=254, required = False, help_text ='Contact email')
 	# contact_phone = PhoneField(blank=True, null=True, required = False, help_text='Contact phone number')
 	
@@ -87,7 +87,7 @@ class Event(models.Model):
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)	
 	event_name = models.CharField(max_length=50, unique=False)
-	event_desc = models.CharField(max_length=200, unique=False)
+	event_desc = models.CharField(max_length=1000, unique=False)
 	event_price = models.DecimalField(max_digits=1000, decimal_places=2, unique=False)
 	event_date = models.DateField(null=True)
 	event_time = models.TimeField(auto_now=False, auto_now_add=False, null=True)

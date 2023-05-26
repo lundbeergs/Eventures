@@ -72,7 +72,7 @@ const OrganizationProfilePage = () => {
           >
             {orgInfo.orginfo_name}
           </Text>
-          <Text style={{ marginTop: "5%", marginLeft: "5%" }}>
+          <Text style={{ marginTop: "5%", marginLeft: "5%", fontSize: 16 }}>
             {orgInfo.orginfo_information}
           </Text>
           <View style={{ marginHorizontal: 10 }}>
