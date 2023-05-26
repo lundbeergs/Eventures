@@ -6,6 +6,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ImageBackground,
+  FlatList,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -28,6 +30,24 @@ const MyProfilePage = () => {
   const [membership, setMembership] = useState([]);
   const [orgData, setOrgData] = useState([]);
   const [myMemberships, setMyMemberships] = useState([]);
+  const [isMember, setIsMember] = useState(false);
+
+  const MyMembershipHandler = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/memberships/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const { data: membershipData } = response;
+      setMyMemberships(membershipData);
+      fetchOrgData();
+      console.log(membershipData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getProfile = async () => {
     try {
@@ -47,7 +67,6 @@ const MyProfilePage = () => {
         setAllergies(allergies);
         setDrinkPref(drinkpref);
         setId(id);
-        await MyMembershipHandler();
       }
     } catch (error) {
       console.error(error);
@@ -56,6 +75,7 @@ const MyProfilePage = () => {
 
   useEffect(() => {
     getProfile();
+    MyMembershipHandler();
   }, []);
 
   useEffect(() => {
@@ -72,21 +92,6 @@ const MyProfilePage = () => {
 
   const handleEditProfile = () => {
     navigation.navigate("EditStudentProfilePage");
-  };
-
-  const MyMembershipHandler = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get("/api/memberships/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const { data } = response;
-      setMyMemberships(data);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const fetchOrgData = async () => {
@@ -106,30 +111,44 @@ const MyProfilePage = () => {
         orgMap[org.id] = org.org_name;
       });
 
+      // Check if the user is a member of any organization
+      const isMember = myMemberships.length > 0;
+      setIsMember(isMember);
+
       // Update the membership data with organization names
       const updatedMemberships = myMemberships.map((membership) => ({
         ...membership,
         org_name: orgMap[membership.organization] || "Unknown Organization",
       }));
-
       setMyMemberships(updatedMemberships);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const deleteMembership = async (organizationId, studentId) => {
+  useEffect(() => {
+    fetchOrgData();
+  }, [myMemberships.length]);
+
+  const deleteMembership = async (organization) => {
     try {
+      console.log(organization);
+      console.log(id);
       const accessToken = await AsyncStorage.getItem("accessToken");
+
+      // Remove the membership from the server
       await API_BASE_URL.delete(
-        `/api/membership/organization/${organizationId}/${studentId}/`,
+        `/api/membership/student/${organization}/${id}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
-      await fetchOrgData(); // Refresh organization data after deleting membership
+      const updatedMemberships = myMemberships.filter(
+        (membership) => membership.organization !== organization
+      );
+      setMyMemberships(updatedMemberships);
     } catch (error) {
       console.error(error);
     }
@@ -163,8 +182,6 @@ const MyProfilePage = () => {
       console.error(error);
     }
   };
-
-  // BLIR EN INFINITY LOOP HÄR pga api/organizationz i denna funktion
 
   useEffect(() => {
     if (myMemberships.length > 0) {
@@ -206,37 +223,36 @@ const MyProfilePage = () => {
         </View>
       </View>
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View style={{marginHorizontal: 15}}>
+        <View style={{ marginHorizontal: 15 }}>
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My Memberships</Text>
           </View>
-          {myMemberships.length > 0 ? (
-            <View style={styles.membershipField}>
-              {myMemberships.map((membership) => (
-                <View key={membership.id}>
-                  <View style={styles.membershipContainer}>
-                    <Text style={styles.membershipText}>
-                      {membership.org_name}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        deleteMembership(
-                          membership.organization,
-                          membership.student
-                        )
-                      }
-                    >
-                      <Ionicons
-                        name="close-circle-outline"
-                        size={30}
-                        color="red"
-                      />
-                    </TouchableOpacity>
-                  </View>
+          <ScrollView>
+            {myMemberships.length === 0 ? (
+              <Text style={styles.myMembershipText}>You are not a member of any organization.</Text>
+            ) : (
+              myMemberships.map((membership) => (
+                <View
+                  style={styles.membershipContainer}
+                  key={membership.organization}
+                >
+                  <Text style={styles.membershipText}>
+                    {membership.org_name}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.iconContainer}
+                    onPress={() => deleteMembership(membership.organization)}
+                  >
+                    <Ionicons
+                      name="close-circle-outline"
+                      size={24}
+                      color="red"
+                    />
+                  </TouchableOpacity>
                 </View>
-              ))}
-            </View>
-          ) : null}
+              ))
+            )}
+          </ScrollView>
         </View>
         <View style={styles.buttonContainer}>
           <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
@@ -313,8 +329,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: "4%",
   },
   myMembershipsField: {
-    height: 50,
-    marginVertical: '3%',
+    height: 40,
+    marginVertical: "3%",
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     borderRadius: 5,
@@ -330,22 +346,28 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     width: "100%",
     backgroundColor: "white",
-    borderRadius: 4,
+    borderRadius: 5,
+    padding: "2%",
   },
   membershipText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: "rgba(0, 0, 0, 1)",
+    padding: "1%",
   },
   membershipContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginHorizontal: '2%'
+    borderRadius: 5,
+    height: 40,
+    margin: "1%",
+    backgroundColor: "white",
+  },
+  iconContainer: {
+    paddingHorizontal: 10,
   },
 });
-
-
 
 export default MyProfilePage;
 
@@ -367,3 +389,43 @@ export default MyProfilePage;
         </TouchableOpacity>
       </View>
       */
+
+//   <View style={styles.membershipField}>
+//   {!isMember && (
+//     <View>
+//       <Text>You are not a member of any organization.</Text>
+//     </View>
+//   )}
+//   {myMemberships.map((membership) => (
+//     <View key={membership.id}>
+//       <View style={styles.membershipContainer}>
+//         <Text style={styles.membershipText}>
+//           {membership.org_name}
+//         </Text>
+//         <TouchableOpacity
+//           onPress={() =>
+//             deleteMembership(
+//               membership.organization,
+//             )
+//           }
+//         >
+//           <Ionicons
+//             name="close-circle-outline"
+//             size={30}
+//             color="red"
+//           />
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   ))}
+// </View>
+//   <FlatList
+//   refreshControl={
+//     <RefreshControl
+//       refreshing={refreshing}
+//       onRefresh={handleRefresh}
+//       progressBackgroundColor={"white"}
+//       progressViewOffset={-20}
+//     />
+//   }
+// />

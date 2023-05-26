@@ -5,6 +5,6 @@ export const API_BASE_URL = axios.create({
 });
 
 export const API_REFRESH_URL = axios.create({
-  baseURL: 'http://130.243.158.207:8000/',
+  baseURL: 'http://192.168.10.197:8000/',
 });
 

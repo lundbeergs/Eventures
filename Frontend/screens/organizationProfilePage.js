@@ -1,23 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
-import stsKV from "../assets/images/stsKV.jpg";
-import whiteCirkle from "../assets/images/whiteCirkle.png";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  SafeAreaView,
+  ImageBackground,
+} from "react-native";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
-
-const orgInfo = {
-  orginfo_name: "STS-sektionen",
-  orginfo_information: "Välkommen till STS-sektionen",
-};
-
-//<Image style={styles.orgIcon} source={route.params.orgIcon} />
+import GlobalStyles from "../global-style";
 
 const OrganizationProfilePage = () => {
   const route = useRoute();
   const navigation = useNavigation();
+  const [orgName, setOrgName] = useState("");
+  const [orgBio, setOrgBio] = useState("");
+  const [eventData, setEventData] = useState([]);
+  const [Id, setId] = useState("");
 
   const requestHandler = async () => {
       navigation.navigate("Requests");
@@ -26,6 +30,46 @@ const OrganizationProfilePage = () => {
   const memberHandler = async () => {
     navigation.navigate("Members");
 };
+
+  const getProfile = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/profile/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const { data: userProfile } = response.data;
+
+      if (userProfile && userProfile.length > 0) {
+        const { org_name, org_bio, id } = userProfile[0];
+        setOrgName(org_name);
+        setOrgBio(org_bio);
+        setId(id);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    getProfile();
+    fetchEventData();
+  }, []);
+
+  const fetchEventData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/events/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setEventData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const logOutHandler = async () => {
     try {
@@ -57,110 +101,120 @@ const OrganizationProfilePage = () => {
   };
 
   return (
-    <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
-      <ScrollView>
-        <View style={styles.informationContainer}>
-          <Image style={styles.orgProfilePic} source={stsKV} />
-          <Image style={styles.orgIconBackground} source={whiteCirkle} />
-          <Text
-            style={{
-              marginTop: "55%",
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: 20,
-            }}
-          >
-            {orgInfo.orginfo_name}
-          </Text>
-          <Text style={{ marginTop: "5%", marginLeft: "5%", fontSize: 16 }}>
-            {orgInfo.orginfo_information}
-          </Text>
-          <View style={{ marginHorizontal: 10 }}>
-            <PurpleButton
-              onPress={requestHandler}
-              text={"Membership requests"}
-            />
-            <PurpleButton
-              onPress={memberHandler}
-              text={"Members"}
-            />
+    <SafeAreaView style={GlobalStyles.container}>
+      <View style={styles.whiteBox}>
+        <ImageBackground
+          source={require("../assets/images/eventures_background.png")}
+          style={styles.imageBackground}
+        >
+          <View style={styles.initialsContainer}>
+            <View style={styles.initialsBackground}>
+              <Text style={styles.initials}>{orgName}</Text>
+            </View>
+          </View>
+        </ImageBackground>
+        <View style={styles.infotextContainer}>
+          <Text style={styles.header}>{orgName}</Text>
+          <Text style={styles.text}>{orgBio}</Text>
+        </View>
+      </View>
+      <View style={styles.buttonContainer}>
+        <PurpleButton
+          onPress={requestHandler}
+          text={"Membership requests"}
+        />
+        <PurpleButton onPress={memberHandler} text={"Memberships"} />
+      </View>
+
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View style={{ marginHorizontal: "8%" }}>
+          <View style={styles.myEventuresField}>
+            <Text style={styles.myEventuresText}>My eventures</Text>
+          </View>
+          {eventData.map((event) => (
+            <View key={event.id}>
+              <Text>{event.event_name}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={{ alignItems: "center" }}>
+          <View style={styles.buttonContainer}>
+            <PurpleButton onPress={logOutHandler} text="Log Out" />
           </View>
         </View>
-
-        <View style={styles.orgEventures}>
-          <Text style={{ textAlign: "center", fontSize: 17 }}>
-            {" "}
-            {orgInfo.orginfo_name}s eventures{" "}
-          </Text>
-        </View>
-      </ScrollView>
-      <View style={{ marginHorizontal: 20 }}>
-        <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  informationContainer: {
-    height: 'auto',
-    marginRight: "3%",
-    marginLeft: "3%",
-    marginVertical: 10,
+  whiteBox: {
+    height: "48%",
     backgroundColor: "white",
-    borderRadius: 5,
+    borderRadius: 4,
+    marginHorizontal: "8%",
+    padding: "2%",
   },
-  text: {
-    fontSize: 24,
+  lowerWhiteBoxContainer: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  imageBackground: {
+    borderRadius: 4,
+    overflow: "hidden",
+    width: "100%",
+    height: 160,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  initialsContainer: {
+    position: "relative",
+    width: 180,
+    height: 60,
+    borderRadius: 45,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  initialsBackground: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
+    borderRadius: 45,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  initials: {
+    fontSize: 20,
+    color: "white",
+    fontWeight: "800",
+  },
+  infotextContainer: {
+    marginVertical: "2%",
+  },
+  header: {
+    fontSize: 18,
     fontWeight: "bold",
   },
-  headerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-    width: "auto",
+  text: {
+    fontSize: 16,
+    fontWeight: "normal",
   },
-  orgProfilePic: {
-    height: 190,
-    width: 340,
-    marginTop: "3%",
-    marginLeft: "3%",
-    marginRight: "1.5%",
-    zIndex: 1,
-    position: "absolute",
+  buttonContainer: {
+    width: "100%",
+    paddingHorizontal: "8%",
+    marginBottom: 10,
   },
-
-  orgIconBackground: {
-    height: 100,
-    width: 100,
-    zIndex: 2,
-    position: "absolute",
-    top: "43%",
-    left: "1.8%",
+  myEventuresField: {
+    paddingVertical: "2%",
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.45)",
+    borderRadius: 10,
   },
-
-  orgIcon: {
-    height: 45,
-    width: 45,
-    borderRadius: 30,
-    zIndex: 3,
-    position: "absolute",
-    top: "51.2%",
-    left: "10%",
-  },
-  profileTextContainer: {
-    flex: 1,
-  },
-  profilePic: {
-    justifyContent: "center",
-  },
-  textField: {
+  myEventuresText: {
+    fontSize: 14,
+    color: "rgba(0, 0, 0, 1)",
+    fontWeight: "600",
     justifyContent: "center",
     alignSelf: "center",
   },
