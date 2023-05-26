@@ -18,101 +18,75 @@ import PurpleButton from "../components/PurpleButton";
 
 const MyProfilePage = () => {
   const navigation = useNavigation();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [allergies, setAllergies] = useState("");
-  const [drinkpref, setDrinkPref] = useState([]);
-  const [id, setId] = useState("");
   const route = useRoute();
-  const initial_first_name = firstName.charAt(0).toUpperCase();
-  const initial_last_name = lastName.charAt(0).toUpperCase();
+  const [profileData, setProfileData] = useState(null);
   const [orgData, setOrgData] = useState([]);
   const [myMemberships, setMyMemberships] = useState([]);
 
   useEffect(() => {
-    MyMembershipHandler();
-    fetchOrgData();
-  }, [myMemberships.length]);
+    fetchData();
+  }, []);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      // Check if the profile has been updated
-      if (route.params?.isProfileUpdated) {
-        // Fetch the updated profile data
-        await getProfile();
-      }
-    };
-    fetchProfile();
+    // Check if the profile has been updated
+    if (route.params?.isProfileUpdated) {
+      // Fetch the updated profile data
+      fetchData();
+      // Reset the isProfileUpdated parameter
+      navigation.setParams({ isProfileUpdated: false });
+    }
   }, [route.params?.isProfileUpdated]);
-  
-  const MyMembershipHandler = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get("/api/memberships/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const { data: membershipData } = response;
-      setMyMemberships(membershipData);
-      getProfile();
-      console.log(membershipData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getProfile = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get("/api/profile/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const { data: userProfile } = response.data;
-
-      if (userProfile && userProfile.length > 0) {
-        const { first_name, last_name, allergies, drinkpref, id } =
-          userProfile[0];
-        setFirstName(first_name);
-        setLastName(last_name);
-        setAllergies(allergies);
-        setDrinkPref(drinkpref);
-        setId(id);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleEditProfile = () => {
-    navigation.navigate("EditStudentProfilePage");
+    navigation.navigate("EditStudentProfilePage", {
+      profileData: {
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        allergies: profileData.allergies,
+        drinkpref: profileData.drinkpref,
+      },
+    });
   };
 
-  const fetchOrgData = async () => {
+  const fetchData = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get("/api/organizations/", {
+
+      // Fetch profile data
+      const profileResponse = await API_BASE_URL.get("/api/profile/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const data = response.data;
-      setOrgData(data); // Update the organization data here
 
-      // Create a map of organization IDs to names
-      const orgMap = {};
-      data.forEach((org) => {
-        orgMap[org.id] = org.org_name;
+      const { data: userProfile } = profileResponse.data;
+
+      if (userProfile && userProfile.length > 0) {
+        setProfileData(userProfile[0]);
+      }
+
+      // Fetch organization data
+      const orgResponse = await API_BASE_URL.get("/api/organizations/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
-      // Update the membership data with organization names
-      const updatedMemberships = myMemberships.map((membership) => ({
-        ...membership,
-        org_name: orgMap[membership.organization] || "Unknown Organization",
-      }));
-      setMyMemberships(updatedMemberships);
+      const { data: orgData } = orgResponse;
+
+      setOrgData(orgData);
+      console.log(orgData);
+
+      // Fetch membership data
+      const membershipResponse = await API_BASE_URL.get("/api/memberships/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const { data: membershipData } = membershipResponse;
+
+      setMyMemberships(membershipData);
     } catch (error) {
       console.error(error);
     }
@@ -121,18 +95,19 @@ const MyProfilePage = () => {
   const deleteMembership = async (organization) => {
     try {
       console.log(organization);
-      console.log(id);
+      console.log(profileData.id);
       const accessToken = await AsyncStorage.getItem("accessToken");
 
       // Remove the membership from the server
       await API_BASE_URL.delete(
-        `/api/membership/student/${organization}/${id}/`,
+        `/api/membership/student/${organization}/${profileData.id}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
+
       const updatedMemberships = myMemberships.filter(
         (membership) => membership.organization !== organization
       );
@@ -171,6 +146,19 @@ const MyProfilePage = () => {
     }
   };
 
+  if (!profileData) {
+    // Render loading state or any other UI when profile data is not available
+    return (
+      <SafeAreaView style={GlobalStyles.container}>
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const { first_name, last_name, allergies, drinkpref, id: id } = profileData;
+  const initial_first_name = first_name.charAt(0).toUpperCase();
+  const initial_last_name = last_name.charAt(0).toUpperCase();
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <View style={styles.whiteBox}>
@@ -189,12 +177,22 @@ const MyProfilePage = () => {
         <View style={styles.lowerWhiteBoxContainer}>
           <View style={styles.infotextContainer}>
             <Text style={styles.header}>
-              {firstName.charAt(0).toUpperCase() + firstName.slice(1)} {lastName.charAt(0).toUpperCase() + lastName.slice(1)}
+              {profileData.first_name.charAt(0).toUpperCase() + first_name.slice(1)}{" "}
+              {profileData.last_name.charAt(0).toUpperCase() + last_name.slice(1)}
             </Text>
-            <Text style={styles.text}>First name: {firstName.charAt(0).toUpperCase() + firstName.slice(1)}</Text>
-            <Text style={styles.text}>Last name: {lastName.charAt(0).toUpperCase() + lastName.slice(1)}</Text>
-            <Text style={styles.text}>Allergies: {allergies.charAt(0).toUpperCase() + allergies.slice(1)}</Text>
-            <Text style={styles.text}>Drink preferences: {drinkpref}</Text>
+            <Text style={styles.text}>
+              First name:{" "}
+              {profileData.first_name.charAt(0).toUpperCase() + first_name.slice(1)}
+            </Text>
+            <Text style={styles.text}>
+              Last name:{" "}
+              {profileData.last_name.charAt(0).toUpperCase() + last_name.slice(1)}
+            </Text>
+            <Text style={styles.text}>
+              Allergies:{" "}
+              {profileData.allergies.charAt(0).toUpperCase() + allergies.slice(1)}
+            </Text>
+            <Text style={styles.text}>Drink preferences: {profileData.drinkpref}</Text>
           </View>
           <TouchableOpacity
             style={styles.editIconContainer}
@@ -210,18 +208,17 @@ const MyProfilePage = () => {
             <Text style={styles.myMembershipsText}>My Memberships</Text>
           </View>
           <ScrollView>
-            {myMemberships.length === 0 ? (
-              
-              <Text style={styles.myMembershipsText}>You are not a member of any organization.</Text>
-   
-            ) : (
-              myMemberships.map((membership) => (
+            {myMemberships.map((membership) => {
+              const organization = orgData.find(
+                (org) => org.id === membership.organization
+              );
+              return (
                 <View
                   style={styles.membershipContainer}
                   key={membership.organization}
                 >
-                  <Text style={styles.membershipText}>
-                    {membership.org_name}
+                  <Text style={styles.membershipsText}>
+                    {organization.org_name}
                   </Text>
                   <TouchableOpacity
                     style={styles.iconContainer}
@@ -234,8 +231,8 @@ const MyProfilePage = () => {
                     />
                   </TouchableOpacity>
                 </View>
-              ))
-            )}
+              );
+            })}
           </ScrollView>
         </View>
         <View style={styles.buttonContainer}>
@@ -326,19 +323,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center",
   },
-  membershipField: {
-    paddingVertical: 8,
-    width: "100%",
-    backgroundColor: "white",
-    borderRadius: 5,
-    padding: "2%",
-  },
-  membershipText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "rgba(0, 0, 0, 1)",
-    padding: "1%",
-  },
   membershipContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -348,68 +332,17 @@ const styles = StyleSheet.create({
     margin: "1%",
     backgroundColor: "white",
   },
+  membershipsText: {
+    fontSize: 16,
+    color: "rgba(0, 0, 0, 1)",
+    fontWeight: 600,
+    justifyContent: "center",
+    alignSelf: "center",
+    margin: "2%",
+  },
   iconContainer: {
     paddingHorizontal: 10,
   },
 });
 
 export default MyProfilePage;
-
-/* 
-<View style={styles.lowerWhiteBoxContainer}>
-        <View style={styles.infotextContainer}>
-          <Text style={styles.header}>
-            {firstName} {lastName}
-          </Text>
-          <Text style={styles.text}>First name: {firstName}</Text>
-          <Text style={styles.text}>Last name: {lastName}</Text>
-          <Text style={styles.text}>Allergies: {allergies}</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.editIconContainer}
-          onPress={handleEditProfile}
-        >
-          <Ionicons name="create-outline" size={30} color="black" />
-        </TouchableOpacity>
-      </View>
-      */
-
-//   <View style={styles.membershipField}>
-//   {!isMember && (
-//     <View>
-//       <Text>You are not a member of any organization.</Text>
-//     </View>
-//   )}
-//   {myMemberships.map((membership) => (
-//     <View key={membership.id}>
-//       <View style={styles.membershipContainer}>
-//         <Text style={styles.membershipText}>
-//           {membership.org_name}
-//         </Text>
-//         <TouchableOpacity
-//           onPress={() =>
-//             deleteMembership(
-//               membership.organization,
-//             )
-//           }
-//         >
-//           <Ionicons
-//             name="close-circle-outline"
-//             size={30}
-//             color="red"
-//           />
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   ))}
-// </View>
-//   <FlatList
-//   refreshControl={
-//     <RefreshControl
-//       refreshing={refreshing}
-//       onRefresh={handleRefresh}
-//       progressBackgroundColor={"white"}
-//       progressViewOffset={-20}
-//     />
-//   }
-// />
