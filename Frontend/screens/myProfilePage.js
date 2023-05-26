@@ -32,6 +32,11 @@ const MyProfilePage = () => {
   const [myMemberships, setMyMemberships] = useState([]);
   const [isMember, setIsMember] = useState(false);
 
+  useEffect(() => {
+    MyMembershipHandler();
+    fetchOrgData();
+  }, []);
+  
   const MyMembershipHandler = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
@@ -42,7 +47,7 @@ const MyProfilePage = () => {
       });
       const { data: membershipData } = response;
       setMyMemberships(membershipData);
-      fetchOrgData();
+      getProfile();
       console.log(membershipData);
     } catch (error) {
       console.error(error);
@@ -72,11 +77,6 @@ const MyProfilePage = () => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    getProfile();
-    MyMembershipHandler();
-  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
