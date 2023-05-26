@@ -54,7 +54,6 @@ const OrganizationPage = () => {
       ];
       setOrgBio(response.data.org_bio);
       setOrgData(orgData);
-      console.log(orgData);
     } catch (error) {
       console.error(error);
     }
@@ -73,7 +72,6 @@ const OrganizationPage = () => {
       );
 
       setEventData(filteredEvents);
-      console.log(eventData);
     } catch (error) {
       console.error(error);
     }
@@ -103,6 +101,30 @@ const OrganizationPage = () => {
       console.error(error);
     }
   };
+
+  /*const getMembershipInfo = async () => {
+    const body = {
+      organization: orgId,
+      student: student,
+    };
+    try {
+      if (isMember == false) {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        const response = await API_BASE_URL.get(
+          `/api/membership/request/${orgId}/${student}/`,
+          body,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }*/
 
   const becomeMember = async () => {
     const body = {
@@ -154,8 +176,6 @@ const OrganizationPage = () => {
       tickets_left,
     } = item;
 
-    console.log(item);
-
     return (
       <OnlyEventItem
       orgId= {event_org}
@@ -179,8 +199,7 @@ const OrganizationPage = () => {
 
   return (
     <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
-      <View>
-        <View style={styles.whiteBox}>
+          <View style={styles.whiteBox}>
           <ImageBackground
             source={EventuresBackground}
             style={styles.imageBackground}
@@ -210,26 +229,26 @@ const OrganizationPage = () => {
         </View>
 
         <View style={styles.orgEventures}>
-          <Text style={{ textAlign: "center", fontSize: 17 }}>
+          <Text style={styles.eventuresText}>
             {" "}
             {route.params.orgName}s eventures{" "}
           </Text>
         </View>
+        <View style={{flex: 1}}>
         <FlatList
           data={eventData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderEventItem}
           contentContainerStyle={styles.eventListContainer}
-          // Add additional FlatList props as needed
         />
-      </View>
+        </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   whiteBox: {
-    height: "35%",
+    height: "50%",
     backgroundColor: "white",
     borderRadius: 4,
     marginHorizontal: "4%",
@@ -239,6 +258,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  eventuresText: {
+    fontSize: 16,
+    color: "rgba(0, 0, 0, 1)",
+    fontWeight: 600,
+    justifyContent: "center",
+    alignSelf: "center",
   },
   imageBackground: {
     borderRadius: 4,
@@ -270,10 +296,6 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     fontWeight: "bold",
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "regular",
   },
   editIconContainer: {
     justifyContent: "center",

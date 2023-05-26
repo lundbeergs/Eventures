@@ -21,7 +21,6 @@ from userprofile.models import *
 
 #         if request.user.is_staff and request.method not in self.edit_methods:
 #             return True
-
 #         return False
 
 from rest_framework.permissions import BasePermission

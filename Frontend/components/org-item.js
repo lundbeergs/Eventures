@@ -24,12 +24,9 @@ const OrgItem = ({
   return (
     <TouchableOpacity onPress={goToOrg}>
       <View style={styles.eventContainer}>
-        <View style={styles.eventInfo}>
-          <Image style={styles.orgProfilePic} source={orgProfilePic} />
           <View style={styles.organizationInformation}>
-            <Text style={{ fontWeight: "bold" }}>{orgName}</Text>
+            <Text style={{ fontWeight: "bold", fontSize: 16 }}>{orgName}</Text>
           </View>
-        </View>
       </View>
     </TouchableOpacity>
   );
@@ -37,32 +34,20 @@ const OrgItem = ({
 
 const styles = StyleSheet.create({
   eventContainer: {
-    flex: 2,
-    margin: 15,
+    flex: 1,
+    marginVertical: 10,
+    marginHorizontal: 15,
     width: "92%",
-    height: 230,
-  },
-
-  eventInfo: {
-    backgroundColor: "white",
-    borderRadius: 5,
-    flex: 2,
-    flexDirection: "column",
-  },
-
-  orgProfilePic: {
-    height: 190,
-    width: "94%",
-    marginTop: "3%",
-    marginLeft: "3%",
-    marginBottom: "1%",
+    height: 40,
+    backgroundColor: 'white',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center', 
   },
 
   organizationInformation: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 1,
-    paddingHorizontal: "3%",
+    justifyContent: "center",
+    alignSelf: "center",
   },
 });
 

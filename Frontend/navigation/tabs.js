@@ -100,7 +100,7 @@ export const HomeTabs = () => {
 
 const studentHomePageStyle = {
     headerTintColor: 'black',
-    headerTitleStyle: { fontWeight: '300', fontSize: 16, borderBottomWidth: 1,
+    headerTitleStyle: { fontWeight: '300', fontSize: 20, borderBottomWidth: 1,
     borderBottomColor: 'black', paddingHorizontal: 20}, 
     headerStyle: { backgroundColor: '#B8E3FF' },
     headerTitleAlign: 'center',

@@ -59,15 +59,12 @@ const EventPage = () => {
       });
 
       const eventIds = response.data.map((ticket) => ticket.event);
-      console.log("Event ids: " + eventIds);
       const searchTickets = eventIds.includes(eventId);
-      console.log("Search tickets: " + searchTickets);
       setHasTicket(searchTickets);
     } catch (error) {
       console.log(error);
     }
   };
-
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -76,12 +73,17 @@ const EventPage = () => {
   };
 
   const buyTicketHandler = async () => {
+    checkIfHasTicket();
     const body = { event_id: eventId };
     try {
       if (hasTicket) {
         setError(
           "You already have a ticket for this event. Find it in 'My Tickets'."
         );
+        console.log(error);
+        togglePopUpModal();
+      } else if (route.params.ticketsLeft == 0) {
+        setError("There is no tickets left for this event!");
         console.log(error);
         togglePopUpModal();
       } else {
@@ -95,6 +97,7 @@ const EventPage = () => {
             },
           }
         );
+        setHasTicket(true);
         setShowModal(true);
       }
     } catch (error) {
@@ -118,7 +121,7 @@ const EventPage = () => {
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
     // Update the max height based on the expanded state
-    setMaxHeight(isExpanded ? 185 : 9999);
+    setMaxHeight(isExpanded ? 50 : 9999);
   };
 
   return (
@@ -149,31 +152,43 @@ const EventPage = () => {
             <View style={{ marginBottom: "3%" }}>
               <Text style={styles.text}>Location: {route.params.location}</Text>
               <Text style={styles.text}>Date: {route.params.date}</Text>
-              <Text style={styles.text}>Time: {route.params.time.substring(0,5)}</Text>
+              <Text style={styles.text}>
+                Time: {route.params.time.substring(0, 5)}
+              </Text>
               <Text style={styles.text}>Price: {route.params.price}</Text>
             </View>
             <View style={{ marginBottom: "3%" }}>
               <Text style={styles.text}>
-                Release date: {route.params.releaseDate}
+                {route.params.releaseDate
+                  ? "Release date: " + route.params.releaseDate
+                  : ""}
               </Text>
               <Text style={styles.text}>
-                Release time: {route.params.releaseTime.substring(0,5)}
+                {route.params.releaseTime
+                  ? "Release time: " + route.params.releaseTime.substring(0, 5)
+                  : ""}
               </Text>
             </View>
           </View>
         </View>
       </ScrollView>
-      <View style={{ marginHorizontal: 20 }}>
+      <View style={{ marginHorizontal: 15 }}>
         <Pressable
           style={({ pressed }) => [
             styles.button,
             pressed && { opacity: 0.8 },
             hasTicket && styles.ticketButton,
+            route.params.ticketsLeft === 0 && styles.disabledButton,
           ]}
           onPress={!hasTicket ? buyTicketHandler : toggleTicketModal}
+          disabled={route.params.ticketsLeft === 0}
         >
           <Text style={styles.buttonText}>
-            {hasTicket ? "Show Ticket" : "Buy Ticket"}
+            {hasTicket
+              ? "Show Ticket"
+              : route.params.ticketsLeft === 0
+              ? "No Tickets Left"
+              : "Buy Ticket"}
           </Text>
         </Pressable>
       </View>
@@ -316,7 +331,9 @@ const styles = StyleSheet.create({
   ticketButton: {
     backgroundColor: "green",
   },
-
+  disabledButton: {
+    backgroundColor: "grey",
+  },
   eventInformation: {
     marginTop: "5%",
     marginLeft: "5%",

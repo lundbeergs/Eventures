@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
-  FlatList
+  FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { API_BASE_URL } from "../axios.js";
@@ -16,11 +16,12 @@ import PopUpModal from "../components/PopUpModal.js";
 import { Picker } from "@react-native-picker/picker";
 
 const drinkOptions = [
+  "Select drink preference...",
   "Non-alcoholic",
   "Beer & White wine",
   "Beer & Red wine",
   "Cider & White wine",
-  "Cider & Red wine"
+  "Cider & Red wine",
 ];
 
 const StudentSignUp = () => {
@@ -30,17 +31,18 @@ const StudentSignUp = () => {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [allergies, setAllergies] = useState("");
-  const [drinkpref, setDrinkPref] = useState('');
+  const [drinkpref, setDrinkPref] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [isRegisteredModalVisible, setIsRegisteredModalVisible] = useState(false);
+  const [isRegisteredModalVisible, setIsRegisteredModalVisible] =
+    useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
 
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
-    if (!email || !password || !first_name || !last_name || !drinkpref) {
+    if (!email || !password || !first_name || !last_name || !allergies || !drinkpref) {
       setError("Please fill in all the required fields to register!");
       setModalVisible(true);
       return;
@@ -57,7 +59,9 @@ const StudentSignUp = () => {
       return;
     }
     if (!isPasswordValid(password)) {
-      setError("Password must be at least 8 characters long and contain at least one number.");
+      setError(
+        "Password must be at least 8 characters long and contain at least one number."
+      );
       setModalVisible(true);
       return;
     }
@@ -111,10 +115,10 @@ const StudentSignUp = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <ScrollView style={styles.contentContainer} >
+      <ScrollView style={styles.contentContainer}>
         <View style={styles.inputContainer}>
           <View style={GlobalStyles.inputComponent}>
-            <Text style={styles.inputHeader}>First name</Text>
+            <Text style={styles.inputHeader}>First name *</Text>
             <TextInput
               placeholder="First name..."
               placeholderTextColor={"grey"}
@@ -123,7 +127,7 @@ const StudentSignUp = () => {
             ></TextInput>
           </View>
           <View style={GlobalStyles.inputComponent}>
-            <Text style={styles.inputHeader}>Last name</Text>
+            <Text style={styles.inputHeader}>Last name *</Text>
             <TextInput
               placeholder="Last name..."
               placeholderTextColor={"grey"}
@@ -132,7 +136,7 @@ const StudentSignUp = () => {
             ></TextInput>
           </View>
           <View style={GlobalStyles.inputComponent}>
-            <Text style={styles.inputHeader}>Email</Text>
+            <Text style={styles.inputHeader}>Email *</Text>
             <TextInput
               placeholder="Email..."
               placeholderTextColor={"grey"}
@@ -141,7 +145,7 @@ const StudentSignUp = () => {
             ></TextInput>
           </View>
           <View style={GlobalStyles.inputComponent}>
-            <Text style={styles.inputHeader}>Password</Text>
+            <Text style={styles.inputHeader}>Password *</Text>
             <TextInput
               placeholder="Password..."
               placeholderTextColor={"grey"}
@@ -151,7 +155,7 @@ const StudentSignUp = () => {
             ></TextInput>
           </View>
           <View style={GlobalStyles.inputComponent}>
-            <Text style={styles.inputHeader}>Re enter password</Text>
+            <Text style={styles.inputHeader}>Re enter password *</Text>
             <TextInput
               placeholder="Re enter password..."
               placeholderTextColor={"grey"}
@@ -165,7 +169,7 @@ const StudentSignUp = () => {
             ></TextInput>
           </View>
           <View style={GlobalStyles.inputComponent}>
-            <Text style={styles.inputHeader}>Allergies</Text>
+            <Text style={styles.inputHeader}>Allergies *</Text>
             <TextInput
               placeholder="Allergies..."
               placeholderTextColor={"grey"}
@@ -174,18 +178,18 @@ const StudentSignUp = () => {
             ></TextInput>
           </View>
         </View>
-        <View style={GlobalStyles.inputComponent}>
-            <Text style={styles.inputHeader}>Drink Preference</Text>
-            <Picker
-              selectedValue={drinkpref}
-              onValueChange={(itemValue) => setDrinkPref(itemValue)}
-              style={styles.drinkInputText}
-            >
-              {drinkOptions.map((option, index) => (
-                <Picker.Item label={option} value={option} key={index} />
-              ))}
-            </Picker>
-          </View>
+        <View style={styles.inputComponent}>
+          <Text style={styles.inputHeader}>Drink Preference *</Text>
+          <Picker
+            selectedValue={drinkpref}
+            onValueChange={(itemValue) => setDrinkPref(itemValue)}
+            style={styles.drinkInputText}
+          >
+            {drinkOptions.map((option, index) => (
+              <Picker.Item label={option} value={option} key={index} />
+            ))}
+          </Picker>
+        </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
         <PurpleButton onPress={handleSubmit} text={"Sign Up"} />
@@ -218,20 +222,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   drinkInputText: {
-      backgroundColor: "white",
-      borderRadius: 4,
+    backgroundColor: "white",
+    borderRadius: 4,
   },
   inputModalContainer: {
     width: "100%",
     marginVertical: 10,
+  },
+  inputComponent: {
+    width: "100%",
+    marginTop: 10,
+    paddingHorizontal: 30,
+    marginBottom: 20,
   },
   inputTextError: {
     color: "red",
   },
   buttonContainer: {
     width: "100%",
-    paddingHorizontal: '8%',
-    bottom: '0%'
+    paddingHorizontal: "8%",
+    bottom: "2%",
   },
   inputHeader: {
     marginVertical: "1%",

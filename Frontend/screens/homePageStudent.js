@@ -59,7 +59,7 @@ const HomePageStudent = () => {
       }));
 
       setData({
-        eventData: filteredEvents,
+        eventData: filteredEvents.reverse(),
         orgData: orgResponse.data,
         membershipData: membershipIds,
       });
@@ -81,12 +81,10 @@ const HomePageStudent = () => {
           <View style={styles.messageBox}>
             <Text style={styles.messageText}>
               You are not a member of any organization. {"\n\n"}
-              Start exploring and join organizations to participate in their
-              events.{"\n\n"}
-              Go to the search page to find organizations that interest you.
+              Start exploring by searching for events and organizations!
             </Text>
             <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate("Search")}}>
-              <Text style={styles.buttonText}>Search Organizations</Text>
+              <Text style={styles.buttonText}>Search </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -127,10 +125,11 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 15,
   },
   button: {
     backgroundColor: "#6B48D3",
+    width: '100%',
     padding: 10,
     borderRadius: 5,
   },

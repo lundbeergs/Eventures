@@ -183,6 +183,12 @@ const MyProfilePage = () => {
     }
   };
 
+  useEffect(() => {
+    if (myMemberships.length > 0) {
+      fetchOrgData();
+    }
+  }, [myMemberships]);
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <View style={styles.whiteBox}>
@@ -330,7 +336,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   myMembershipsText: {
-    fontSize: 14,
+    fontSize: 16,
     color: "rgba(0, 0, 0, 1)",
     fontWeight: 600,
     justifyContent: "center",
