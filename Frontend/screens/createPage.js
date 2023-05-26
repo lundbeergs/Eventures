@@ -29,6 +29,7 @@ const CreatePage = () => {
     const [cut_release_time_string, setCutReleaseTime] = useState('')
     const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
     const [imageUri, setImageUri] = useState('');
+    const [location, setLocation] = useState('');
     const [tickets_left, setTicketsLeft] = useState('');
     const [organization, setOrganizationID] = useState(" ");
     const [error, setError] = useState("");
@@ -75,7 +76,7 @@ const CreatePage = () => {
             if (userProfile && userProfile.length > 0) {
                 const { id } = userProfile[0];
                 setOrganizationID(id);
-                console.log("org hej" + id);
+                console.log("org: " + organization + " hej" + id);
             }
         } catch (error) {
             console.error(error);
@@ -84,7 +85,7 @@ const CreatePage = () => {
 
 
     const handleSubmit = async () => {
-        if (!event_name /* || !location */ || !event_desc || !event_pic || !event_price || !event_date || !event_time || !tickets_left) {
+        if (!event_name /* || !location */ || !event_desc || !event_pic || !event_price || !event_date || !event_time || !location || !tickets_left) {
             setModalVisible(true);
             return;
         }
@@ -98,11 +99,13 @@ const CreatePage = () => {
                 event_time: cut_time_string,
                 release_date: cut_release_date_string,
                 release_time: cut_release_time_string,
+                event_location: location,
                 tickets_left: tickets_left,
                 event_org: organization
 
             };
-            console.log(body + event_pic)
+            console.log(organization)
+
             const accessToken = await AsyncStorage.getItem("accessToken");
             const response = await API_BASE_URL.post(`/api/organizations/${organization}/events/`, body, {
                 headers: {
@@ -167,7 +170,7 @@ const CreatePage = () => {
             <ScrollView style={styles.createEventArea}>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Eventure Title:</Text>
+                    <Text style={styles.inputLabel}>Eventure Title *</Text>
                     <TextInput
                         style={styles.inputField}
                         onChangeText={(text) => setTitle(text)}
@@ -192,7 +195,7 @@ const CreatePage = () => {
                         <View style={styles.buttonContent}>
                             <Ionicons name="calendar" size={30} color="black" />
                             <View style={styles.dateText}>
-                                <Text style={{ marginLeft: '5%' }}>Date:</Text>
+                                <Text style={{ marginLeft: '5%' }}>Date *</Text>
                                 <Text style={styles.dateAndTimeText}>{format(event_date, "do 'of' MMMM yyyy")}</Text>
                             </View>
                         </View>
@@ -211,7 +214,7 @@ const CreatePage = () => {
                         <View style={styles.buttonContent}>
                             <Ionicons name="time" size={30} color="black" />
                             <View style={styles.dateText}>
-                                <Text style={{ marginLeft: '5%' }}>Time:</Text>
+                                <Text style={{ marginLeft: '5%' }}>Time *</Text>
                                 <Text style={styles.dateAndTimeText}>{event_time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
                             </View>
                         </View>
@@ -234,7 +237,7 @@ const CreatePage = () => {
                         <View style={styles.buttonContent}>
                             <Ionicons name="calendar" size={30} color="black" />
                             <View style={styles.dateText}>
-                                <Text style={{ marginLeft: '5%' }}>Date:</Text>
+                                <Text style={{ marginLeft: '5%' }}>Date</Text>
                                 <Text style={styles.dateAndTimeText}>{format(release_date, "do 'of' MMMM yyyy")}</Text>
                             </View>
                         </View>
@@ -253,7 +256,7 @@ const CreatePage = () => {
                         <View style={styles.buttonContent}>
                             <Ionicons name="time" size={30} color="black" />
                             <View style={styles.dateText}>
-                                <Text style={{ marginLeft: '5%' }}>Time:</Text>
+                                <Text style={{ marginLeft: '5%' }}>Time</Text>
                                 <Text style={styles.dateAndTimeText}>{release_time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
                             </View>
                         </View>
@@ -280,7 +283,7 @@ const CreatePage = () => {
                             onPress={handleImagePicker}
                         >
                             <Text style={styles.imagePickerButtonText}>
-                                Choose Eventure Pic
+                                Choose Eventure Pic *
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -304,7 +307,7 @@ const CreatePage = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Eventure information:</Text>
+                    <Text style={styles.inputLabel}>Eventure information *</Text>
                     <TextInput
                         style={[styles.inputField, { height: 140, textAlignVertical: 'top' }]}
                         onChangeText={(text) => setInformation(text)}
@@ -314,7 +317,17 @@ const CreatePage = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Eventure Price:</Text>
+                    <Text style={styles.inputLabel}>Eventure location *</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        onChangeText={(text) => setLocation(text)}
+                        value={location}
+                        placeholder="Enter event location"
+                    />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Eventure Price *</Text>
                     <TextInput
                         style={styles.inputField}
                         onChangeText={(text) => {
@@ -330,7 +343,7 @@ const CreatePage = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Amount of tickets:</Text>
+                    <Text style={styles.inputLabel}>Amount of tickets *</Text>
                     <TextInput
                         style={styles.inputField}
                         onChangeText={(text) => {
