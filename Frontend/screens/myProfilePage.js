@@ -15,7 +15,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import GlobalStyles from "../global-style";
 import { API_BASE_URL } from "../axios";
 import PurpleButton from "../components/PurpleButton";
-import OrgList from "../components/org-list";
 
 const MyProfilePage = () => {
   const navigation = useNavigation();
@@ -27,15 +26,13 @@ const MyProfilePage = () => {
   const route = useRoute();
   const initial_first_name = firstName.charAt(0).toUpperCase();
   const initial_last_name = lastName.charAt(0).toUpperCase();
-  const [membership, setMembership] = useState([]);
   const [orgData, setOrgData] = useState([]);
   const [myMemberships, setMyMemberships] = useState([]);
-  const [isMember, setIsMember] = useState(false);
 
   useEffect(() => {
     MyMembershipHandler();
     fetchOrgData();
-  }, []);
+  }, [myMemberships.length]);
   
   const MyMembershipHandler = async () => {
     try {
@@ -111,10 +108,6 @@ const MyProfilePage = () => {
         orgMap[org.id] = org.org_name;
       });
 
-      // Check if the user is a member of any organization
-      const isMember = myMemberships.length > 0;
-      setIsMember(isMember);
-
       // Update the membership data with organization names
       const updatedMemberships = myMemberships.map((membership) => ({
         ...membership,
@@ -125,10 +118,6 @@ const MyProfilePage = () => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    fetchOrgData();
-  }, [myMemberships.length]);
 
   const deleteMembership = async (organization) => {
     try {
@@ -183,12 +172,6 @@ const MyProfilePage = () => {
     }
   };
 
-  useEffect(() => {
-    if (myMemberships.length > 0) {
-      fetchOrgData();
-    }
-  }, [myMemberships]);
-
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <View style={styles.whiteBox}>
@@ -207,11 +190,11 @@ const MyProfilePage = () => {
         <View style={styles.lowerWhiteBoxContainer}>
           <View style={styles.infotextContainer}>
             <Text style={styles.header}>
-              {firstName} {lastName}
+              {firstName.charAt(0).toUpperCase() + firstName.slice(1)} {lastName.charAt(0).toUpperCase() + lastName.slice(1)}
             </Text>
-            <Text style={styles.text}>First name: {firstName}</Text>
-            <Text style={styles.text}>Last name: {lastName}</Text>
-            <Text style={styles.text}>Allergies: {allergies}</Text>
+            <Text style={styles.text}>First name: {firstName.charAt(0).toUpperCase() + firstName.slice(1)}</Text>
+            <Text style={styles.text}>Last name: {lastName.charAt(0).toUpperCase() + lastName.slice(1)}</Text>
+            <Text style={styles.text}>Allergies: {allergies.charAt(0).toUpperCase() + allergies.slice(1)}</Text>
             <Text style={styles.text}>Drink preferences: {drinkpref}</Text>
           </View>
           <TouchableOpacity
@@ -229,7 +212,9 @@ const MyProfilePage = () => {
           </View>
           <ScrollView>
             {myMemberships.length === 0 ? (
-              <Text style={styles.myMembershipText}>You are not a member of any organization.</Text>
+              
+              <Text style={styles.myMembershipsText}>You are not a member of any organization.</Text>
+   
             ) : (
               myMemberships.map((membership) => (
                 <View
