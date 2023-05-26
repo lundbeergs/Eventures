@@ -33,6 +33,18 @@ const MyProfilePage = () => {
     MyMembershipHandler();
     fetchOrgData();
   }, [myMemberships.length]);
+  }, [myMemberships.length]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      // Check if the profile has been updated
+      if (route.params?.isProfileUpdated) {
+        // Fetch the updated profile data
+        await getProfile();
+      }
+    };
+    fetchProfile();
+  }, [route.params?.isProfileUpdated]);
   
   const MyMembershipHandler = async () => {
     try {
@@ -74,18 +86,6 @@ const MyProfilePage = () => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      // Check if the profile has been updated
-      if (route.params?.isProfileUpdated) {
-        // Fetch the updated profile data
-        await getProfile();
-      }
-    };
-
-    fetchProfile();
-  }, [route.params?.isProfileUpdated]);
 
   const handleEditProfile = () => {
     navigation.navigate("EditStudentProfilePage");

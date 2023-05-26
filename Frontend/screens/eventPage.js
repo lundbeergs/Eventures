@@ -47,9 +47,10 @@ const EventPage = () => {
   useEffect(() => {
     setEventId(route.params.eventId);
     checkIfHasTicket();
-  }, [eventId]);
+  }, [eventId, hasTicket]);
 
   const checkIfHasTicket = async () => {
+    console.log('HÄR')
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await API_BASE_URL.get("/api/student-tickets/", {
@@ -73,7 +74,7 @@ const EventPage = () => {
   };
 
   const buyTicketHandler = async () => {
-    checkIfHasTicket();
+    await checkIfHasTicket();
     const body = { event_id: eventId };
     try {
       if (hasTicket) {
