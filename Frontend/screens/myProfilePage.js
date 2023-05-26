@@ -33,7 +33,6 @@ const MyProfilePage = () => {
     MyMembershipHandler();
     fetchOrgData();
   }, [myMemberships.length]);
-  }, [myMemberships.length]);
 
   useEffect(() => {
     const fetchProfile = async () => {

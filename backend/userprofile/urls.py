@@ -14,6 +14,7 @@ urlpatterns = [
 
     # Sjsjsjs
 	path('membership/request/<uuid:organization_id>/<uuid:student_id>/', MembershipRequestView.as_view()), # ANVÄND DENNA <3
+    path('membership/request/<uuid:student_id>/', MembershipRequestView.as_view()), #Lista på alla membership requests som en user har
 
     # För organisationen att se sina membership requests, och ändra dessa.
     path('membership/requests/<uuid:organization_id>/', OrganizationMembershipRequestsView.as_view()),
