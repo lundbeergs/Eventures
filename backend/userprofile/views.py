@@ -237,6 +237,13 @@ class MembershipRequestView(APIView):
             serializer.save(student=request.user.student_profile)               
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, student_id):
+        student = StudentProfile.objects.get(id=student_id)
+        requests = MembershipRequest.objects.filter(student=student)
+        serializer = MembershipRequestSerializer(requests, many=True)
+        return Response(serializer.data)
+
 
 # Responsible for retreiving the list of membership requests for an organization ('GET')
 # and updating the status of a membership request ('PUT)

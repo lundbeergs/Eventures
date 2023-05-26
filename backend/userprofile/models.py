@@ -66,7 +66,8 @@ class Membership(models.Model):
      organization = models.ForeignKey(OrganizationProfile, on_delete=models.CASCADE, related_name='memberships')
      student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='memberships')
      date_joined = models.DateField(auto_now_add=True)
-
+     class Meta:
+	     unique_together = ('organization', 'student')
 
 	# Kanske ta med!!!!
 	# class Meta: 
@@ -78,6 +79,9 @@ class MembershipRequest(models.Model):
 	student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='membership_requests')
 	date_requested = models.DateField(auto_now_add=True)
 	accepted = models.BooleanField(default=False)
+
+	class Meta:
+		unique_together = ('organization', 'student')
 
 	# Kanske ta med!!!!
 	# class Meta: 
