@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import GlobalStyles from "../global-style";
 import { API_BASE_URL } from "../axios";
 import PurpleButton from "../components/PurpleButton";
+import { all } from "axios";
 
 const MyProfilePage = () => {
   const navigation = useNavigation();
@@ -146,6 +147,14 @@ const MyProfilePage = () => {
     }
   };
 
+  const capitalize = (str) => {
+    const nameParts = str.split(" ");
+    const capitalizedParts = nameParts.map(
+      (part) => part.charAt(0).toUpperCase() + part.slice(1)
+    );
+    return capitalizedParts.join(" ");
+  };
+
   if (!profileData) {
     // Render loading state or any other UI when profile data is not available
     return (
@@ -156,8 +165,7 @@ const MyProfilePage = () => {
   }
 
   const { first_name, last_name, allergies, drinkpref, id: id } = profileData;
-  const initial_first_name = first_name.charAt(0).toUpperCase();
-  const initial_last_name = last_name.charAt(0).toUpperCase();
+  
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -169,7 +177,7 @@ const MyProfilePage = () => {
           <View style={styles.initialsContainer}>
             <View style={styles.initialsBackground}>
               <Text style={styles.initials}>
-                {initial_first_name}.{initial_last_name}
+                {first_name.charAt(0).toUpperCase()}.{last_name.charAt(0).toUpperCase()}
               </Text>
             </View>
           </View>
@@ -177,22 +185,23 @@ const MyProfilePage = () => {
         <View style={styles.lowerWhiteBoxContainer}>
           <View style={styles.infotextContainer}>
             <Text style={styles.header}>
-              {profileData.first_name.charAt(0).toUpperCase() + first_name.slice(1)}{" "}
-              {profileData.last_name.charAt(0).toUpperCase() + last_name.slice(1)}
+            {capitalize(first_name)} {capitalize(last_name)}
             </Text>
             <Text style={styles.text}>
               First name:{" "}
-              {profileData.first_name.charAt(0).toUpperCase() + first_name.slice(1)}
+              {capitalize(first_name)}
             </Text>
             <Text style={styles.text}>
               Last name:{" "}
-              {profileData.last_name.charAt(0).toUpperCase() + last_name.slice(1)}
+              {capitalize(last_name)}
             </Text>
             <Text style={styles.text}>
               Allergies:{" "}
-              {profileData.allergies.charAt(0).toUpperCase() + allergies.slice(1)}
+              {capitalize(allergies)}
             </Text>
-            <Text style={styles.text}>Drink preferences: {profileData.drinkpref}</Text>
+            <Text style={styles.text}>
+              Drink preferences: {profileData.drinkpref}
+            </Text>
           </View>
           <TouchableOpacity
             style={styles.editIconContainer}
