@@ -6,8 +6,6 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ImageBackground,
-  FlatList,
-  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -15,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import GlobalStyles from "../global-style";
 import { API_BASE_URL } from "../axios";
 import PurpleButton from "../components/PurpleButton";
-import { all } from "axios";
 
 const MyProfilePage = () => {
   const navigation = useNavigation();
@@ -93,13 +90,11 @@ const MyProfilePage = () => {
     }
   };
 
-  const deleteMembership = async (organization) => {
+  const deleteMembership = async (organizationId, studentId) => {
     try {
       console.log(organization);
       console.log(profileData.id);
       const accessToken = await AsyncStorage.getItem("accessToken");
-
-      // Remove the membership from the server
       await API_BASE_URL.delete(
         `/api/membership/student/${organization}/${profileData.id}/`,
         {
@@ -212,7 +207,7 @@ const MyProfilePage = () => {
         </View>
       </View>
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View style={{ marginHorizontal: 15 }}>
+      <View style={{marginHorizontal: 15}}>
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My Memberships</Text>
           </View>
@@ -321,8 +316,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: "4%",
   },
   myMembershipsField: {
-    height: 40,
-    marginVertical: "3%",
+    height: 50,
+    marginVertical: '3%',
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     borderRadius: 5,
@@ -355,5 +350,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 });
+
+
 
 export default MyProfilePage;
