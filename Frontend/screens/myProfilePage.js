@@ -150,12 +150,12 @@ const MyProfilePage = () => {
     }
   };
 
-  const capitalize = (str) => {
-    const nameParts = str.split(" ");
-    const capitalizedParts = nameParts.map(
-      (part) => part.charAt(0).toUpperCase() + part.slice(1)
+  const capitalLetter = (string) => {
+    const words = string.split(" ");
+    const capitalizedWords = words.map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1)
     );
-    return capitalizedParts.join(" ");
+    return capitalizedWords.join(" ");
   };
 
   if (!profileData) {
@@ -188,19 +188,19 @@ const MyProfilePage = () => {
         <View style={styles.lowerWhiteBoxContainer}>
           <View style={styles.infotextContainer}>
             <Text style={styles.header}>
-            {capitalize(first_name)} {capitalize(last_name)}
+            {capitalLetter(first_name)} {capitalLetter(last_name)}
             </Text>
-            <Text style={styles.text}>
+            <Text style={styles.text} numberOfLines={1}>
               First name:{" "}
-              {capitalize(first_name)}
+              {capitalLetter(first_name)}
             </Text>
-            <Text style={styles.text}>
+            <Text style={styles.text} numberOfLines={1}>
               Last name:{" "}
-              {capitalize(last_name)}
+              {capitalLetter(last_name)}
             </Text>
-            <Text style={styles.text}>
+            <Text style={styles.text} numberOfLines={1}>
               Allergies:{" "}
-              {capitalize(allergies)}
+              {capitalLetter(allergies)}
             </Text>
             <Text style={styles.text}>
               Drink preferences: {profileData.drinkpref}
@@ -314,7 +314,9 @@ const styles = StyleSheet.create({
   },
   editIconContainer: {
     justifyContent: "center",
-    marginTop: "20%",
+    marginTop: "32%",
+    marginLeft: "90%",
+    position: "absolute",
   },
   buttonContainer: {
     width: "100%",
