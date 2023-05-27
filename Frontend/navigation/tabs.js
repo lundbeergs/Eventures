@@ -19,7 +19,7 @@ function HomeStackScreen() {
     const navigation = useNavigation();
    
     return (
-        <HomeStack.Navigator screenOptions={{headerShown: true}}>
+        <HomeStack.Navigator initialRouteName="HomePageStudent" screenOptions={{headerShown: true}}>
         <HomeStack.Screen name='HomePageStudent' component={HomePageStudent}
         options= {{title: "Following", ...studentHomePageStyle, headerLeft: null}}/>
         <HomeStack.Screen name='EventPage' component={EventPage} options= {{title: "", ...headerStyle}}/>

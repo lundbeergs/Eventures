@@ -60,7 +60,7 @@ const CreatePage = () => {
     const handleImageSelection = (image, index) => {
         setSelectedImage(image);
         setShowModal(false);
-        setEventPic(index + 100);
+        setEventPic(index + 101);
     };
 
     const getOrganizationProfile = async () => {

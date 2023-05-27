@@ -29,32 +29,28 @@ export default function StudentLoginPage() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    getTokenFromStorage();
-  }, [userType]);
+  }, []);
 
-  const getTokenFromStorage = async () => {
+  const storeAccessTokenInStorage = async (token) => {
     try {
-      const storedToken = await AsyncStorage.getItem("accessToken");
-      if (storedToken) {
-        const decodedToken = jwtDecode(storedToken);
-        
-        if (decodedToken.exp * 1000 > Date.now()) {
-          setToken(storedToken);
-          navigation.navigate("HomeStackStudent", { userData: decodedToken });
-        } else {
-          await refreshTokens();
-        }
-      }
+      console.log("Access: " + token);
+      await AsyncStorage.setItem("accessToken", token);
     } catch (error) {
-      console.log("Error retrieving token from storage:", error);
+      console.log("Error storing accesstoken in storage:", error);
     }
   };
 
-  const storeTokenInStorage = async (token) => {
+  const storeUserTypeInStorage = async (userType) => {
+    console.log("UserType: " + userType);
+    await AsyncStorage.setItem("userType", userType);
+  };
+
+  const storeRefreshTokenInStorage = async (token) => {
     try {
-      await AsyncStorage.setItem("accessToken", token);
+      console.log("Refresh: " + token);
+      await AsyncStorage.setItem("refreshToken", token);
     } catch (error) {
-      console.log("Error storing token in storage:", error);
+      console.log("Error storing refreshtoken in storage:", error);
     }
   };
 
@@ -95,19 +91,25 @@ export default function StudentLoginPage() {
         password: password,
       });
       const { access, refresh, user_type } = response.data;
-      console.log(access);
-      setUserType(user_type);
-      console.log(user_type);
+
       if (!access || !refresh) {
         throw new Error("Tokens not found in response data");
       }
-      setToken(access);
-      getProfile(access);
-      storeTokenInStorage(access);
-      navigation.navigate("HomeStackStudent", { userData: jwtDecode(access) });
+      storeUserTypeInStorage(user_type);
+      storeRefreshTokenInStorage(refresh);
+      storeAccessTokenInStorage(access);
+
+      if (user_type == "is_student"){ 
+        getProfile(access);
+        navigation.navigate("HomeStackStudent", { userData: jwtDecode(access) });
+        }
+        else {
+          setError("You are not a student!")
+          togglePopUpModal();
+        }
     } catch (error) {
       console.log("Error logging in:", error);
-      setError("Wrong email or password. Please try again!")
+      setError("Wrong email or password. Please try again!");
       togglePopUpModal();
     }
   };
@@ -121,12 +123,13 @@ export default function StudentLoginPage() {
       const response = await API_BASE_URL.post("/api/token/refresh/", {
         refreshToken,
       });
+      console.log(response.data);
       const { accessToken, refreshToken: newRefreshToken } = response.data;
       if (!accessToken || !newRefreshToken) {
         throw new Error("Tokens not found in response data");
       }
       setToken(accessToken);
-      storeTokenInStorage(accessToken);
+      storeAccessTokenInStorage(accessToken);
       await AsyncStorage.setItem("refreshToken", newRefreshToken);
     } catch (error) {
       console.log("Error refreshing tokens:", error);

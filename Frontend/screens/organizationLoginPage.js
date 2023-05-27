@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, Image, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  Image,
+  SafeAreaView,
+} from "react-native";
 
 import axios from "axios";
 import GlobalStyles from "../global-style";
@@ -9,50 +17,47 @@ import eventures from "../assets/images/eventures.png";
 import PurpleButton from "../components/PurpleButton";
 import Header from "../components/Header";
 import PopUpModal from "../components/PopUpModal";
-import { API_BASE_URL } from '../axios.js'
+import { API_BASE_URL } from "../axios.js";
 import jwtDecode from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 
 export default function OrganizationLoginPage() {
   const [popUpModalVisible, setPopUpModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
+  const [error, setError] = useState("");
   const navigation = useNavigation();
 
-  useEffect(() => {
-    getTokenFromStorage();
-  }, []);
+  useEffect(() => {}, []);
 
-  const getTokenFromStorage = async () => {
+  const storeAccessTokenInStorage = async (token) => {
     try {
-      const storedToken = await AsyncStorage.getItem("accessToken");
-      if (storedToken) {
-        const decodedToken = jwtDecode(storedToken);
-        if (decodedToken.exp * 1000 > Date.now()) {
-          setToken(storedToken);
-          navigation.navigate("HomePageOrganization", { userData: decodedToken });
-        } else {
-          await refreshTokens();
-        }
-      }
+      console.log("Access: " + token);
+      await AsyncStorage.setItem("accessToken", token);
     } catch (error) {
-      console.log("Error retrieving token from storage:", error);
+      console.log("Error storing accesstoken in storage:", error);
     }
   };
 
-  const storeTokenInStorage = async (token) => {
+  const storeUserTypeInStorage = async (userType) => {
+    console.log("UserType: " + userType);
+    await AsyncStorage.setItem("userType", userType);
+  };
+
+  const storeRefreshTokenInStorage = async (token) => {
     try {
-      await AsyncStorage.setItem("accessToken", token);
+      console.log("Refresh: " + token);
+      await AsyncStorage.setItem("refreshToken", token);
     } catch (error) {
-      console.log("Error storing token in storage:", error);
+      console.log("Error storing refreshtoken in storage:", error);
     }
   };
 
   const removeTokenFromStorage = async () => {
     try {
       await AsyncStorage.removeItem("accessToken");
+      await AsyncStorage.removeItem("refreshToken");
     } catch (error) {
       console.log("Error removing token from storage:", error);
     }
@@ -64,40 +69,29 @@ export default function OrganizationLoginPage() {
         email: email,
         password: password,
       });
-      const { access, refresh } = response.data;
+      const { access, refresh, user_type } = response.data;
+
       if (!access || !refresh) {
         throw new Error("Tokens not found in response data");
       }
+      storeUserTypeInStorage(user_type);
+      storeRefreshTokenInStorage(refresh);
+      storeAccessTokenInStorage(access);
 
-      setToken(access);
-      storeTokenInStorage(access);
-      console.log('Här är min token'+ access)
-      navigation.navigate("HomePageOrganization", { userData: jwtDecode(access) });
+      if (user_type == "is_organization") {
+        navigation.navigate("HomePageOrganization", {
+          userData: jwtDecode(access),
+        });
+      } else {
+        console.log("Not a student!!!");
+        setError("You are not an organization!");
+        togglePopUpModal();
+      }
     } catch (error) {
       console.log("Error logging in:", error);
-      togglePopUpModal();
-    }
-  };
-
-  const refreshTokens = async () => {
-    try {
-      const refreshToken = await AsyncStorage.getItem("refreshToken");
-      if (!refreshToken) {
-        throw new Error("Refresh token not found in storage");
-      }
-      const response = await API_BASE_URL.post("/api/refresh/", {
-        refreshToken,
-      });
-      const { accessToken, refreshToken: newRefreshToken } = response.data;
-      if (!accessToken || !newRefreshToken) {
-        throw new Error("Tokens not found in response data");
-      }
-      setToken(accessToken);
-      storeTokenInStorage(accessToken);
-      await AsyncStorage.setItem("refreshToken", newRefreshToken);
-    } catch (error) {
-      console.log("Error refreshing tokens:", error);
       removeTokenFromStorage();
+      setError("Invalid email or password. Please try again!");
+      togglePopUpModal();
     }
   };
 
@@ -149,7 +143,7 @@ export default function OrganizationLoginPage() {
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 40,
-          marginTop: '10%',
+          marginTop: "10%",
         }}
       >
         <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
@@ -175,7 +169,7 @@ export default function OrganizationLoginPage() {
 
       <PopUpModal
         isVisible={popUpModalVisible}
-        text="Invalid email or password. Please try again!"
+        text={error}
         buttonText={"OK"}
         closeModal={togglePopUpModal}
       />
@@ -197,7 +191,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     marginTop: 20,
-    paddingHorizontal: '8%',
+    paddingHorizontal: "8%",
   },
   newUserText: {
     fontSize: 18,

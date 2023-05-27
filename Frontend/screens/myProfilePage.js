@@ -6,8 +6,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ImageBackground,
-  FlatList,
   ScrollView,
+  RefreshControl
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -22,6 +22,7 @@ const MyProfilePage = () => {
   const [profileData, setProfileData] = useState(null);
   const [orgData, setOrgData] = useState([]);
   const [myMemberships, setMyMemberships] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -36,6 +37,12 @@ const MyProfilePage = () => {
       navigation.setParams({ isProfileUpdated: false });
     }
   }, [route.params?.isProfileUpdated]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
 
   const handleEditProfile = () => {
     navigation.navigate("EditStudentProfilePage", {
@@ -92,24 +99,22 @@ const MyProfilePage = () => {
     }
   };
 
-  const deleteMembership = async (organization) => {
+  const deleteMembership = async (organizationId) => {
     try {
-      console.log(organization);
+      console.log(organizationId);
       console.log(profileData.id);
       const accessToken = await AsyncStorage.getItem("accessToken");
-
-      // Remove the membership from the server
       await API_BASE_URL.delete(
-        `/api/membership/student/${organization}/${profileData.id}/`,
+        `/api/membership/student/${organizationId}/${profileData.id}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
-
+      console.log("Membership deleted!");
       const updatedMemberships = myMemberships.filter(
-        (membership) => membership.organization !== organization
+        (membership) => membership.organization !== organizationId
       );
       setMyMemberships(updatedMemberships);
     } catch (error) {
@@ -146,6 +151,14 @@ const MyProfilePage = () => {
     }
   };
 
+  const capitalLetter = (string) => {
+    const words = string.split(" ");
+    const capitalizedWords = words.map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+    );
+    return capitalizedWords.join(" ");
+  };
+
   if (!profileData) {
     // Render loading state or any other UI when profile data is not available
     return (
@@ -156,8 +169,6 @@ const MyProfilePage = () => {
   }
 
   const { first_name, last_name, allergies, drinkpref, id: id } = profileData;
-  const initial_first_name = first_name.charAt(0).toUpperCase();
-  const initial_last_name = last_name.charAt(0).toUpperCase();
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -169,7 +180,8 @@ const MyProfilePage = () => {
           <View style={styles.initialsContainer}>
             <View style={styles.initialsBackground}>
               <Text style={styles.initials}>
-                {initial_first_name}.{initial_last_name}
+                {first_name.charAt(0).toUpperCase()}.
+                {last_name.charAt(0).toUpperCase()}
               </Text>
             </View>
           </View>
@@ -177,22 +189,20 @@ const MyProfilePage = () => {
         <View style={styles.lowerWhiteBoxContainer}>
           <View style={styles.infotextContainer}>
             <Text style={styles.header}>
-              {profileData.first_name.charAt(0).toUpperCase() + first_name.slice(1)}{" "}
-              {profileData.last_name.charAt(0).toUpperCase() + last_name.slice(1)}
+              {capitalLetter(first_name)} {capitalLetter(last_name)}
+            </Text>
+            <Text style={styles.text} numberOfLines={1}>
+              First name: {capitalLetter(first_name)}
+            </Text>
+            <Text style={styles.text} numberOfLines={1}>
+              Last name: {capitalLetter(last_name)}
+            </Text>
+            <Text style={styles.text} numberOfLines={1}>
+              Allergies: {capitalLetter(allergies)}
             </Text>
             <Text style={styles.text}>
-              First name:{" "}
-              {profileData.first_name.charAt(0).toUpperCase() + first_name.slice(1)}
+              Drink preferences: {profileData.drinkpref}
             </Text>
-            <Text style={styles.text}>
-              Last name:{" "}
-              {profileData.last_name.charAt(0).toUpperCase() + last_name.slice(1)}
-            </Text>
-            <Text style={styles.text}>
-              Allergies:{" "}
-              {profileData.allergies.charAt(0).toUpperCase() + allergies.slice(1)}
-            </Text>
-            <Text style={styles.text}>Drink preferences: {profileData.drinkpref}</Text>
           </View>
           <TouchableOpacity
             style={styles.editIconContainer}
@@ -207,7 +217,16 @@ const MyProfilePage = () => {
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My Memberships</Text>
           </View>
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                progressBackgroundColor={"white"}
+                progressViewOffset={-20}
+              />
+            }
+          >
             {myMemberships.map((membership) => {
               const organization = orgData.find(
                 (org) => org.id === membership.organization
@@ -302,7 +321,9 @@ const styles = StyleSheet.create({
   },
   editIconContainer: {
     justifyContent: "center",
-    marginTop: "20%",
+    marginTop: "32%",
+    marginLeft: "90%",
+    position: "absolute",
   },
   buttonContainer: {
     width: "100%",
@@ -310,7 +331,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: "4%",
   },
   myMembershipsField: {
-    height: 40,
+    height: 50,
     marginVertical: "3%",
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
