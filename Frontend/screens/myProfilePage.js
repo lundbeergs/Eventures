@@ -6,7 +6,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ImageBackground,
-  ScrollView
+  ScrollView,
+  RefreshControl
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -98,22 +99,22 @@ const MyProfilePage = () => {
     }
   };
 
-  const deleteMembership = async (organizationId, studentId) => {
+  const deleteMembership = async (organizationId) => {
     try {
-      console.log(organization);
+      console.log(organizationId);
       console.log(profileData.id);
       const accessToken = await AsyncStorage.getItem("accessToken");
       await API_BASE_URL.delete(
-        `/api/membership/student/${organization}/${profileData.id}/`,
+        `/api/membership/student/${organizationId}/${profileData.id}/`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
-
+      console.log("Membership deleted!");
       const updatedMemberships = myMemberships.filter(
-        (membership) => membership.organization !== organization
+        (membership) => membership.organization !== organizationId
       );
       setMyMemberships(updatedMemberships);
     } catch (error) {
@@ -168,7 +169,6 @@ const MyProfilePage = () => {
   }
 
   const { first_name, last_name, allergies, drinkpref, id: id } = profileData;
-  
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -180,7 +180,8 @@ const MyProfilePage = () => {
           <View style={styles.initialsContainer}>
             <View style={styles.initialsBackground}>
               <Text style={styles.initials}>
-                {first_name.charAt(0).toUpperCase()}.{last_name.charAt(0).toUpperCase()}
+                {first_name.charAt(0).toUpperCase()}.
+                {last_name.charAt(0).toUpperCase()}
               </Text>
             </View>
           </View>
@@ -188,19 +189,16 @@ const MyProfilePage = () => {
         <View style={styles.lowerWhiteBoxContainer}>
           <View style={styles.infotextContainer}>
             <Text style={styles.header}>
-            {capitalLetter(first_name)} {capitalLetter(last_name)}
+              {capitalLetter(first_name)} {capitalLetter(last_name)}
             </Text>
             <Text style={styles.text} numberOfLines={1}>
-              First name:{" "}
-              {capitalLetter(first_name)}
+              First name: {capitalLetter(first_name)}
             </Text>
             <Text style={styles.text} numberOfLines={1}>
-              Last name:{" "}
-              {capitalLetter(last_name)}
+              Last name: {capitalLetter(last_name)}
             </Text>
             <Text style={styles.text} numberOfLines={1}>
-              Allergies:{" "}
-              {capitalLetter(allergies)}
+              Allergies: {capitalLetter(allergies)}
             </Text>
             <Text style={styles.text}>
               Drink preferences: {profileData.drinkpref}
@@ -215,11 +213,20 @@ const MyProfilePage = () => {
         </View>
       </View>
       <View style={{ flex: 1, justifyContent: "space-between" }}>
-      <View style={{marginHorizontal: 15}}>
+        <View style={{ marginHorizontal: 15 }}>
           <View style={styles.myMembershipsField}>
             <Text style={styles.myMembershipsText}>My Memberships</Text>
           </View>
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                progressBackgroundColor={"white"}
+                progressViewOffset={-20}
+              />
+            }
+          >
             {myMemberships.map((membership) => {
               const organization = orgData.find(
                 (org) => org.id === membership.organization
@@ -325,7 +332,7 @@ const styles = StyleSheet.create({
   },
   myMembershipsField: {
     height: 50,
-    marginVertical: '3%',
+    marginVertical: "3%",
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     borderRadius: 5,
@@ -358,7 +365,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 });
-
-
 
 export default MyProfilePage;

@@ -20,8 +20,6 @@ import PopUpModal from "../components/PopUpModal";
 
 const EventPage = () => {
   const route = useRoute();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [maxHeight, setMaxHeight] = useState(185); // Initial max height of eventInformation
   const [showModal, setShowModal] = useState(false);
   const [eventId, setEventId] = useState("");
   const [error, setError] = useState("");
@@ -29,6 +27,8 @@ const EventPage = () => {
   const [hasTicket, setHasTicket] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [ticketModalVisible, setTicketModalVisible] = useState(false);
+  const [isMember, setIsMember] = useState("");
+  let isOrganizationMember;
   const [currentTime, setCurrentTime] = useState(new Date());
   const [releaseTime, setReleaseTime] = useState(new Date());
   const eventPic = route.params.eventPic;
@@ -46,32 +46,29 @@ const EventPage = () => {
 
   const eventPicSource = imagePaths[eventPic];
 
-  // useEffect(() => {
-  //   setEventId(route.params.eventId);
-  //   checkIfHasTicket();
-  // }, [eventId, hasTicket]);
+  useEffect(() => {
+    fetchInfo();
+  }, [hasTicket, isMember]);
 
-  // useEffect(() => {
-  //   setEventId(route.params.eventId);
-  //   checkIfHasTicket();
-  // }, [route.params.eventId]);
-
-  // useEffect(() => {
-  //   setEventId(route.params.eventId);
-  //   const releaseTime = new Date();
-  //   releaseTime.setHours(route.params.releaseTime.split(":")[0]);
-  //   releaseTime.setMinutes(route.params.releaseTime.split(":")[1]);
-  //   setReleaseTime(releaseTime);
-  //   checkIfHasTicket();
-  // }, [route.params.eventId, route.params.releaseTime]);
+  const fetchInfo = async () => {
+    setEventId(route.params.eventId);
+    await checkIfHasTicket();
+    await checkMembership();
+    await releaseTimeDateHandler();
+  };
 
   useEffect(() => {
     setEventId(route.params.eventId);
     const releaseTime = new Date();
-    releaseTime.setHours(route.params.releaseTime.split(":")[0]);
-    releaseTime.setMinutes(route.params.releaseTime.split(":")[1]);
-    setReleaseTime(releaseTime);
-    checkIfHasTicket();
+    if (
+      route.params.releaseDate !== null &&
+      route.params.releaseTime !== null
+    ) {
+      releaseTime.setHours(route.params.releaseTime.split(":")[0]);
+      releaseTime.setMinutes(route.params.releaseTime.split(":")[1]);
+      console.log(releaseTime);
+      setReleaseTime(releaseTime);
+    }
 
     // Update current time every second
     const interval = setInterval(() => {
@@ -84,7 +81,6 @@ const EventPage = () => {
   }, [route.params.eventId, route.params.releaseTime]);
 
   const checkIfHasTicket = async () => {
-    console.log("HÄR");
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await API_BASE_URL.get("/api/student-tickets/", {
@@ -94,10 +90,34 @@ const EventPage = () => {
       });
 
       const eventIds = response.data.map((ticket) => ticket.event);
-      const searchTickets = eventIds.includes(eventId);
-      setHasTicket(searchTickets);
+      setHasTicket(eventIds.includes(eventId));
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const checkMembership = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get(`/api/memberships/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const membershipData = response.data;
+
+      if (membershipData.length !== 0) {
+        isOrganizationMember = membershipData.find(
+          (membership) => membership.organization === route.params.orgId
+        );
+      }
+      if (isOrganizationMember) {
+        setIsMember(true);
+      } else {
+        setIsMember(false);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -107,24 +127,33 @@ const EventPage = () => {
     setRefreshing(false);
   };
 
+  const releaseTimeDateHandler = async () => {
+    if (
+      route.params.releaseDate !== null &&
+      route.params.releaseTime !== null
+    ) {
+      const currentTime = new Date();
+      const releaseDateParts = route.params.releaseDate.split("-");
+      const releaseTimeParts = route.params.releaseTime.split(":");
+
+      const releaseDateTime = new Date(
+        releaseDateParts[0], // Year
+        releaseDateParts[1] - 1, // Month (subtract 1 as it is 0-based)
+        releaseDateParts[2], // Day
+        releaseTimeParts[0], // Hours
+        releaseTimeParts[1] // Minutes
+      );
+      setReleaseTime(releaseDateTime);
+
+      console.log("CurrentTime", currentTime);
+    } else {
+      console.log("No release date and time");
+    }
+  };
+
   const buyTicketHandler = async () => {
-    const currentTime = new Date();
-    const releaseDateParts = route.params.releaseDate.split("-");
-    const releaseTimeParts = route.params.releaseTime.split(":");
-
-    const releaseDateTime = new Date(
-      releaseDateParts[0], // Year
-      releaseDateParts[1] - 1, // Month (subtract 1 as it is 0-based)
-      releaseDateParts[2], // Day
-      releaseTimeParts[0], // Hours
-      releaseTimeParts[1] // Minutes
-    );
-    setReleaseTime(releaseDateTime);
-
-    console.log("CurrentTime", currentTime);
-    console.log("ReleaseDateTime:", releaseDateTime);
-
-    checkIfHasTicket();
+    await checkIfHasTicket();
+    await checkMembership();
 
     const body = { event_id: eventId };
     try {
@@ -136,6 +165,12 @@ const EventPage = () => {
         togglePopUpModal();
       } else if (route.params.ticketsLeft == 0) {
         setError("There is no tickets left for this event!");
+        console.log(error);
+        togglePopUpModal();
+      } else if (!isMember) {
+        setError(
+          "Become a member of this organization before you can get a ticket!"
+        );
         console.log(error);
         togglePopUpModal();
       } else {
@@ -170,10 +205,41 @@ const EventPage = () => {
     setPopUpModalVisible(!popUpModalVisible);
   };
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-    // Update the max height based on the expanded state
-    setMaxHeight(isExpanded ? 50 : 9999);
+  const renderButton = () => {
+    if (route.params.ticketsLeft === 0) {
+      return (
+        <Pressable style={styles.disabledButton} disabled={true}>
+          <Text style={styles.buttonText}>No Tickets Left</Text>
+        </Pressable>
+      );
+    } else if (currentTime < releaseTime) {
+      return (
+        <Pressable style={styles.disabledButton} disabled={true}>
+          <Text style={styles.buttonText}>
+            Ticket release: {route.params.releaseDate} at{" "}
+            {route.params.releaseTime.substring(0, 5)}
+          </Text>
+        </Pressable>
+      );
+    } else if (hasTicket) {
+      return (
+        <Pressable style={styles.ticketButton} onPress={toggleTicketModal}>
+          <Text style={styles.buttonText}>Show Ticket</Text>
+        </Pressable>
+      );
+    } else if (route.params.price === 0) {
+      return (
+        <Pressable style={styles.button} onPress={buyTicketHandler}>
+          <Text style={styles.buttonText}> Get Ticket</Text>
+        </Pressable>
+      );
+    } else {
+      return (
+        <Pressable style={styles.button} onPress={buyTicketHandler}>
+          <Text style={styles.buttonText}> Buy Ticket</Text>
+        </Pressable>
+      );
+    }
   };
 
   return (
@@ -224,32 +290,7 @@ const EventPage = () => {
           </View>
         </View>
       </ScrollView>
-      <View style={{ marginHorizontal: 15 }}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && { opacity: 0.8 },
-            hasTicket && styles.ticketButton,
-            route.params.ticketsLeft === 0 && styles.disabledButton,
-            currentTime < releaseTime && styles.disabledButton,
-          ]}
-          onPress={!hasTicket ? buyTicketHandler : toggleTicketModal}
-          disabled={route.params.ticketsLeft === 0 || currentTime < releaseTime}
-        >
-          <Text style={styles.buttonText}>
-            {hasTicket
-              ? "Show Ticket"
-              : route.params.ticketsLeft === 0
-              ? "No Tickets Left"
-              : currentTime < releaseTime
-              ? "Ticket release: " +
-                route.params.releaseDate +
-                " at " +
-                route.params.releaseTime.substring(0, 5)
-              : "Buy Ticket"}
-          </Text>
-        </Pressable>
-      </View>
+      <View style={{ marginHorizontal: 15 }}>{renderButton()}</View>
       <PopUpModal
         isVisible={popUpModalVisible}
         text={error}
@@ -388,9 +429,21 @@ const styles = StyleSheet.create({
   },
   ticketButton: {
     backgroundColor: "green",
+    width: "100%",
+    height: 45,
+    marginTop: 20,
+    alignItems: "center",
+    borderRadius: 10,
+    justifyContent: "center",
   },
   disabledButton: {
     backgroundColor: "grey",
+    width: "100%",
+    height: 45,
+    marginTop: 20,
+    alignItems: "center",
+    borderRadius: 10,
+    justifyContent: "center",
   },
   eventInformation: {
     marginTop: "5%",
