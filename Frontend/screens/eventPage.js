@@ -30,6 +30,8 @@ const EventPage = () => {
   const [isMember, setIsMember] = useState("");
   let isOrganizationMember;
 
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [releaseTime, setReleaseTime] = useState(new Date());
   const eventPic = route.params.eventPic;
 
   const imagePaths = {
@@ -46,14 +48,32 @@ const EventPage = () => {
   const eventPicSource = imagePaths[eventPic];
 
   useEffect( () => {
-     fetchInfo(); 
-  }, [hasTicket, isMember]);
+    fetchInfo(); 
+ }, [hasTicket, isMember]);
 
-  const fetchInfo = async () => {
-    setEventId(route.params.eventId);
-    await checkIfHasTicket();
-    await checkMembership();
+ const fetchInfo = async () => {
+   setEventId(route.params.eventId);
+   await checkIfHasTicket();
+   await checkMembership();
+ };
+
+ useEffect(() => {
+  setEventId(route.params.eventId);
+  const releaseTime = new Date();
+  releaseTime.setHours(route.params.releaseTime.split(":")[0]);
+  releaseTime.setMinutes(route.params.releaseTime.split(":")[1]);
+  setReleaseTime(releaseTime);
+  checkIfHasTicket();
+
+  // Update current time every second
+  const interval = setInterval(() => {
+    setCurrentTime(new Date());
+  }, 1000);
+
+  return () => {
+    clearInterval(interval);
   };
+}, [route.params.eventId, route.params.releaseTime]);
 
   const checkIfHasTicket = async () => {
     try {
@@ -103,9 +123,25 @@ const EventPage = () => {
   };
 
   const buyTicketHandler = async () => {
+    const currentTime = new Date();
+    const releaseDateParts = route.params.releaseDate.split("-");
+    const releaseTimeParts = route.params.releaseTime.split(":");
+
+    const releaseDateTime = new Date(
+      releaseDateParts[0], // Year
+      releaseDateParts[1] - 1, // Month (subtract 1 as it is 0-based)
+      releaseDateParts[2], // Day
+      releaseTimeParts[0], // Hours
+      releaseTimeParts[1] // Minutes
+    );
+    setReleaseTime(releaseDateTime);
+
+    console.log("CurrentTime", currentTime);
+
     await checkIfHasTicket();
     await checkMembership();
     console.log("isMember: " + isMember);
+
     const body = { event_id: eventId };
     try {
       if (hasTicket) {
@@ -163,7 +199,17 @@ const EventPage = () => {
           <Text style={styles.buttonText}>No Tickets Left</Text>
         </Pressable>
       );
-    } else if (hasTicket) {
+    } 
+    else if (currentTime < releaseTime){
+      return (
+        <Pressable style={styles.disabledButton} disabled={true}>
+          <Text style={styles.buttonText}>
+          Ticket release: {route.params.releaseDate} at {route.params.releaseTime.substring(0, 5)}
+          </Text>
+        </Pressable>
+      );
+    }
+    else if (hasTicket) {
       return (
         <Pressable style={styles.ticketButton} onPress={toggleTicketModal}>
           <Text style={styles.buttonText}>Show Ticket</Text>
