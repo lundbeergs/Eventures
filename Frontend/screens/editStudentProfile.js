@@ -47,7 +47,7 @@ export default function EditStudentProfileScreen() {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       console.log(body)
-      const response = await API_BASE_URL.put(`/api/profile/`, body, {
+      const response = await API_BASE_URL.put("/api/profile/", body, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
