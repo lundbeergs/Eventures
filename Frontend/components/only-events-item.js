@@ -71,7 +71,7 @@ const OnlyEventItem = ({
               <Image style={styles.eventPic} source={eventPicSource} />
               <View style={styles.eventTextInfo}>
                 <Text style={{ marginLeft: "3%" }}>
-                  {"Tickets: " + ticketsLeft}
+                  {date}
                 </Text>
                 <Text style={{ marginRight: "12%", fontWeight: "bold" }}>
                   {eventTitle}
