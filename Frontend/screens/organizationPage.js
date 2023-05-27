@@ -31,7 +31,7 @@ const OrganizationPage = () => {
     fetchOrgData();
     fetchEventData();
     checkMembership();
-    checkMembershipRequest(student);
+    checkMembershipRequest();
   }, [student, isMember, hasRequestPending]);
 
   const handleRefresh = () => {
@@ -95,6 +95,8 @@ const OrganizationPage = () => {
         (membership) => membership.organization === orgId
       );
 
+      console.log("Member: " + isOrganizationMember);
+
       if (isOrganizationMember) {
         setIsMember(true);
       } else {
@@ -105,54 +107,37 @@ const OrganizationPage = () => {
     }
   };
 
-  const checkMembershipRequest = async (student) => {
+  const checkMembershipRequest = async () => {
     try {
-      console.log('STUDENT:'+ student)
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get(`/api/membership/request/${student}/`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const membershipRequestData = response.data;
-      const isPendingRequest = membershipRequestData.find(
-        (membershipRequest) => membershipRequest.organization === orgId
-      );
-
-      if (isPendingRequest) {
-        setHasRequestPending(true);
+      const student = await AsyncStorage.getItem("studentId");
+      console.log("Student: " + student);
+  
+      if (student) {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        const response = await API_BASE_URL.get(`/api/membership/request/${student}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+  
+        const membershipRequestData = response.data;
+        const isPendingRequest = membershipRequestData.find(
+          (membershipRequest) => membershipRequest.organization === orgId
+        );
+        console.log("Pending: " + isPendingRequest)
+  
+        if (isPendingRequest) {
+          setHasRequestPending(true);
+        } else {
+          setHasRequestPending(false);
+        }
       } else {
-        setHasRequestPending(false);
+        console.log('Not fast enough!');
       }
     } catch (error) {
       console.error(error);
     }
   };
-
-  /*const getMembershipInfo = async () => {
-    const body = {
-      organization: orgId,
-      student: student,
-    };
-    try {
-      if (isMember == false) {
-        const accessToken = await AsyncStorage.getItem("accessToken");
-        const response = await API_BASE_URL.get(
-          `/api/membership/request/${orgId}/${student}/`,
-          body,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        console.log(response.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }*/
 
   const becomeMember = async () => {
     const body = {
@@ -160,7 +145,7 @@ const OrganizationPage = () => {
       student: student,
     };
     try {
-      if (isMember == false && hasRequestPending == false) {
+      if (isMember == "false" && hasRequestPending == "false") {
         const accessToken = await AsyncStorage.getItem("accessToken");
         const response = await API_BASE_URL.post(
           `/api/membership/request/${orgId}/${student}/`,
@@ -173,7 +158,7 @@ const OrganizationPage = () => {
         );
         console.log("Become member" + response.data);
       } 
-      if (isMember == false && hasRequestPending == true){
+      if (isMember == "false" && hasRequestPending == "true"){
         console.log("Student has a membership request pending");
       }
       else {
@@ -232,13 +217,13 @@ const OrganizationPage = () => {
   const renderButton = () => {
     if (isMember) {
       return (
-        <Pressable style={styles.button} disabled={true}>
+        <Pressable style={styles.memberButton} disabled={true}>
           <Text style={styles.buttonText}>Member</Text>
         </Pressable>
       );
     } else if (hasRequestPending) {
       return (
-        <Pressable style={styles.button} disabled={true}>
+        <Pressable style={styles.pendingButton} disabled={true}>
           <Text style={styles.buttonText}>Request Pending</Text>
         </Pressable>
       );
@@ -269,18 +254,6 @@ const OrganizationPage = () => {
             </View>
           </View>
           {renderButton()}
-          {/* <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              pressed && { opacity: 0.8 },
-              isMember && styles.memberButton,
-            ]}
-            onPress={!isMember ? becomeMember : undefined}
-          >
-            <Text style={styles.buttonText}>
-              {isMember ? "Member" : "Become member"}
-            </Text>
-          </Pressable> */}
         </View>
 
         <View style={styles.orgEventures}>
@@ -406,7 +379,22 @@ const styles = StyleSheet.create({
     color: "white",
   },
   memberButton: {
+    width: "100%",
+    height: 45,
+    marginTop: 20,
+    alignItems: "center",
+    borderRadius: 10,
+    justifyContent: "center",
     backgroundColor: "green",
+  },
+  pendingButton: {
+    width: "100%",
+    height: 45,
+    marginTop: 20,
+    alignItems: "center",
+    borderRadius: 10,
+    justifyContent: "center",
+    backgroundColor: "grey",
   },
   informationContainer: {
     height: 350,
