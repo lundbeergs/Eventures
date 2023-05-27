@@ -23,7 +23,7 @@ const OrganizationPage = () => {
   const [isMember, setIsMember] = useState("");
   const [hasRequestPending, setHasRequestPending] = useState("");
   const [student, setStudent] = useState("");
-  const [orgData, setOrgData] = useState([]);
+  const [orgName, setOrgName] = useState("");
   const [eventData, setEventData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -49,20 +49,15 @@ const OrganizationPage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const orgData = [
-        {
-          id: response.data.id,
-          org_name: response.data.org_name,
-        },
-      ];
       setOrgBio(response.data.org_bio);
-      setOrgData(orgData);
+      setOrgName(response.data.org_name);
     } catch (error) {
       console.error(error);
     }
   };
 
   const fetchEventData = async () => {
+    await fetchOrgData();
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await API_BASE_URL.get(`/api/events/`, {
@@ -74,7 +69,7 @@ const OrganizationPage = () => {
         (event) => event.event_org === orgId
       );
 
-      setEventData(filteredEvents);
+      setEventData(filteredEvents.reverse());
     } catch (error) {
       console.error(error);
     }
@@ -95,8 +90,6 @@ const OrganizationPage = () => {
         (membership) => membership.organization === orgId
       );
 
-      console.log("Member: " + isOrganizationMember);
-
       if (isOrganizationMember) {
         setIsMember(true);
       } else {
@@ -110,29 +103,31 @@ const OrganizationPage = () => {
   const checkMembershipRequest = async () => {
     try {
       const student = await AsyncStorage.getItem("studentId");
-      console.log("Student: " + student);
-  
+
       if (student) {
         const accessToken = await AsyncStorage.getItem("accessToken");
-        const response = await API_BASE_URL.get(`/api/membership/request/${student}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-  
+        const response = await API_BASE_URL.get(
+          `/api/membership/request/${student}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
         const membershipRequestData = response.data;
         const isPendingRequest = membershipRequestData.find(
           (membershipRequest) => membershipRequest.organization === orgId
         );
-        console.log("Pending: " + isPendingRequest)
-  
+        console.log("Pending: " + isPendingRequest);
+
         if (isPendingRequest) {
           setHasRequestPending(true);
         } else {
           setHasRequestPending(false);
         }
       } else {
-        console.log('Not fast enough!');
+        console.log("Not fast enough!");
       }
     } catch (error) {
       console.error(error);
@@ -145,7 +140,7 @@ const OrganizationPage = () => {
       student: student,
     };
     try {
-      if (isMember == "false" && hasRequestPending == "false") {
+      if (isMember == false && hasRequestPending == false) {
         const accessToken = await AsyncStorage.getItem("accessToken");
         const response = await API_BASE_URL.post(
           `/api/membership/request/${orgId}/${student}/`,
@@ -157,11 +152,13 @@ const OrganizationPage = () => {
           }
         );
         console.log("Become member" + response.data);
-      } 
-      if (isMember == "false" && hasRequestPending == "true"){
-        console.log("Student has a membership request pending");
       }
-      else {
+
+      await checkMembershipRequest();
+
+      if (isMember == false && hasRequestPending == true) {
+        console.log("Student has a membership request pending");
+      } else {
         console.log("Already a member");
       }
     } catch (error) {
@@ -170,46 +167,22 @@ const OrganizationPage = () => {
   };
 
   const renderEventItem = ({ item }) => {
-    const org_name = orgData.orgname;
-    const org_id = orgData.id;
-
-    const {
-      orgId,
-      orgName,
-      organizationInformation,
-      event_org,
-      orgIcon,
-      orgProfilePic,
-      id,
-      event_name,
-      event_pic,
-      event_desc,
-      event_location,
-      event_date,
-      event_time,
-      event_price,
-      release_date,
-      release_time,
-      tickets_left,
-    } = item;
-
     return (
       <OnlyEventItem
-      orgId= {event_org}
-      orgIcon={orgIcon} 
-      orgProfilePic={orgProfilePic} 
-      organizationInformation={organizationInformation} 
-      eventId = {id}
-      eventTitle={event_name}
-      eventPic={event_pic}
-      eventInformation={event_desc}
-      location={event_location}
-      date = {event_date}
-      time={event_time}
-      price={event_price + ' kr'}
-      releaseDate = {release_date}
-      releaseTime = {release_time}
-      ticketsLeft={tickets_left}
+        orgId={item.event_org}
+        orgName={orgName}
+        organizationInformation={item.organizationInformation}
+        eventId={item.id}
+        eventTitle={item.event_name}
+        eventPic={item.event_pic}
+        eventInformation={item.event_desc}
+        location={item.event_location}
+        date={item.event_date}
+        time={item.event_time}
+        price={item.event_price + " kr"}
+        releaseDate={item.release_date}
+        releaseTime={item.release_time}
+        ticketsLeft={item.tickets_left}
       />
     );
   };
@@ -238,38 +211,36 @@ const OrganizationPage = () => {
 
   return (
     <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
-          <View style={styles.whiteBox}>
-          <ImageBackground
-            source={EventuresBackground}
-            style={styles.imageBackground}
-          >
-            <View style={styles.initialsBackground}>
-              <Text style={styles.initials}>{route.params.orgName}</Text>
-            </View>
-          </ImageBackground>
-          <View style={styles.lowerWhiteBoxContainer}>
-            <View style={styles.infotextContainer}>
-              <Text style={styles.header}>{route.params.orgName}</Text>
-              <Text style={styles.text}>{orgBio}</Text>
-            </View>
+      <View style={styles.whiteBox}>
+        <ImageBackground
+          source={EventuresBackground}
+          style={styles.imageBackground}
+        >
+          <Text style={styles.initials}>{route.params.orgName}</Text>
+        </ImageBackground>
+        <View style={styles.lowerWhiteBoxContainer}>
+          <View style={styles.infotextContainer}>
+            <Text style={styles.header}>{route.params.orgName}</Text>
+            <Text style={styles.text}>{orgBio}</Text>
           </View>
-          {renderButton()}
         </View>
+        {renderButton()}
+      </View>
 
-        <View style={styles.orgEventures}>
-          <Text style={styles.eventuresText}>
-            {" "}
-            {route.params.orgName}s eventures{" "}
-          </Text>
-        </View>
-        <View style={{flex: 1}}>
+      <View style={styles.orgEventures}>
+        <Text style={styles.eventuresText}>
+          {" "}
+          {route.params.orgName}s eventures{" "}
+        </Text>
+      </View>
+      <View style={{ flex: 1 }}>
         <FlatList
           data={eventData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderEventItem}
           contentContainerStyle={styles.eventListContainer}
         />
-        </View>
+      </View>
     </View>
   );
 };
@@ -299,14 +270,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     width: "100%",
     height: 160,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  initialsBackground: {
-    paddingHorizontal: '4%',
-    paddingVertical: '4%',
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
-    borderRadius: 45,
     justifyContent: "center",
     alignItems: "center",
   },
