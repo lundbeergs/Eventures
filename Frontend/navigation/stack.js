@@ -6,6 +6,7 @@ import StudentLoginPage from '../screens/studentLoginPage';
 import OrganizationLoginPage from '../screens/organizationLoginPage';
 import ForgotPasswordScreen from '../screens/forgotPasswordScreen';
 import StudentSignUp from '../screens/StudentSignUp';
+import WelcomePage from '../screens/welcomeScreen';
 import { OrgTabs } from './org_tabs';
 
 
@@ -16,8 +17,11 @@ export const FirstStack = () => {
 
   return (
     <Stack.Navigator>
+      <Stack.Screen name="WelcomePage" component={WelcomePage}
+      options={{title: '', headerStyle: {backgroundColor: '#B8E3FF'}, headerLeft: null}}
+      />
       <Stack.Screen name="FirstPage" component={FirstPage}
-      options={{title: '', headerStyle: {backgroundColor: '#B8E3FF'}}}
+      options={{title: '', headerStyle: {backgroundColor: '#B8E3FF'}, headerLeft: null}}
       />
       <Stack.Screen name="HomeStackStudent" component={HomeTabs} options={{ headerShown: false }}/>
   

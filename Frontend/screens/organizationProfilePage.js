@@ -138,7 +138,6 @@ const OrganizationProfilePage = () => {
     } = item;
 
     console.log("VIKTIGT");
-    console.log(item);
 
     return (
       <OnlyEventOrg
@@ -184,6 +183,7 @@ const OrganizationProfilePage = () => {
           <PurpleButton onPress={requestHandler} text={"Membership requests"} />
           <PurpleButton onPress={memberHandler} text={"Memberships"} />
         </View>
+        </ScrollView>
 
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View style={{ marginHorizontal: "8%" }}>
@@ -206,7 +206,6 @@ const OrganizationProfilePage = () => {
           ))} */}
           </View>
         </View>
-      </ScrollView>
       <View style={{ alignItems: "center" }}>
         <View style={styles.buttonContainer}>
           <PurpleButton onPress={logOutHandler} text="Log Out" />
