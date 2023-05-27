@@ -6,7 +6,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ImageBackground,
-  ScrollView,
+  ScrollView
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -21,6 +21,7 @@ const MyProfilePage = () => {
   const [profileData, setProfileData] = useState(null);
   const [orgData, setOrgData] = useState([]);
   const [myMemberships, setMyMemberships] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -35,6 +36,12 @@ const MyProfilePage = () => {
       navigation.setParams({ isProfileUpdated: false });
     }
   }, [route.params?.isProfileUpdated]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
 
   const handleEditProfile = () => {
     navigation.navigate("EditStudentProfilePage", {
