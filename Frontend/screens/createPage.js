@@ -466,7 +466,7 @@ const CreatePage = () => {
           />
         </View>
 
-        <View style={{ marginHorizontal: "4%" }}>
+        <View style={{ marginVertical: '0.5%', marginHorizontal: "4%", }}>
           <Pressable
             style={({ pressed }) => [
               GlobalStyles.button,
@@ -512,8 +512,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputContainer: {
-    marginHorizontal: "4%",
-    marginVertical: "2%",
+    width: "100%",
+    marginTop: 10,
+    paddingHorizontal: '4%',
   },
   inputLabel: {
     fontSize: 13,
@@ -524,7 +525,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
   },
-
+  inputComponent: {
+    width: "100%",
+    marginTop: 10,
+    paddingHorizontal: '4%',
+  },
   inputPictureField: {
     width: "99%",
     height: 200,
