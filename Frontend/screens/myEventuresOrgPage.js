@@ -44,14 +44,10 @@ const MyEventuresOrgPage = () => {
       console.error(error);
     }
   };
-  useEffect(() => {
-    getProfile();
-  }, []);
 
   useEffect(() => {
-    if (orgId) {
-      fetchEventData();
-    }
+    getProfile();
+    fetchEventData();
   }, [orgId]);
 
   const fetchEventData = async () => {
@@ -119,16 +115,16 @@ const MyEventuresOrgPage = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View style={styles.eventField}>
-            <FlatList
-              data={eventData}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderEventItem}
-              contentContainerStyle={styles.eventListContainer}
-            />
-          </View>
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View style={styles.eventField}>
+          <FlatList
+            data={eventData}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderEventItem}
+            contentContainerStyle={styles.eventListContainer}
+          />
         </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -143,4 +139,3 @@ const styles = StyleSheet.create({
 });
 
 export default MyEventuresOrgPage;
-
