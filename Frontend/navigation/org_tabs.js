@@ -20,10 +20,10 @@ function MyEventuresOrgScreen() {
     <MyEventuresOrgStack.Screen
         name="MyEventuresOrgPage"
         component={myEventuresOrgPage}
-        options={{ title: "My profile", ...headerStyle, headerLeft: null }}
+        options={{ title: "My Eventures", ...headerStyle, headerLeft: null }}
       />
-  <OrganizationProfileStack.Screen name="OrgEventPage" component = {OrgEventPage} options= {{title: "Org event", ...headerStyle}}/>
-  <OrganizationProfileStack.Screen name="EditEventPage" component = {EditEventPage} options= {{title: "Edit event", ...headerStyle}}/>
+  <OrganizationProfileStack.Screen name="OrgEventPage" component = {OrgEventPage} options= {{title: "", ...headerStyle}}/>
+  <OrganizationProfileStack.Screen name="EditEventPage" component = {EditEventPage} options= {{title: "Edit Eventure", ...headerStyle}}/>
   </MyEventuresOrgStack.Navigator>
   )
 }
@@ -34,12 +34,12 @@ function OrganizationProfileScreen() {
       <OrganizationProfileStack.Screen
         name="Profile"
         component={OrganizationProfilePage}
-        options={{ title: "My profile", ...headerStyle, headerLeft: null }}
+        options={{ title: "My Profile", ...headerStyle, headerLeft: null }}
       />
       <OrganizationProfileStack.Screen
         name="Requests"
         component={RequestPage}
-        options={{ title: "Membership requests", ...headerStyle }}
+        options={{ title: "Membership Requests", ...headerStyle }}
       />
        <OrganizationProfileStack.Screen
         name="Members"

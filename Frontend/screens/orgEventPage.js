@@ -53,7 +53,6 @@ const OrgEventPage = () => {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    checkIfHasTicket();
     setRefreshing(false);
   };
 
