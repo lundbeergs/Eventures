@@ -3,14 +3,10 @@ import { useRoute } from "@react-navigation/native";
 import {
   View,
   StyleSheet,
-  Image,
-  ScrollView,
   SafeAreaView,
-  ImageBackground,
   FlatList,
   RefreshControl,
 } from "react-native";
-import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
@@ -18,8 +14,6 @@ import GlobalStyles from "../global-style";
 import OnlyEventOrg from "../components/only-events-org";
 
 const MyEventuresOrgPage = () => {
-  const route = useRoute();
-  const navigation = useNavigation();
   const [orgName, setOrgName] = useState("");
   const [orgBio, setOrgBio] = useState("");
   const [eventData, setEventData] = useState([]);
@@ -71,7 +65,7 @@ const MyEventuresOrgPage = () => {
       const filteredEvents = allEvents.filter(
         (eventData) => eventData.event_org === orgId
       );
-      setEventData(filteredEvents);
+      setEventData(filteredEvents.reverse());
     } catch (error) {
       console.error(error);
     }
