@@ -109,7 +109,7 @@ const MyEventuresOrgPage = () => {
         location={event_location}
         date={event_date}
         time={event_time}
-        price={event_price + " kr"}
+        price={event_price}
         releaseDate={release_date}
         releaseTime={release_time}
         ticketsLeft={tickets_left}
