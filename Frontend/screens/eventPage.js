@@ -252,8 +252,8 @@ const EventPage = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            colors={["#9Bd35A", "#689F38"]}
-            progressBackgroundColor="#fff"
+            progressBackgroundColor={"white"}
+            progressViewOffset={-20}
           />
         }
       >
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     marginBottom: "2%",
     width: "100%",
-    paddingHorizontal: '4%',
+    paddingHorizontal: "4%",
   },
   button: {
     width: "100%",
