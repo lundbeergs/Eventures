@@ -8,6 +8,7 @@ import {
   ImageBackground,
   ScrollView,
   RefreshControl,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -99,26 +100,48 @@ const MyProfilePage = () => {
     }
   };
 
+
   const deleteMembership = async (organizationId) => {
     try {
-      console.log(organizationId);
-      console.log(profileData.id);
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      await API_BASE_URL.delete(
-        `/api/membership/student/${organizationId}/${profileData.id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
+      Alert.alert(
+        "Delete Membership",
+        "Are you sure you want to delete this membership?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
           },
-        }
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: async () => {
+              console.log(organizationId);
+              console.log(profileData.id);
+              const accessToken = await AsyncStorage.getItem("accessToken");
+              await API_BASE_URL.delete(
+                `/api/membership/student/${organizationId}/${profileData.id}/`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              );
+              console.log("Membership deleted!");
+              const updatedMemberships = myMemberships.filter(
+                (membership) => membership.organization !== organizationId
+              );
+              setMyMemberships(updatedMemberships);
+              Alert.alert(
+                "Membership Deleted",
+                "The membership has been successfully deleted."
+              );
+            },
+          },
+        ]
       );
-      console.log("Membership deleted!");
-      const updatedMemberships = myMemberships.filter(
-        (membership) => membership.organization !== organizationId
-      );
-      setMyMemberships(updatedMemberships);
     } catch (error) {
       console.error(error);
+      Alert.alert("Error", "An error occurred while deleting the membership.");
     }
   };
 
@@ -172,7 +195,7 @@ const MyProfilePage = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <ScrollView
+      <ScrollView 
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
           <RefreshControl
