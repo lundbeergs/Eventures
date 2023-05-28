@@ -5,6 +5,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import EventList from "../components/event-list";
 import React, { useEffect, useState } from "react";
@@ -76,34 +77,51 @@ const HomePageStudent = () => {
 
   return (
     <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
-      {data.eventData.length === 0 && (
-        <View style={styles.messageContainer}>
+      {!data.membershipData.length ? (
+        <ScrollView
+        contentContainerStyle={{flex:1}}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              progressBackgroundColor={"white"}
+              progressViewOffset={-20}
+            />
+          }
+        >
+          <View style={styles.messageContainer}>
           <View style={styles.messageBox}>
             <Text style={styles.messageText}>
-              You are not a member of any organization. {"\n\n"}
-              Start exploring by searching for events and organizations!
+              Not a member of any organization. {"\n\n"}
+              Go explore!
             </Text>
-            <TouchableOpacity style={styles.button} onPress={() => {navigation.navigate("Search")}}>
-              <Text style={styles.buttonText}>Search </Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+              <Text
+                style={{ fontSize: 20, color: "#0D99FF", fontWeight: "600" }}
+              >
+                Search
+              </Text>
             </TouchableOpacity>
           </View>
-        </View>
+          </View>
+        </ScrollView>
+      ) : (
+        <FlatList
+          data={data.eventData}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={
+            <EventList eventData={data.eventData} orgData={data.orgData} />
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              progressBackgroundColor={"white"}
+              progressViewOffset={-20}
+            />
+          }
+        />
       )}
-      <FlatList
-        data={data.eventData}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={
-          <EventList eventData={data.eventData} orgData={data.orgData} />
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            progressBackgroundColor={"white"}
-            progressViewOffset={-20}
-          />
-        }
-      />
     </View>
   );
 };
@@ -118,7 +136,7 @@ const styles = StyleSheet.create({
   },
   messageBox: {
     margin: "10%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
     padding: 20,
     borderRadius: 5,
     alignItems: "center",
@@ -126,10 +144,12 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 18,
     marginBottom: 15,
+    fontWeight: 400,
+    textAlign: "center",
   },
   button: {
     backgroundColor: "#6B48D3",
-    width: '100%',
+    width: "100%",
     padding: 10,
     borderRadius: 5,
   },
@@ -138,68 +158,3 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
-
-/*const [eventData, setEventData] = useState([]);
-  const [orgData, setOrgData] = useState([]);
-  const [membershipData, setMembershipData] = useState([]);*/
-
-/*useEffect(() => {
-    fetchMemershipData();
-    fetchOrgData();
-    fetchEventData();
-  }, [] )
-
-  const fetchEventData = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get(`/api/events/`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const filteredEvents = response.data.filter(event =>
-        membershipData.some(member => member.organization === event.event_org),
-      );
-      setEventData(filteredEvents);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchOrgData = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      const response = await API_BASE_URL.get('/api/organizations/', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      setOrgData(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchMemershipData = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      const response = await API_BASE_URL.get('/api/memberships/', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const membershipData = response.data.map((item) => ({
-        organization: item.organization,
-      }));
-      setMembershipData(membershipData);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchEventData();
-    setRefreshing(false);
-  };*/

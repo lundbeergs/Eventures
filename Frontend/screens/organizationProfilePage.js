@@ -4,18 +4,16 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   ScrollView,
   SafeAreaView,
   ImageBackground,
-  FlatList,
+  TouchableOpacity,
 } from "react-native";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../global-style";
-import OnlyEventOrg from "../components/only-events-org";
 
 const OrganizationProfilePage = () => {
   const route = useRoute();
@@ -57,32 +55,6 @@ const OrganizationProfilePage = () => {
   useEffect(() => {
     getProfile();
   }, []);
-
-  useEffect(() => {
-    if (orgId) {
-      fetchEventData();
-    }
-  }, [orgId]);
-
-  const fetchEventData = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get("/api/events/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      console.log(response.data);
-      const allEvents = response.data;
-      const filteredEvents = allEvents.filter(
-        (eventData) => eventData.event_org === orgId
-      );
-      setEventData(filteredEvents);
-      console.log(filteredEvents);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const logOutHandler = async () => {
     try {
@@ -180,8 +152,8 @@ const OrganizationProfilePage = () => {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <PurpleButton onPress={requestHandler} text={"Membership requests"} />
-          <PurpleButton onPress={memberHandler} text={"Memberships"} />
+          <PurpleButton onPress={requestHandler} text={"Membership Requests"} />
+          <PurpleButton onPress={memberHandler} text={"Members"} />
         </View>
         
 
@@ -218,15 +190,12 @@ const OrganizationProfilePage = () => {
 
 const styles = StyleSheet.create({
   whiteBox: {
-    height: "35%",
+    height: "70%",
     backgroundColor: "white",
     borderRadius: 4,
-    marginHorizontal: "8%",
+    marginHorizontal: "4%",
     padding: "2%",
-  },
-  lowerWhiteBoxContainer: {
     flex: 1,
-    flexDirection: "row",
   },
   imageBackground: {
     borderRadius: 4,
@@ -248,8 +217,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",
-    // backgroundColor: "rgba(255, 255, 255, 0.4)",
-    // borderRadius: 45,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -296,4 +263,3 @@ const styles = StyleSheet.create({
 });
 
 export default OrganizationProfilePage;
-

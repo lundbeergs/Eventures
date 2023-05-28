@@ -20,8 +20,6 @@ import PopUpModal from "../components/PopUpModal";
 
 const EventPage = () => {
   const route = useRoute();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [maxHeight, setMaxHeight] = useState(185); // Initial max height of eventInformation
   const [showModal, setShowModal] = useState(false);
   const [eventId, setEventId] = useState("");
   const [error, setError] = useState("");
@@ -29,6 +27,10 @@ const EventPage = () => {
   const [hasTicket, setHasTicket] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [ticketModalVisible, setTicketModalVisible] = useState(false);
+  const [isMember, setIsMember] = useState("");
+  let isOrganizationMember;
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [releaseTime, setReleaseTime] = useState(new Date());
   const eventPic = route.params.eventPic;
 
   const imagePaths = {
@@ -45,12 +47,40 @@ const EventPage = () => {
   const eventPicSource = imagePaths[eventPic];
 
   useEffect(() => {
+    fetchInfo();
+  }, [hasTicket, isMember]);
+
+  const fetchInfo = async () => {
     setEventId(route.params.eventId);
-    checkIfHasTicket();
-  }, [eventId, hasTicket]);
+    await checkIfHasTicket();
+    await checkMembership();
+    await releaseTimeDateHandler();
+  };
+
+  useEffect(() => {
+    setEventId(route.params.eventId);
+    const releaseTime = new Date();
+    if (
+      route.params.releaseDate !== null &&
+      route.params.releaseTime !== null
+    ) {
+      releaseTime.setHours(route.params.releaseTime.split(":")[0]);
+      releaseTime.setMinutes(route.params.releaseTime.split(":")[1]);
+      console.log(releaseTime);
+      setReleaseTime(releaseTime);
+    }
+
+    // Update current time every second
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [route.params.eventId, route.params.releaseTime]);
 
   const checkIfHasTicket = async () => {
-    console.log('HÄR')
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       const response = await API_BASE_URL.get("/api/student-tickets/", {
@@ -60,10 +90,34 @@ const EventPage = () => {
       });
 
       const eventIds = response.data.map((ticket) => ticket.event);
-      const searchTickets = eventIds.includes(eventId);
-      setHasTicket(searchTickets);
+      setHasTicket(eventIds.includes(eventId));
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const checkMembership = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get(`/api/memberships/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const membershipData = response.data;
+
+      if (membershipData.length !== 0) {
+        isOrganizationMember = membershipData.find(
+          (membership) => membership.organization === route.params.orgId
+        );
+      }
+      if (isOrganizationMember) {
+        setIsMember(true);
+      } else {
+        setIsMember(false);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -73,8 +127,34 @@ const EventPage = () => {
     setRefreshing(false);
   };
 
+  const releaseTimeDateHandler = async () => {
+    if (
+      route.params.releaseDate !== null &&
+      route.params.releaseTime !== null
+    ) {
+      const currentTime = new Date();
+      const releaseDateParts = route.params.releaseDate.split("-");
+      const releaseTimeParts = route.params.releaseTime.split(":");
+
+      const releaseDateTime = new Date(
+        releaseDateParts[0], // Year
+        releaseDateParts[1] - 1, // Month (subtract 1 as it is 0-based)
+        releaseDateParts[2], // Day
+        releaseTimeParts[0], // Hours
+        releaseTimeParts[1] // Minutes
+      );
+      setReleaseTime(releaseDateTime);
+
+      console.log("CurrentTime", currentTime);
+    } else {
+      console.log("No release date and time");
+    }
+  };
+
   const buyTicketHandler = async () => {
     await checkIfHasTicket();
+    await checkMembership();
+
     const body = { event_id: eventId };
     try {
       if (hasTicket) {
@@ -85,6 +165,12 @@ const EventPage = () => {
         togglePopUpModal();
       } else if (route.params.ticketsLeft == 0) {
         setError("There is no tickets left for this event!");
+        console.log(error);
+        togglePopUpModal();
+      } else if (!isMember) {
+        setError(
+          "Become a member of this organization before you can get a ticket!"
+        );
         console.log(error);
         togglePopUpModal();
       } else {
@@ -119,10 +205,41 @@ const EventPage = () => {
     setPopUpModalVisible(!popUpModalVisible);
   };
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-    // Update the max height based on the expanded state
-    setMaxHeight(isExpanded ? 50 : 9999);
+  const renderButton = () => {
+    if (currentTime < releaseTime) {
+      return (
+        <Pressable style={styles.disabledButton} disabled={true}>
+          <Text style={styles.buttonText}>
+            Ticket release: {route.params.releaseDate} at{" "}
+            {route.params.releaseTime.substring(0, 5)}
+          </Text>
+        </Pressable>
+      );
+    } else if (hasTicket) {
+      return (
+        <Pressable style={styles.ticketButton} onPress={toggleTicketModal}>
+          <Text style={styles.buttonText}>Show Ticket</Text>
+        </Pressable>
+      );
+    } else if (route.params.ticketsLeft === 0) {
+      return (
+        <Pressable style={styles.disabledButton} disabled={true}>
+          <Text style={styles.buttonText}>No Tickets Left</Text>
+        </Pressable>
+      );
+    } else if (route.params.price === 0) {
+      return (
+        <Pressable style={styles.button} onPress={buyTicketHandler}>
+          <Text style={styles.buttonText}> Get Ticket</Text>
+        </Pressable>
+      );
+    } else {
+      return (
+        <Pressable style={styles.button} onPress={buyTicketHandler}>
+          <Text style={styles.buttonText}> Buy Ticket</Text>
+        </Pressable>
+      );
+    }
   };
 
   return (
@@ -173,26 +290,7 @@ const EventPage = () => {
           </View>
         </View>
       </ScrollView>
-      <View style={{ marginHorizontal: 15 }}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && { opacity: 0.8 },
-            hasTicket && styles.ticketButton,
-            route.params.ticketsLeft === 0 && styles.disabledButton,
-          ]}
-          onPress={!hasTicket ? buyTicketHandler : toggleTicketModal}
-          disabled={route.params.ticketsLeft === 0}
-        >
-          <Text style={styles.buttonText}>
-            {hasTicket
-              ? "Show Ticket"
-              : route.params.ticketsLeft === 0
-              ? "No Tickets Left"
-              : "Buy Ticket"}
-          </Text>
-        </Pressable>
-      </View>
+      <View style={styles.buttonContainer}>{renderButton()}</View>
       <PopUpModal
         isVisible={popUpModalVisible}
         text={error}
@@ -235,7 +333,7 @@ const EventPage = () => {
         statusBarTranslucent={true}
       >
         <View style={styles.outerModalContainer}>
-          <View style={styles.pinkFrame}>
+          <View style={styles.ticketFrame}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>{route.params.eventTitle}</Text>
               <View style={styles.qrCodeContainer}>
@@ -270,38 +368,14 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
   },
-
-  header: {
-    fontSize: 20,
-    justifyContent: "center",
-    alignSelf: "center",
-    fontWeight: "bold",
-    marginVertical: "2%",
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "regular",
-  },
-
-  informationContainer: {
-    flex: 1,
-    width: "100%",
-    minHeight: 470,
-    maxHeight: 9999,
-    marginRight: 15,
-    marginLeft: 15,
-    backgroundColor: "white",
-    borderRadius: 5,
-    overflow: "hidden",
-  },
   greenFrame: {
     backgroundColor: "rgba(144, 238, 144, 0.5)",
     margin: 10,
     borderRadius: 20,
     overflow: "hidden",
   },
-  pinkFrame: {
-    backgroundColor: "rgba(255, 20, 147, 0.4)",
+  ticketFrame: {
+    backgroundColor: "rgba(184, 227, 255, 0.5)",
     margin: 10,
     borderRadius: 20,
     overflow: "hidden",
@@ -314,7 +388,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
+  header: {
+    fontSize: 20,
+    justifyContent: "center",
+    alignSelf: "center",
+    fontWeight: "bold",
+    marginVertical: "2%",
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "regular",
+  },
+  buttonContainer: {
+    marginTop: "auto",
+    marginBottom: "2%",
+    width: "100%",
+    paddingHorizontal: '4%',
+  },
   button: {
     width: "100%",
     height: 45,
@@ -331,29 +421,27 @@ const styles = StyleSheet.create({
   },
   ticketButton: {
     backgroundColor: "green",
+    width: "100%",
+    height: 45,
+    marginTop: 20,
+    alignItems: "center",
+    borderRadius: 10,
+    justifyContent: "center",
   },
   disabledButton: {
     backgroundColor: "grey",
-  },
-  eventInformation: {
-    marginTop: "5%",
-    marginLeft: "5%",
-    marginBottom: 10,
-  },
-  video: {
-    height: 150,
+    width: "100%",
+    height: 45,
+    marginTop: 20,
+    alignItems: "center",
+    borderRadius: 10,
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
-    marginRight: 15,
-    marginLeft: 15,
-    margin: "3%",
-    borderRadius: 5,
   },
-
-  readMore: {
-    textAlign: "center",
-    color: "blue",
-    marginBottom: 10,
+  outerModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContainer: {
     marginVertical: 20,
@@ -372,12 +460,6 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     width: "100%",
-  },
-  outerModalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
 });
 

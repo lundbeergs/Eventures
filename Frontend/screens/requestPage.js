@@ -135,31 +135,31 @@ const RequestPage = () => {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <ScrollView>
-          {students.map((student) => (
-            <View style={styles.studentContainer} key={student.id}>
-              <Text style={styles.studentName}>
-                {`${capitalizeFirstLetter(
-                  student.first_name
-                )} ${capitalizeFirstLetter(student.last_name)}`}
-              </Text>
-              <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => acceptRequest(student.id)}
-              >
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={24}
-                  color="green"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => deleteRequest(student.id)}
-              >
-                <Ionicons name="close-circle-outline" size={24} color="red" />
-              </TouchableOpacity>
-            </View>
-          ))}
+        {students.map((student) => (
+          <View style={styles.studentContainer} key={student.id}>
+            <Text style={styles.studentName}>
+              {`${capitalizeFirstLetter(
+                student.first_name
+              )} ${capitalizeFirstLetter(student.last_name)}`}
+            </Text>
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => acceptRequest(student.id)}
+            >
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={24}
+                color="green"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => deleteRequest(student.id)}
+            >
+              <Ionicons name="close-circle-outline" size={24} color="red" />
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -169,11 +169,11 @@ const styles = StyleSheet.create({
   studentContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
+    marginVertical: "2%",
+    marginHorizontal: "4%",
     backgroundColor: "white",
     padding: "2%",
-    margin: "2%",
-    borderRadius: 10,
+    borderRadius: 4,
   },
   studentName: {
     flex: 1,

@@ -61,7 +61,7 @@ const SearchEventItem = ({
         <View style={styles.eventInfo}>
           <Image style={styles.eventPic} source={eventPicSource} />
           <View style={styles.eventTextInfo}>
-            <Text style={{ marginLeft: '3%' }}>{'Tickets: ' + ticketsLeft}</Text>
+            <Text style={{ marginLeft: '3%' }}>{date}</Text>
             <Text style={{ marginRight: '12%', fontWeight: 'bold' }}>{eventTitle}</Text>
             <Text style={{ marginRight: '3%' }}>{price}</Text>
           </View>
@@ -74,7 +74,7 @@ const SearchEventItem = ({
 const styles = StyleSheet.create({
   eventContainer: {
     flex: 2,
-    margin: 15,
+    margin: '4%',
     width: '92%',
     height: 230,
   },
