@@ -135,7 +135,7 @@ const OrganizationProfilePage = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <ScrollView>
+      <ScrollView >
         <View style={styles.whiteBox}>
           <ImageBackground
             source={require("../assets/images/eventures_background.png")}
@@ -157,15 +157,7 @@ const OrganizationProfilePage = () => {
           <PurpleButton onPress={memberHandler} text={"Members"} />
         </View>
         
-
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View style={{ marginHorizontal: "8%" }}>
-            <View style={styles.myEventuresField}>
-              <Text style={styles.myEventuresText}>My eventures</Text>
-            </View>
-          </View>
-        </View>
-      <View style={{ alignItems: "center", marginBottom: 40 }}>
+      <View style={{ alignItems: "center", bottom: '2%' }}>
         <View style={styles.buttonContainer}>
           <PurpleButton onPress={logOutHandler} text="Log Out" />
         </View>
@@ -225,7 +217,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    paddingHorizontal: "8%",
+    paddingHorizontal: "4%",
     marginBottom: 10,
   },
   myEventuresField: {

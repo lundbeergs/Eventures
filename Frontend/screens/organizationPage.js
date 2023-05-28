@@ -234,7 +234,7 @@ const OrganizationPage = () => {
       <View style={styles.orgEventures}>
         <Text style={styles.eventuresText}>
           {" "}
-          {route.params.orgName}s eventures{" "}
+          {route.params.orgName}s Eventures{" "}
         </Text>
       </View>
       <View style={{ flex: 1 }}>
@@ -292,45 +292,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  editIconContainer: {
-    justifyContent: "center",
-    marginTop: "20%",
-  },
-  buttonContainer: {
-    width: "100%",
-    bottom: "2%",
-    paddingHorizontal: "8%",
-  },
-  myMembershipsField: {
-    paddingVertical: 8,
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.45)",
-    borderRadius: 10,
-  },
-  myMembershipsText: {
-    fontSize: 14,
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: 600,
-    justifyContent: "center",
-    alignSelf: "center",
-  },
-  membershipField: {
-    paddingVertical: 8,
-    padding: "10%",
-    width: "100%",
-    backgroundColor: "white",
-    borderRadius: 10,
-  },
-  membershipText: {
-    fontSize: 14,
-    color: "rgba(0, 0, 0, 1)",
-  },
-  membershipContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
   button: {
     width: "100%",
     height: 45,
@@ -363,13 +324,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "grey",
   },
-  informationContainer: {
-    height: 350,
-    marginRight: 15,
-    marginLeft: 15,
-    backgroundColor: "white",
-    borderRadius: 5,
-  },
   background: {
     borderRadius: 4,
     overflow: "hidden",
@@ -379,7 +333,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   orgEventures: {
-    height: 50,
+    height: 30,
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     marginHorizontal: 15,

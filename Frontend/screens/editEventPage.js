@@ -378,8 +378,8 @@ const EditEventPage = () => {
 
                 </View>
                 <View style={{marginHorizontal: '4%'}}>
-                <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8}]} >
-                    <Text style={GlobalStyles.buttonText} onPress={handleSave} > Save changes</Text>
+                <Pressable onPress={handleSave} style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8}]} >
+                    <Text style={GlobalStyles.buttonText} > Save changes</Text>
                 </Pressable>
                 </View>
                 <View style={{ height: 50 }}>
