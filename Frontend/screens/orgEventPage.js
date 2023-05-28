@@ -19,18 +19,21 @@ import PopUpModal from "../components/PopUpModal";
 
 const OrgEventPage = () => {
   const route = useRoute();
-  const [eventId, setEventId] = useState("");
+  const [eventId, setEventId] = useState(route.params.eventId);
   const [refreshing, setRefreshing] = useState(false);
-  const eventPic = route.params.eventPic;
-  const eventTitle = route.params.eventTitle;
-  const eventInformation = route.params.eventInformation;
-  const location = route.params.location;
-  const date = route.params.date;
-  const time = route.params.time;
-  const price = route.params.price;
-  const releaseDate = route.params.releaseDate;
-  const releaseTime = route.params.releaseTime;
-  const ticketsLeft = route.params.ticketsLeft;
+
+  const [eventPic, setEventPic] = useState(route.params.eventPic);
+  const [eventTitle, setEventTitle] = useState(route.params.eventTitle);
+  const [eventInformation, setEventInformation] = useState(
+    route.params.eventInformation
+  );
+  const [location, setLocation] = useState(route.params.location);
+  const [date, setDate] = useState(route.params.date);
+  const [time, setTime] = useState(route.params.time);
+  const [price, setPrice] = useState(route.params.price);
+  const [releaseDate, setReleaseDate] = useState(route.params.releaseDate);
+  const [releaseTime, setReleaseTime] = useState(route.params.releaseTime);
+  const [ticketsLeft, setTicketsLeft] = useState(route.params.ticketsLeft);
 
   const navigation = useNavigation();
 
@@ -48,28 +51,61 @@ const OrgEventPage = () => {
   const eventPicSource = imagePaths[eventPic];
 
   useEffect(() => {
-    setEventId(route.params.eventId);
-  })
+    fetchEventData();
+  });
 
   const handleRefresh = () => {
     setRefreshing(true);
+    fetchEventData();
     setRefreshing(false);
   };
 
+  const fetchEventData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/events/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const allEvents = response.data;
+      const filteredEvents = allEvents.filter(
+        (eventData) => eventData.id === eventId
+      );
+      
+      if (filteredEvents.length > 0) {
+        const eventData = filteredEvents[0];
+  
+        setEventPic(eventData.event_pic);
+        setEventTitle(eventData.event_name);
+        setEventInformation(eventData.event_desc);
+        setLocation(eventData.event_location);
+        setDate(eventData.event_date);
+        setTime(eventData.event_time);
+        setPrice(eventData.event_price);
+        setReleaseDate(eventData.release_date);
+        setReleaseTime(eventData.release_time);
+        setTicketsLeft(eventData.tickets_left);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };  
+
   function editEventHandler() {
     navigation.navigate("EditEventPage", {
-        eventId: eventId,
-        eventTitle: eventTitle,
-        eventInformation: eventInformation,
-        eventPic: eventPic,
-        location: location,
-        date: date,
-        time: time,
-        price: price,
-        releaseDate: releaseDate,
-        releaseTime: releaseTime,
-        ticketsLeft: ticketsLeft,
-      });
+      eventId: eventId,
+      eventTitle: eventTitle,
+      eventInformation: eventInformation,
+      eventPic: eventPic,
+      location: location,
+      date: date,
+      time: time,
+      price: price,
+      releaseDate: releaseDate,
+      releaseTime: releaseTime,
+      ticketsLeft: ticketsLeft,
+    });
   }
 
   return (
@@ -97,16 +133,12 @@ const OrgEventPage = () => {
             <View style={{ marginBottom: "3%" }}>
               <Text style={styles.text}>Location: {location}</Text>
               <Text style={styles.text}>Date: {date}</Text>
-              <Text style={styles.text}>
-                Time: {time.substring(0, 5)}
-              </Text>
+              <Text style={styles.text}>Time: {time.substring(0, 5)}</Text>
               <Text style={styles.text}>Price: {price}</Text>
             </View>
             <View style={{ marginBottom: "3%" }}>
               <Text style={styles.text}>
-                {releaseDate
-                  ? "Release date: " + releaseDate
-                  : ""}
+                {releaseDate ? "Release date: " + releaseDate : ""}
               </Text>
               <Text style={styles.text}>
                 {releaseTime
@@ -117,9 +149,9 @@ const OrgEventPage = () => {
           </View>
         </View>
       </ScrollView>
-            <View style={{marginHorizontal: '4%'}}>
-            <PurpleButton onPress={editEventHandler} text={"Edit eventure"} />
-            </View>
+      <View style={{ marginHorizontal: "4%" }}>
+        <PurpleButton onPress={editEventHandler} text={"Edit eventure"} />
+      </View>
     </SafeAreaView>
   );
 };

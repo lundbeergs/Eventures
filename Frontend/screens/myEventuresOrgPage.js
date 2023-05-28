@@ -46,14 +46,10 @@ const MyEventuresOrgPage = () => {
       console.error(error);
     }
   };
-  useEffect(() => {
-    getProfile();
-  }, []);
 
   useEffect(() => {
-    if (orgId) {
-      fetchEventData();
-    }
+    getProfile();
+    fetchEventData();
   }, [orgId]);
 
   const handleRefresh = () => {

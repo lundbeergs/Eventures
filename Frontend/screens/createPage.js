@@ -85,7 +85,7 @@ const CreatePage = () => {
 
 
     const handleSubmit = async () => {
-        if (!event_name /* || !location */ || !event_desc || !event_pic || !event_price || !event_date || !event_time || !location || !tickets_left) {
+        if (!event_name || !event_desc || !event_pic || !event_price || !event_date || !event_time || !location || !tickets_left) {
             setModalVisible(true);
             return;
         }
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     dateAndTimeText: {
         fontWeight: 'bold',
         marginLeft: '5%',
-        fontSize: '12%'
+        fontSize: 13
     },
     imagePickerImage: {
         height: 120,
