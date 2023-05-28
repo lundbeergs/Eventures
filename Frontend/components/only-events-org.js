@@ -42,7 +42,7 @@ const OnlyEventOrg = ({
   const navigation = useNavigation();
 
   const goToEvent = () => {
-    navigation.navigate("Create", {
+    navigation.navigate("OrgEventPage", {
       orgId: orgId,
       orgName: orgName,
       orgIcon: orgIcon,

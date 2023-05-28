@@ -152,7 +152,7 @@ const OrganizationProfilePage = () => {
         location={event_location}
         date={event_date}
         time={event_time}
-        price={event_price + " kr"}
+        price={event_price}
         releaseDate={release_date}
         releaseTime={release_time}
         ticketsLeft={tickets_left}
@@ -183,7 +183,7 @@ const OrganizationProfilePage = () => {
           <PurpleButton onPress={requestHandler} text={"Membership requests"} />
           <PurpleButton onPress={memberHandler} text={"Memberships"} />
         </View>
-        </ScrollView>
+        
 
         <View style={{ flex: 1, justifyContent: "space-between" }}>
           <View style={{ marginHorizontal: "8%" }}>
@@ -206,11 +206,12 @@ const OrganizationProfilePage = () => {
           ))} */}
           </View>
         </View>
-      <View style={{ alignItems: "center" }}>
+      <View style={{ alignItems: "center", marginBottom: 40 }}>
         <View style={styles.buttonContainer}>
           <PurpleButton onPress={logOutHandler} text="Log Out" />
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -291,7 +292,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginVertical: "2%",
     paddingHorizontal: "4.5%",
-    marginBottom: "30%",
   },
 });
 

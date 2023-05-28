@@ -4,6 +4,8 @@ import OrganizationProfilePage from '../screens/organizationProfilePage';
 import CreatePage from '../screens/createPage';
 import RequestPage from '../screens/requestPage';
 import MemberPage from '../screens/memberPage';
+import OrgEventPage from '../screens/orgEventPage';
+import EditEventPage from '../screens/editEventPage';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
@@ -16,6 +18,8 @@ function OrganizationProfileScreen() {
       <OrganizationProfileStack.Navigator screenOptions={{headerShown: true}}>
       <OrganizationProfileStack.Screen name="Profile" component={OrganizationProfilePage} options= {{title: "My profile", ...headerStyle, headerLeft: null}}/>
        <OrganizationProfileStack.Screen name="Requests" component={RequestPage} options= {{title: "Membership requests", ...headerStyle}}/>
+       <OrganizationProfileStack.Screen name="OrgEventPage" component = {OrgEventPage} options= {{title: "Org event", ...headerStyle}}/>
+       <OrganizationProfileStack.Screen name="EditEventPage" component = {EditEventPage} options= {{title: "Edit event", ...headerStyle}}/>
        <OrganizationProfileStack.Screen name="Members" component = {MemberPage} options= {{title: "Members", ...headerStyle}}/>
       </OrganizationProfileStack.Navigator>
   );
