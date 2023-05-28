@@ -106,12 +106,12 @@ const OrganizationProfilePage = () => {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <PurpleButton onPress={requestHandler} text={"Membership requests"} />
-          <PurpleButton onPress={memberHandler} text={"Memberships"} />
+          <PurpleButton onPress={requestHandler} text={"Membership Requests"} />
+          <PurpleButton onPress={memberHandler} text={"Members"} />
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <PurpleButton onPress={logOutHandler} text="Log Out" />
+        <PurpleButton onPress={logOutHandler} text="Sign Out" />
       </View>
     </SafeAreaView>
   );
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     height: "70%",
     backgroundColor: "white",
     borderRadius: 4,
-    marginHorizontal: "8%",
+    marginHorizontal: "4%",
     padding: "2%",
     flex: 1,
   },
@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    paddingHorizontal: "8%",
-    marginBottom: 10,
+    paddingHorizontal: "4%",
+    bottom: '2%',
   },
 });
 

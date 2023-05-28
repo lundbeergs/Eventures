@@ -131,11 +131,11 @@ import {
     studentContainer: {
       flexDirection: "row",
       alignItems: "center",
-      marginVertical: 10,
+      marginVertical: '2%',
+      marginHorizontal: '4%',
       backgroundColor: "white",
       padding: "2%",
-      margin: "2%",
-      borderRadius: 10,
+      borderRadius: 4,
     },
     studentName: {
       flex: 1,

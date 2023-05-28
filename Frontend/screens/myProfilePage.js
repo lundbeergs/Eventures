@@ -222,7 +222,7 @@ const MyProfilePage = () => {
           </View>
         </View>
         <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View style={{ marginHorizontal: 15 }}>
+          <View style={{ marginHorizontal: '4%' }}>
             <View style={styles.myMembershipsField}>
               <Text style={styles.myMembershipsText}>My Memberships</Text>
             </View>
@@ -308,9 +308,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: 800,
   },
-  headerContainer: {
-    marginTop: "2%",
-  },
   infotextContainer: {
     marginVertical: "2%",
   },
@@ -330,7 +327,7 @@ const styles = StyleSheet.create({
   },
   myMembershipsField: {
     height: "20%",
-    marginVertical: "3%",
+    marginVertical: "2%",
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     borderRadius: 5,
@@ -347,8 +344,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: 5,
-    height: "42%",
-    marginVertical: "1%",
+    marginVertical: '1%',
     backgroundColor: "white",
   },
   membershipsText: {
