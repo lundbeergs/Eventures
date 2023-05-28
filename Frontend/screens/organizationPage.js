@@ -103,17 +103,21 @@ const OrganizationPage = () => {
   const checkMembershipRequest = async () => {
     try {
       const student = await AsyncStorage.getItem("studentId");
+      console.log(student);
 
       if (student) {
+        console.log('HÄR');
         const accessToken = await AsyncStorage.getItem("accessToken");
+        console.log(accessToken);
         const response = await API_BASE_URL.get(
-          `/api/membership/request/${student}`,
+          `/api/membership/request/${student}/`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
+        console.log(response.data);
 
         const membershipRequestData = response.data;
         const isPendingRequest = membershipRequestData.find(
