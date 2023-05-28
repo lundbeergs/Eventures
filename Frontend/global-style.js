@@ -57,11 +57,11 @@ const GlobalStyles = StyleSheet.create({
   inputComponent: {
     width: "100%",
     marginTop: 10,
-    paddingHorizontal: 30,
+    paddingHorizontal: '4%',
   },
   inputContainer: {
     width: "100%",
-    marginTop: 20,
+    marginTop: 10,
   },
 });
 

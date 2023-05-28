@@ -5,6 +5,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import EventList from "../components/event-list";
 import React, { useEffect, useState } from "react";
@@ -77,7 +78,18 @@ const HomePageStudent = () => {
   return (
     <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
       {!data.membershipData.length ? (
-        <View style={styles.messageContainer}>
+        <ScrollView
+        contentContainerStyle={{flex:1}}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              progressBackgroundColor={"white"}
+              progressViewOffset={-20}
+            />
+          }
+        >
+          <View style={styles.messageContainer}>
           <View style={styles.messageBox}>
             <Text style={styles.messageText}>
               Not a member of any organization. {"\n\n"}
@@ -91,7 +103,8 @@ const HomePageStudent = () => {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+          </View>
+        </ScrollView>
       ) : (
         <FlatList
           data={data.eventData}

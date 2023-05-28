@@ -42,7 +42,14 @@ const StudentSignUp = () => {
   const navigation = useNavigation();
 
   const handleSubmit = async () => {
-    if (!email || !password || !first_name || !last_name || !allergies || !drinkpref) {
+    if (
+      !email ||
+      !password ||
+      !first_name ||
+      !last_name ||
+      !allergies ||
+      !drinkpref
+    ) {
       setError("Please fill in all the required fields to register!");
       setModalVisible(true);
       return;
@@ -177,18 +184,18 @@ const StudentSignUp = () => {
               onChangeText={(text) => setAllergies(text)}
             ></TextInput>
           </View>
-        </View>
-        <View style={styles.inputComponent}>
-          <Text style={styles.inputHeader}>Drink Preference *</Text>
-          <Picker
-            selectedValue={drinkpref}
-            onValueChange={(itemValue) => setDrinkPref(itemValue)}
-            style={styles.drinkInputText}
-          >
-            {drinkOptions.map((option, index) => (
-              <Picker.Item label={option} value={option} key={index} />
-            ))}
-          </Picker>
+          <View style={GlobalStyles.inputComponent}>
+            <Text style={styles.inputHeader}>Drink Preference *</Text>
+            <Picker
+              selectedValue={drinkpref}
+              onValueChange={(itemValue) => setDrinkPref(itemValue)}
+              style={styles.drinkInputText}
+            >
+              {drinkOptions.map((option, index) => (
+                <Picker.Item label={option} value={option} key={index} />
+              ))}
+            </Picker>
+          </View>
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
@@ -221,6 +228,13 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
   },
+  inputContainer: {
+    flex: 1,
+    width: "100%",
+    marginTop: 10,
+    paddingHorizontal: "4%",
+    marginBottom: 10,
+  },
   drinkInputText: {
     backgroundColor: "white",
     borderRadius: 4,
@@ -228,12 +242,6 @@ const styles = StyleSheet.create({
   inputModalContainer: {
     width: "100%",
     marginVertical: 10,
-  },
-  inputComponent: {
-    width: "100%",
-    marginTop: 10,
-    paddingHorizontal: 30,
-    marginBottom: 20,
   },
   inputTextError: {
     color: "red",

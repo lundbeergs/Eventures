@@ -6,7 +6,7 @@ import {
   FlatList,
   RefreshControl,
   Modal,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { API_BASE_URL } from "../axios";
@@ -93,7 +93,6 @@ const TicketPage = () => {
     setTicketModalVisible(!ticketModalVisible);
   };
 
-
   return (
     <View style={GlobalStyles.container}>
       <FlatList
@@ -110,18 +109,16 @@ const TicketPage = () => {
           />
         }
       />
-        <Modal
+      <Modal
         visible={ticketModalVisible}
         animationType="fade"
         transparent={true}
         statusBarTranslucent={true}
       >
         <View style={styles.outerModalContainer}>
-          <View style={styles.pinkFrame}>
+          <View style={styles.ticketFrame}>
             <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>
-                {selectedTicket}
-              </Text>
+              <Text style={styles.modalTitle}>{selectedTicket}</Text>
               <View style={styles.qrCodeContainer}>
                 <QRCode
                   value={selectedTicket}
@@ -179,8 +176,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     overflow: "hidden",
   },
-  pinkFrame: {
-    backgroundColor: "rgba(255, 20, 147, 0.4)",
+  ticketFrame: {
+    backgroundColor: "rgba(184, 227, 255, 0.5)",
     margin: 10,
     borderRadius: 20,
     overflow: "hidden",
