@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   ScrollView,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -40,7 +40,7 @@ const MyProfilePage = () => {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchData();
+    await Promise.all([fetchData()]);
     setRefreshing(false);
   };
 
@@ -172,21 +172,37 @@ const MyProfilePage = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <View style={styles.whiteBox}>
-        <ImageBackground
-          source={require("../assets/images/eventures_background.png")}
-          style={styles.imageBackground}
-        >
-          <View style={styles.initialsContainer}>
-            <View style={styles.initialsBackground}>
-              <Text style={styles.initials}>
-                {first_name.charAt(0).toUpperCase()}.
-                {last_name.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          </View>
-        </ImageBackground>
-        <View style={styles.lowerWhiteBoxContainer}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            progressBackgroundColor={"white"}
+            progressViewOffset={-20}
+          />
+        }
+      >
+            <View style={styles.whiteBox}>
+          <ImageBackground
+            source={require("../assets/images/eventures_background.png")}
+            style={styles.imageBackground}
+          >
+            <View style={styles.initialsContainer}>
+              <View style={styles.initialsBackground}>
+                <Text style={styles.initials}>
+                  {first_name.charAt(0).toUpperCase()}.
+                  {last_name.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+            </View></ImageBackground>
+            <TouchableOpacity
+              style={styles.editIconContainer}
+              onPress={handleEditProfile}
+            >
+              <Ionicons name="create-outline" size={30} color="black" />
+            </TouchableOpacity>
+          
           <View style={styles.infotextContainer}>
             <Text style={styles.header}>
               {capitalLetter(first_name)} {capitalLetter(last_name)}
@@ -204,76 +220,63 @@ const MyProfilePage = () => {
               Drink preferences: {profileData.drinkpref}
             </Text>
           </View>
-          <TouchableOpacity
-            style={styles.editIconContainer}
-            onPress={handleEditProfile}
-          >
-            <Ionicons name="create-outline" size={30} color="black" />
-          </TouchableOpacity>
         </View>
-      </View>
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View style={{ marginHorizontal: 15 }}>
-          <View style={styles.myMembershipsField}>
-            <Text style={styles.myMembershipsText}>My Memberships</Text>
-          </View>
-          <ScrollView
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                progressBackgroundColor={"white"}
-                progressViewOffset={-20}
-              />
-            }
-          >
-            {myMemberships.map((membership) => {
-              const organization = orgData.find(
-                (org) => org.id === membership.organization
-              );
-              return (
-                <View
-                  style={styles.membershipContainer}
-                  key={membership.organization}
-                >
-                  <Text style={styles.membershipsText}>
-                    {organization.org_name}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.iconContainer}
-                    onPress={() => deleteMembership(membership.organization)}
+        <View style={{ flex: 1, justifyContent: "space-between" }}>
+          <View style={{ marginHorizontal: 15 }}>
+            <View style={styles.myMembershipsField}>
+              <Text style={styles.myMembershipsText}>My Memberships</Text>
+            </View>
+            <ScrollView
+            >
+              {myMemberships.map((membership) => {
+                const organization = orgData.find(
+                  (org) => org.id === membership.organization
+                );
+                return (
+                  <View
+                    style={styles.membershipContainer}
+                    key={membership.organization}
                   >
-                    <Ionicons
-                      name="close-circle-outline"
-                      size={24}
-                      color="red"
-                    />
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </ScrollView>
+                    <Text style={styles.membershipsText}>
+                      {organization.org_name}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.iconContainer}
+                      onPress={() => deleteMembership(membership.organization)}
+                    >
+                      <Ionicons
+                        name="close-circle-outline"
+                        size={24}
+                        color="red"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+          <View style={styles.buttonContainer}>
+            <PurpleButton onPress={logOutHandler} text="Log Out" />
+          </View>
         </View>
-        <View style={styles.buttonContainer}>
-          <PurpleButton onPress={logOutHandler} text={"Log Out"}></PurpleButton>
-        </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   whiteBox: {
-    height: "47%",
+    height: 305,
     backgroundColor: "white",
     borderRadius: 4,
     marginHorizontal: "4%",
     padding: "2%",
   },
-  lowerWhiteBoxContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  editIconContainer: {
+    position: "absolute",
+    top: "91%",
+    right: "5%",
+    zIndex: 1,
   },
   imageBackground: {
     borderRadius: 4,
@@ -319,19 +322,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "regular",
   },
-  editIconContainer: {
-    justifyContent: "center",
-    marginTop: "32%",
-    marginLeft: "90%",
-    position: "absolute",
-  },
   buttonContainer: {
     width: "100%",
     bottom: "2%",
     paddingHorizontal: "4%",
   },
   myMembershipsField: {
-    height: 50,
+    height: "20%",
     marginVertical: "3%",
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
@@ -349,8 +346,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     borderRadius: 5,
-    height: 40,
-    margin: "1%",
+    height: "42%",
+    marginVertical: "1%",
     backgroundColor: "white",
   },
   membershipsText: {
@@ -362,7 +359,7 @@ const styles = StyleSheet.create({
     margin: "2%",
   },
   iconContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: "4%",
   },
 });
 

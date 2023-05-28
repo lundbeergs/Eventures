@@ -119,7 +119,7 @@ const OrganizationPage = () => {
         const isPendingRequest = membershipRequestData.find(
           (membershipRequest) => membershipRequest.organization === orgId
         );
-        console.log("Pending: " + isPendingRequest);
+        console.log("Pending: " + membershipRequestData);
 
         if (isPendingRequest) {
           setHasRequestPending(true);
