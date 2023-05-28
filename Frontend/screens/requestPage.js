@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Button,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -16,9 +17,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const RequestPage = () => {
   const [organization, setOrganizationID] = useState("");
   const [students, setStudents] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getRequests();
+    getOrganizationProfile();
+    setRefreshing(false);
   };
 
   const getRequests = async () => {
@@ -132,15 +141,30 @@ const RequestPage = () => {
     }
   };
 
+  const capitalLetter = (string) => {
+    const words = string.split(" ");
+    const capitalizedWords = words.map(
+      (word) => word.charAt(0).toUpperCase() + word.slice(1)
+    );
+    return capitalizedWords.join(" ");
+  };
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            progressBackgroundColor="white"
+            progressViewOffset={-20}
+          />
+        }
+      >
         {students.map((student) => (
           <View style={styles.studentContainer} key={student.id}>
             <Text style={styles.studentName}>
-              {`${capitalizeFirstLetter(
-                student.first_name
-              )} ${capitalizeFirstLetter(student.last_name)}`}
+              {capitalLetter(student.first_name)} {capitalLetter(student.last_name)}
             </Text>
             <TouchableOpacity
               style={styles.iconContainer}
