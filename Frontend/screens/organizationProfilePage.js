@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ImageBackground,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,6 +24,7 @@ const OrganizationProfilePage = () => {
   const [orgBio, setOrgBio] = useState("");
   const [eventData, setEventData] = useState([]);
   const [orgId, setOrgId] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const requestHandler = async () => {
     navigation.navigate("Requests");
@@ -30,6 +32,12 @@ const OrganizationProfilePage = () => {
 
   const memberHandler = async () => {
     navigation.navigate("Members");
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getProfile();
+    setRefreshing(false);
   };
 
   const getProfile = async () => {
@@ -86,56 +94,18 @@ const OrganizationProfilePage = () => {
     }
   };
 
-  const renderEventItem = ({ item }) => {
-    const org_name = orgName;
-    const org_id = id;
-
-    const {
-      orgId,
-      orgName,
-      organizationInformation,
-      event_org,
-      orgIcon,
-      orgProfilePic,
-      id,
-      event_name,
-      event_pic,
-      event_desc,
-      event_location,
-      event_date,
-      event_time,
-      event_price,
-      release_date,
-      release_time,
-      tickets_left,
-    } = item;
-
-    console.log("VIKTIGT");
-
-    return (
-      <OnlyEventOrg
-        orgId={event_org}
-        orgIcon={orgIcon}
-        orgProfilePic={orgProfilePic}
-        organizationInformation={organizationInformation}
-        eventId={id}
-        eventTitle={event_name}
-        eventPic={event_pic}
-        eventInformation={event_desc}
-        location={event_location}
-        date={event_date}
-        time={event_time}
-        price={event_price}
-        releaseDate={release_date}
-        releaseTime={release_time}
-        ticketsLeft={tickets_left}
-      />
-    );
-  };
-
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <ScrollView >
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            progressBackgroundColor="white"
+            progressViewOffset={-20}
+          />
+        }
+      >
         <View style={styles.whiteBox}>
           <ImageBackground
             source={require("../assets/images/eventures_background.png")}
@@ -156,12 +126,12 @@ const OrganizationProfilePage = () => {
           <PurpleButton onPress={requestHandler} text={"Membership Requests"} />
           <PurpleButton onPress={memberHandler} text={"Members"} />
         </View>
-        
-      <View style={{ alignItems: "center", bottom: '2%' }}>
-        <View style={styles.buttonContainer}>
-          <PurpleButton onPress={logOutHandler} text="Log Out" />
+
+        <View style={{ alignItems: "center", bottom: "2%" }}>
+          <View style={styles.buttonContainer}>
+            <PurpleButton onPress={logOutHandler} text="Sign Out" />
+          </View>
         </View>
-      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -219,25 +189,6 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: "4%",
     marginBottom: 10,
-  },
-  myEventuresField: {
-    paddingVertical: "2%",
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.45)",
-    borderRadius: 10,
-  },
-  myEventuresText: {
-    fontSize: 14,
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: "600",
-    justifyContent: "center",
-    alignSelf: "center",
-  },
-  eventField: {
-    width: "100%",
-    borderRadius: 4,
-    marginVertical: "2%",
-    paddingHorizontal: "4.5%",
   },
 });
 

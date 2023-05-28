@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ImageBackground,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,6 +24,7 @@ const MyEventuresOrgPage = () => {
   const [orgBio, setOrgBio] = useState("");
   const [eventData, setEventData] = useState([]);
   const [orgId, setOrgId] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const getProfile = async () => {
     try {
@@ -53,6 +55,13 @@ const MyEventuresOrgPage = () => {
       fetchEventData();
     }
   }, [orgId]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getProfile();
+    fetchEventData();
+    setRefreshing(false);
+  };
 
   const fetchEventData = async () => {
     try {
@@ -119,16 +128,24 @@ const MyEventuresOrgPage = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View style={styles.eventField}>
-            <FlatList
-              data={eventData}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderEventItem}
-              contentContainerStyle={styles.eventListContainer}
-            />
-          </View>
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View style={styles.eventField}>
+          <FlatList
+            data={eventData}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderEventItem}
+            contentContainerStyle={styles.eventListContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                progressBackgroundColor="white"
+                progressViewOffset={-20}
+              />
+            }
+          />
         </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -143,4 +160,3 @@ const styles = StyleSheet.create({
 });
 
 export default MyEventuresOrgPage;
-
