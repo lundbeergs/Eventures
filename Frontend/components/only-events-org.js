@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import OrgEventPage from "../screens/orgEventPage";
 
 const imagePaths = {
   101: require("../assets/1.png"),

@@ -11,6 +11,22 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 const Tab = createBottomTabNavigator();
 const OrganizationProfileStack = createStackNavigator();
+const MyEventuresOrgStack = createStackNavigator()
+
+function MyEventuresOrgScreen() {
+  return (
+    
+  <MyEventuresOrgStack.Navigator screenOptions={{ headerShown: true }}>
+    <MyEventuresOrgStack.Screen
+        name="MyEventuresOrgPage"
+        component={myEventuresOrgPage}
+        options={{ title: "My profile", ...headerStyle, headerLeft: null }}
+      />
+  <OrganizationProfileStack.Screen name="OrgEventPage" component = {OrgEventPage} options= {{title: "Org event", ...headerStyle}}/>
+  <OrganizationProfileStack.Screen name="EditEventPage" component = {EditEventPage} options= {{title: "Edit event", ...headerStyle}}/>
+  </MyEventuresOrgStack.Navigator>
+  )
+}
 
 function OrganizationProfileScreen() {
   return (
@@ -25,9 +41,7 @@ function OrganizationProfileScreen() {
         component={RequestPage}
         options={{ title: "Membership requests", ...headerStyle }}
       />
-       <OrganizationProfileStack.Screen name="OrgEventPage" component = {OrgEventPage} options= {{title: "Org event", ...headerStyle}}/>
-       <OrganizationProfileStack.Screen name="EditEventPage" component = {EditEventPage} options= {{title: "Edit event", ...headerStyle}}/>
-      <OrganizationProfileStack.Screen
+       <OrganizationProfileStack.Screen
         name="Members"
         component={MemberPage}
         options={{ title: "Members", ...headerStyle }}
@@ -69,8 +83,8 @@ export const OrgTabs = () => {
     >
       <Tab.Screen
         name="MyEventuresOrg"
-        component={myEventuresOrgPage}
-        options={{ title: "My Eventures", ...headerStyle, headerLeft: null  }}
+        component={MyEventuresOrgScreen}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Create"

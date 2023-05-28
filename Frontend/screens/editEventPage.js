@@ -40,6 +40,7 @@ const EditEventPage = () => {
     const eventId = route.params.eventId;
 
     console.log('event id '+ eventId)
+    console.log('org id: ' + organization)
     console.log(event_date)
     console.log(event_time)
     console.log('price: ' + event_price)
@@ -97,7 +98,7 @@ const EditEventPage = () => {
             });
             console.log('hej' + body)
             console.log(response.data);
-            navigation.navigate('Profile', { isProfileUpdated: true });
+            navigation.navigate('MyEventuresOrgPage', { isProfileUpdated: true });
         } catch (error) {
             console.log(error);
         }

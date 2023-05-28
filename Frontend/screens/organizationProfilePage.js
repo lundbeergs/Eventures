@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FlatList } from "react";
 import { useRoute } from "@react-navigation/native";
 import {
   View,
@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../global-style";
+import OnlyEventOrg from "../components/only-events-org";
 
 const OrganizationProfilePage = () => {
   const route = useRoute();
@@ -162,20 +163,6 @@ const OrganizationProfilePage = () => {
             <View style={styles.myEventuresField}>
               <Text style={styles.myEventuresText}>My eventures</Text>
             </View>
-          </View>
-          <View style={styles.eventField}>
-            <FlatList
-              data={eventData}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderEventItem}
-              contentContainerStyle={styles.eventListContainer}
-              
-            />
-            {/* {eventData.map((event) => (
-            <View key={event.id}>
-              <Text>{event.event_name}</Text>
-            </View>
-          ))} */}
           </View>
         </View>
       <View style={{ alignItems: "center", marginBottom: 40 }}>
