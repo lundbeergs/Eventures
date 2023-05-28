@@ -369,8 +369,8 @@ const CreatePage = () => {
                 style={[
                   styles.selectedImage,
                   {
-                    justifyContent: 'center',
-                    alignSelf: 'center',
+                    justifyContent: "center",
+                    alignSelf: "center",
                     width: "92%",
                     height: 200,
                     borderRadius: 5,
@@ -383,6 +383,9 @@ const CreatePage = () => {
               style={styles.imagePickerButton}
               onPress={handleImagePicker}
             >
+              <View style={styles.iconContainer}>
+                <Ionicons name="image-outline" size={20} color="black" />
+              </View>
               <Text style={styles.imagePickerButtonText}>
                 Choose Eventure Pic *
               </Text>
@@ -466,7 +469,7 @@ const CreatePage = () => {
           />
         </View>
 
-        <View style={{ marginVertical: '0.5%', marginHorizontal: "4%", }}>
+        <View style={{ marginVertical: "0.5%", marginHorizontal: "4%" }}>
           <Pressable
             style={({ pressed }) => [
               GlobalStyles.button,
@@ -514,7 +517,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
     marginTop: 10,
-    paddingHorizontal: '4%',
+    paddingHorizontal: "4%",
   },
   inputLabel: {
     fontSize: 13,
@@ -528,7 +531,7 @@ const styles = StyleSheet.create({
   inputComponent: {
     width: "100%",
     marginTop: 10,
-    paddingHorizontal: '4%',
+    paddingHorizontal: "4%",
   },
   inputPictureField: {
     width: "99%",

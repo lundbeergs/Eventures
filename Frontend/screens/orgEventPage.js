@@ -5,8 +5,6 @@ import {
   StyleSheet,
   Image,
   ScrollView,
-  Modal,
-  Pressable,
   RefreshControl,
   SafeAreaView,
 } from "react-native";
@@ -15,7 +13,6 @@ import PurpleButton from "../components/PurpleButton";
 import GlobalStyles from "../global-style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
-import PopUpModal from "../components/PopUpModal";
 
 const OrgEventPage = () => {
   const route = useRoute();

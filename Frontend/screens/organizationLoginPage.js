@@ -10,8 +10,6 @@ import {
   Image,
   SafeAreaView,
 } from "react-native";
-
-import axios from "axios";
 import GlobalStyles from "../global-style";
 import eventures from "../assets/images/eventures.png";
 import PurpleButton from "../components/PurpleButton";
@@ -28,8 +26,6 @@ export default function OrganizationLoginPage() {
   const [token, setToken] = useState("");
   const [error, setError] = useState("");
   const navigation = useNavigation();
-
-  useEffect(() => {}, []);
 
   const storeAccessTokenInStorage = async (token) => {
     try {
