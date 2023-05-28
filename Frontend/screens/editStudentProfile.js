@@ -47,7 +47,7 @@ export default function EditStudentProfileScreen() {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       console.log(body)
-      const response = await API_BASE_URL.put(`/api/profile/`, body, {
+      const response = await API_BASE_URL.put("/api/profile/", body, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -91,7 +91,7 @@ export default function EditStudentProfileScreen() {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-        <View style={GlobalStyles.inputContainer}>
+        <View style={styles.inputContainer}>
           <View style={GlobalStyles.inputComponent}>
             <Text style={styles.inputHeader}> First name</Text>
             <TextInput
@@ -155,30 +155,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#fff",
   },
+  inputContainer: {
+    flex: 1,
+    width: "100%",
+    marginTop: 10,
+  },
   text: {
     fontSize: 24,
     fontWeight: "bold",
   },
-  headerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-    width: "auto",
-  },
-  profileTextContainer: {
-    flex: 1,
-  },
-  profilePic: {
-    justifyContent: "center",
-  },
   textField: {
     justifyContent: "center",
     alignSelf: "center",
-  },
-  editIconContainer: {
-    position: "absolute",
-    top: 10,
-    right: 10,
   },
   inputHeader: {
     marginVertical: "1%",
@@ -190,7 +178,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   buttonContainer: {
+    marginTop: "auto",
+    marginBottom: "2%",
     width: "100%",
-    paddingHorizontal: '8%',
+    paddingHorizontal: '4%',
   },
 });

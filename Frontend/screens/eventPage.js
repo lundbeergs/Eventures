@@ -206,13 +206,7 @@ const EventPage = () => {
   };
 
   const renderButton = () => {
-    if (route.params.ticketsLeft === 0) {
-      return (
-        <Pressable style={styles.disabledButton} disabled={true}>
-          <Text style={styles.buttonText}>No Tickets Left</Text>
-        </Pressable>
-      );
-    } else if (currentTime < releaseTime) {
+    if (currentTime < releaseTime) {
       return (
         <Pressable style={styles.disabledButton} disabled={true}>
           <Text style={styles.buttonText}>
@@ -225,6 +219,12 @@ const EventPage = () => {
       return (
         <Pressable style={styles.ticketButton} onPress={toggleTicketModal}>
           <Text style={styles.buttonText}>Show Ticket</Text>
+        </Pressable>
+      );
+    } else if (route.params.ticketsLeft === 0) {
+      return (
+        <Pressable style={styles.disabledButton} disabled={true}>
+          <Text style={styles.buttonText}>No Tickets Left</Text>
         </Pressable>
       );
     } else if (route.params.price === 0) {
@@ -290,7 +290,7 @@ const EventPage = () => {
           </View>
         </View>
       </ScrollView>
-      <View style={{ marginHorizontal: 15 }}>{renderButton()}</View>
+      <View style={styles.buttonContainer}>{renderButton()}</View>
       <PopUpModal
         isVisible={popUpModalVisible}
         text={error}
@@ -333,7 +333,7 @@ const EventPage = () => {
         statusBarTranslucent={true}
       >
         <View style={styles.outerModalContainer}>
-          <View style={styles.pinkFrame}>
+          <View style={styles.ticketFrame}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>{route.params.eventTitle}</Text>
               <View style={styles.qrCodeContainer}>
@@ -368,38 +368,14 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
   },
-
-  header: {
-    fontSize: 20,
-    justifyContent: "center",
-    alignSelf: "center",
-    fontWeight: "bold",
-    marginVertical: "2%",
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "regular",
-  },
-
-  informationContainer: {
-    flex: 1,
-    width: "100%",
-    minHeight: 470,
-    maxHeight: 9999,
-    marginRight: 15,
-    marginLeft: 15,
-    backgroundColor: "white",
-    borderRadius: 5,
-    overflow: "hidden",
-  },
   greenFrame: {
     backgroundColor: "rgba(144, 238, 144, 0.5)",
     margin: 10,
     borderRadius: 20,
     overflow: "hidden",
   },
-  pinkFrame: {
-    backgroundColor: "rgba(255, 20, 147, 0.4)",
+  ticketFrame: {
+    backgroundColor: "rgba(184, 227, 255, 0.5)",
     margin: 10,
     borderRadius: 20,
     overflow: "hidden",
@@ -412,7 +388,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
+  header: {
+    fontSize: 20,
+    justifyContent: "center",
+    alignSelf: "center",
+    fontWeight: "bold",
+    marginVertical: "2%",
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "regular",
+  },
+  buttonContainer: {
+    marginTop: "auto",
+    marginBottom: "2%",
+    width: "100%",
+    paddingHorizontal: '4%',
+  },
   button: {
     width: "100%",
     height: 45,
@@ -445,25 +437,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
   },
-  eventInformation: {
-    marginTop: "5%",
-    marginLeft: "5%",
-    marginBottom: 10,
-  },
-  video: {
-    height: 150,
+  outerModalContainer: {
+    flex: 1,
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
-    marginRight: 15,
-    marginLeft: 15,
-    margin: "3%",
-    borderRadius: 5,
-  },
-
-  readMore: {
-    textAlign: "center",
-    color: "blue",
-    marginBottom: 10,
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContainer: {
     marginVertical: 20,
@@ -482,12 +460,6 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     width: "100%",
-  },
-  outerModalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
 });
 

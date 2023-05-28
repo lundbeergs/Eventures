@@ -323,9 +323,10 @@ const styles = StyleSheet.create({
     fontWeight: "regular",
   },
   buttonContainer: {
+    marginTop: "auto",
+    marginBottom: "2%",
     width: "100%",
-    bottom: "2%",
-    paddingHorizontal: "4%",
+    paddingHorizontal: '4%',
   },
   myMembershipsField: {
     height: "20%",

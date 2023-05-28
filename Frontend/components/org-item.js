@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   eventContainer: {
     flex: 1,
     marginVertical: 10,
-    marginHorizontal: 15,
+    marginHorizontal: '4%',
     width: "92%",
     height: 40,
     backgroundColor: 'white',
