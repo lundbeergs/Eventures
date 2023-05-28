@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: '4%',
   },
   myMembershipsField: {
-    height: "20%",
+    height: 30,
     marginVertical: "2%",
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",

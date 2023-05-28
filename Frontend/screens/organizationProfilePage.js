@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FlatList } from "react";
 import { useRoute } from "@react-navigation/native";
 import {
   View,
@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../global-style";
+import OnlyEventOrg from "../components/only-events-org";
 
 const OrganizationProfilePage = () => {
   const route = useRoute();
@@ -85,6 +86,52 @@ const OrganizationProfilePage = () => {
     }
   };
 
+  const renderEventItem = ({ item }) => {
+    const org_name = orgName;
+    const org_id = id;
+
+    const {
+      orgId,
+      orgName,
+      organizationInformation,
+      event_org,
+      orgIcon,
+      orgProfilePic,
+      id,
+      event_name,
+      event_pic,
+      event_desc,
+      event_location,
+      event_date,
+      event_time,
+      event_price,
+      release_date,
+      release_time,
+      tickets_left,
+    } = item;
+
+    console.log("VIKTIGT");
+
+    return (
+      <OnlyEventOrg
+        orgId={event_org}
+        orgIcon={orgIcon}
+        orgProfilePic={orgProfilePic}
+        organizationInformation={organizationInformation}
+        eventId={id}
+        eventTitle={event_name}
+        eventPic={event_pic}
+        eventInformation={event_desc}
+        location={event_location}
+        date={event_date}
+        time={event_time}
+        price={event_price}
+        releaseDate={release_date}
+        releaseTime={release_time}
+        ticketsLeft={tickets_left}
+      />
+    );
+  };
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -109,10 +156,21 @@ const OrganizationProfilePage = () => {
           <PurpleButton onPress={requestHandler} text={"Membership Requests"} />
           <PurpleButton onPress={memberHandler} text={"Members"} />
         </View>
-      </ScrollView>
-      <View style={styles.buttonContainer}>
-        <PurpleButton onPress={logOutHandler} text="Sign Out" />
+        
+
+        <View style={{ flex: 1, justifyContent: "space-between" }}>
+          <View style={{ marginHorizontal: "8%" }}>
+            <View style={styles.myEventuresField}>
+              <Text style={styles.myEventuresText}>My eventures</Text>
+            </View>
+          </View>
+        </View>
+      <View style={{ alignItems: "center", marginBottom: 40 }}>
+        <View style={styles.buttonContainer}>
+          <PurpleButton onPress={logOutHandler} text="Log Out" />
+        </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -167,8 +225,27 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    paddingHorizontal: "4%",
-    bottom: '2%',
+    paddingHorizontal: "8%",
+    marginBottom: 10,
+  },
+  myEventuresField: {
+    paddingVertical: "2%",
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.45)",
+    borderRadius: 10,
+  },
+  myEventuresText: {
+    fontSize: 14,
+    color: "rgba(0, 0, 0, 1)",
+    fontWeight: "600",
+    justifyContent: "center",
+    alignSelf: "center",
+  },
+  eventField: {
+    width: "100%",
+    borderRadius: 4,
+    marginVertical: "2%",
+    paddingHorizontal: "4.5%",
   },
 });
 

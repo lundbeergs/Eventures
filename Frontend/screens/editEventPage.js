@@ -1,4 +1,5 @@
 import { React, useState, useEffect } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { View, Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Image, ScrollView, Pressable, Modal } from "react-native";
 import GlobalStyles from "../global-style";
 import { Ionicons } from "@expo/vector-icons";
@@ -10,29 +11,98 @@ import { API_BASE_URL } from "../axios.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PopUpModal from "../components/PopUpModal.js";
 
-const CreatePage = () => {
-    const [event_name, setTitle] = useState("");
+const EditEventPage = () => {
+    
+    const route = useRoute();
+    const navigation = useNavigation();
+    const [event_name, setTitle] = useState(route.params.eventTitle);
     //const [location, setLocation] = useState("");
-    const [event_desc, setInformation] = useState("");
-    const [event_pic, setEventPic] = useState('');
-    const [event_price, setPrice] = useState("");
-    const [event_date, setDate] = useState(new Date());
+    const [event_desc, setInformation] = useState(route.params.eventInformation);
+    const [event_pic, setEventPic] = useState(route.params.eventPic);
+    const [event_price, setPrice] = useState(route.params.price);
+    const [event_date, setDate] = useState(new Date(route.params.date + 'T11:43:00.000Z'));
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [cut_date_string, setCutDate] = useState('')
-    const [event_time, setTime] = useState(new Date());
+    const [cut_date_string, setCutDate] = useState(route.params.date)
+    const [event_time, setTime] = useState(new Date('2023-05-27T' + route.params.time + '.000Z'));
     const [showTimePicker, setShowTimePicker] = useState(false);
-    const [cut_time_string, setCutTime] = useState('')
-    const [release_date, setReleaseDate] = useState(new Date());
+    const [cut_time_string, setCutTime] = useState(route.params.time)
+    const [release_date, setReleaseDate] = useState(new Date(route.params.releaseDate + 'T11:43:00.000Z'));
     const [showReleaseDatePicker, setShowReleaseDatePicker] = useState(false);
-    const [cut_release_date_string, setCutReleaseDate] = useState('')
-    const [release_time, setReleaseTime] = useState(new Date());
-    const [cut_release_time_string, setCutReleaseTime] = useState('')
+    const [cut_release_date_string, setCutReleaseDate] = useState(route.params.releaseDate)
+    const [release_time, setReleaseTime] = useState(new Date('2023-05-27T' + route.params.releaseTime + 'Z'));
+    const [cut_release_time_string, setCutReleaseTime] = useState(route.params.releaseTime)
     const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
     const [imageUri, setImageUri] = useState('');
-    const [location, setLocation] = useState('');
-    const [tickets_left, setTicketsLeft] = useState('');
+    const [location, setLocation] = useState(route.params.location);
+    const [tickets_left, setTicketsLeft] = useState(route.params.ticketsLeft);
     const [organization, setOrganizationID] = useState(" ");
     const [error, setError] = useState("");
+    const eventId = route.params.eventId;
+
+    console.log('event id '+ eventId)
+    console.log('org id: ' + organization)
+    console.log(event_date)
+    console.log(event_time)
+    console.log('price: ' + event_price)
+    console.log('cuttad tid' + cut_date_string)
+    console.log('eventvild: ' + event_pic)
+    console.log('tickets ' + tickets_left)
+
+    const getOrganizationProfile = async () => {
+        try {
+            const accessToken = await AsyncStorage.getItem("accessToken");
+            const response = await API_BASE_URL.get("/api/profile/", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+            });
+            const { data: userProfile } = response.data;
+
+            if (userProfile && userProfile.length > 0) {
+                const { id } = userProfile[0];
+                setOrganizationID(id);
+                console.log("org: " + organization + " hej" + id);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleSave = async () => {
+        if (!event_name || !event_desc || !event_pic || !event_price || !event_date || !event_time || !location || !tickets_left) {
+            setError("Please fill in all the required fields to edit your event");
+            //setModalVisible(true);
+            console.log(FEL)
+            return;
+        }
+        const body = {
+            event_name: event_name,
+            event_desc: event_desc,
+            event_pic: event_pic,
+            event_price: event_price,
+            event_date: cut_date_string,
+            event_time: cut_time_string,
+            release_date: cut_release_date_string,
+            release_time: cut_release_time_string,
+            event_location: location,
+            tickets_left: tickets_left
+        };
+
+        try {
+            const accessToken = await AsyncStorage.getItem("accessToken");
+            console.log(body)
+            const response = await API_BASE_URL.put(`/api/organizations/${organization}/events/${eventId}/`, body, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            console.log('hej' + body)
+            console.log(response.data);
+            navigation.navigate('MyEventuresOrgPage', { isProfileUpdated: true });
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
 
     useEffect(() => {
@@ -61,64 +131,6 @@ const CreatePage = () => {
         setSelectedImage(image);
         setShowModal(false);
         setEventPic(index + 101);
-    };
-
-    const getOrganizationProfile = async () => {
-        try {
-            const accessToken = await AsyncStorage.getItem("accessToken");
-            const response = await API_BASE_URL.get("/api/profile/", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                },
-            });
-            const { data: userProfile } = response.data;
-
-            if (userProfile && userProfile.length > 0) {
-                const { id } = userProfile[0];
-                setOrganizationID(id);
-                console.log("org: " + organization + " hej" + id);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-
-    const handleSubmit = async () => {
-        if (!event_name /* || !location */ || !event_desc || !event_pic || !event_price || !event_date || !event_time || !location || !tickets_left) {
-            setModalVisible(true);
-            return;
-        }
-        try {
-            const body = {
-                event_name: event_name,
-                event_desc: event_desc,
-                event_pic: event_pic,
-                event_price: event_price,
-                event_date: cut_date_string,
-                event_time: cut_time_string,
-                release_date: cut_release_date_string,
-                release_time: cut_release_time_string,
-                event_location: location,
-                tickets_left: tickets_left,
-                event_org: organization
-
-            };
-            console.log(organization)
-
-            const accessToken = await AsyncStorage.getItem("accessToken");
-            const response = await API_BASE_URL.post(`/api/organizations/${organization}/events/`, body, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                },
-            });;
-            console.log('Event created');
-            const state = {
-                userToken: response.data.token,
-            };
-        } catch (error) {
-            console.log(error);
-        }
     };
 
 
@@ -215,7 +227,7 @@ const CreatePage = () => {
                             <Ionicons name="time" size={30} color="black" />
                             <View style={styles.dateText}>
                                 <Text style={{ marginLeft: '5%' }}>Time *</Text>
-                                <Text style={styles.dateAndTimeText}>{event_time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
+                                <Text style={styles.dateAndTimeText}>{event_time.toString().slice(16, 21)}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -257,7 +269,7 @@ const CreatePage = () => {
                             <Ionicons name="time" size={30} color="black" />
                             <View style={styles.dateText}>
                                 <Text style={{ marginLeft: '5%' }}>Time</Text>
-                                <Text style={styles.dateAndTimeText}>{release_time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' })}</Text>
+                                <Text style={styles.dateAndTimeText}>{release_time.toString().slice(16, 21)}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -273,18 +285,20 @@ const CreatePage = () => {
                     )}
                 </View>
 
-                <View style={styles.container}>
 
+                <View>
+                    <Text style={[styles.inputLabel, { marginLeft: '4%' }]}>Eventure picture *</Text>
                     {selectedImage ? (
-                        <Image source={selectedImage} style={[styles.selectedImage, { width: '95%', height: 200, margin: '2.5%', borderRadius: 5 }]} />
+                        <Image source={selectedImage} style={[styles.selectedImage, { width: '92%', height: 200, marginHorizontal: '4%', borderRadius: 5 }]} />
                     ) : (
                         <TouchableOpacity
                             style={styles.imagePickerButton}
                             onPress={handleImagePicker}
                         >
-                            <Text style={styles.imagePickerButtonText}>
-                                Choose Eventure Pic *
-                            </Text>
+                            <View style={styles.iconContainer}>
+                                <Ionicons name="image-outline" size={20} color="black" />
+                            </View>
+                            <Text>Choose Eventure Pic *</Text>
                         </TouchableOpacity>
                     )}
 
@@ -305,6 +319,8 @@ const CreatePage = () => {
                         </View>
                     </Modal>
                 </View>
+
+
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputLabel}>Eventure information *</Text>
@@ -331,7 +347,7 @@ const CreatePage = () => {
                     <TextInput
                         style={styles.inputField}
                         onChangeText={(text) => {
-                            if (/^\d+$/.test(text)) {
+                            if (/^\d*(\.\d*)?$/.test(text)) {
                                 setPrice(text);
                             }
                         }}
@@ -339,6 +355,10 @@ const CreatePage = () => {
                         placeholder="Enter event price"
                         keyboardType="numeric"
                     />
+
+
+
+
 
                 </View>
 
@@ -351,20 +371,19 @@ const CreatePage = () => {
                                 setTicketsLeft(text);
                             }
                         }}
-                        value={tickets_left}
+                        value={tickets_left.toString()}
                         placeholder="Enter ticket amount"
                         keyboardType="numeric"
                     />
 
                 </View>
-
                 <View style={{marginHorizontal: '4%'}}>
-                <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8 }]} >
-                    <Text style={GlobalStyles.buttonText} onPress={handleSubmit} > Create Eventure</Text>
+                <Pressable style={({ pressed }) => [GlobalStyles.button, pressed && { opacity: .8}]} >
+                    <Text style={GlobalStyles.buttonText} onPress={handleSave} > Save changes</Text>
                 </Pressable>
                 </View>
                 <View style={{ height: 50 }}>
-            </View>
+                </View>
 
             </ScrollView>
 
@@ -470,4 +489,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default CreatePage;
+export default EditEventPage;
