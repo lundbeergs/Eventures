@@ -36,6 +36,8 @@ const OrganizationPage = () => {
 
   const handleRefresh = () => {
     setRefreshing(true);
+    fetchOrgData();
+    fetchEventData();
     checkMembership();
     checkMembershipRequest();
     setRefreshing(false);
@@ -106,7 +108,7 @@ const OrganizationPage = () => {
       console.log(student);
 
       if (student) {
-        console.log('HÄR');
+        console.log("HÄR");
         const accessToken = await AsyncStorage.getItem("accessToken");
         console.log(accessToken);
         const response = await API_BASE_URL.get(
@@ -214,7 +216,17 @@ const OrganizationPage = () => {
   };
 
   return (
-    <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
+    <ScrollView
+      style={{ backgroundColor: "#BDE3FF", flex: 1 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          progressBackgroundColor="white"
+          progressViewOffset={-20}
+        />
+      }
+    >
       <View style={styles.whiteBox}>
         <ImageBackground
           source={EventuresBackground}
@@ -238,20 +250,33 @@ const OrganizationPage = () => {
         </Text>
       </View>
       <View style={{ flex: 1 }}>
-        <FlatList
-          data={eventData}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderEventItem}
-          contentContainerStyle={styles.eventListContainer}
-        />
+        {eventData.map((item) => (
+          <OnlyEventItem
+            key={item.id.toString()}
+            orgId={item.event_org}
+            orgName={orgName}
+            organizationInformation={item.organizationInformation}
+            eventId={item.id}
+            eventTitle={item.event_name}
+            eventPic={item.event_pic}
+            eventInformation={item.event_desc}
+            location={item.event_location}
+            date={item.event_date}
+            time={item.event_time}
+            price={item.event_price + " kr"}
+            releaseDate={item.release_date}
+            releaseTime={item.release_time}
+            ticketsLeft={item.tickets_left}
+          />
+        ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   whiteBox: {
-    height: "50%",
+    height: 305,
     backgroundColor: "white",
     borderRadius: 4,
     marginHorizontal: "4%",
@@ -281,6 +306,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: "white",
     fontWeight: 800,
+    textAlign: "center",
   },
   headerContainer: {
     marginTop: "2%",

@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ImageBackground,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,6 +24,7 @@ const MyEventuresOrgPage = () => {
   const [orgBio, setOrgBio] = useState("");
   const [eventData, setEventData] = useState([]);
   const [orgId, setOrgId] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const getProfile = async () => {
     try {
@@ -49,6 +51,13 @@ const MyEventuresOrgPage = () => {
     getProfile();
     fetchEventData();
   }, [orgId]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getProfile();
+    fetchEventData();
+    setRefreshing(false);
+  };
 
   const fetchEventData = async () => {
     try {
@@ -122,6 +131,14 @@ const MyEventuresOrgPage = () => {
             keyExtractor={(item) => item.id.toString()}
             renderItem={renderEventItem}
             contentContainerStyle={styles.eventListContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                progressBackgroundColor="white"
+                progressViewOffset={-20}
+              />
+            }
           />
         </View>
       </View>
