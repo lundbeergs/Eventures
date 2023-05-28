@@ -98,7 +98,7 @@ const EditEventPage = () => {
             });
             console.log('hej' + body)
             console.log(response.data);
-            navigation.navigate('MyEventuresOrgPage', { isProfileUpdated: true });
+            navigation.navigate('OrgEventPage', { isProfileUpdated: true });
         } catch (error) {
             console.log(error);
         }
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     dateAndTimeText: {
         fontWeight: 'bold',
         marginLeft: '5%',
-        fontSize: '12%'
+        fontSize: 13
     },
     imagePickerImage: {
         height: 120,
