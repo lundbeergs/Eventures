@@ -32,6 +32,7 @@ const EventPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [releaseTime, setReleaseTime] = useState(new Date());
   const eventPic = route.params.eventPic;
+  const [orgName, setOrgName] = useState("")
 
   const imagePaths = {
     101: require("../assets/1.png"),
@@ -48,6 +49,7 @@ const EventPage = () => {
 
   useEffect(() => {
     fetchInfo();
+    getOrgProfile();
   }, [hasTicket, isMember]);
 
   const fetchInfo = async () => {
@@ -96,6 +98,22 @@ const EventPage = () => {
     }
   };
 
+  const getOrgProfile = async () => {
+    try {
+      console.log(route.params.orgId);
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get(`/api/organizations/${route.params.orgId}/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const orgName = response.data.org_name;
+      setOrgName(orgName);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const checkMembership = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
@@ -104,6 +122,7 @@ const EventPage = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+
       const membershipData = response.data;
 
       if (membershipData.length !== 0) {
@@ -265,7 +284,7 @@ const EventPage = () => {
               <Text style={styles.text}>{route.params.eventInformation}</Text>
             </View>
             <View style={{ marginBottom: "3%" }}>
-              <Text style={styles.text}>Host: {route.params.orgName}</Text>
+              <Text style={styles.text}>Host: {orgName}</Text>
             </View>
             <View style={{ marginBottom: "3%" }}>
               <Text style={styles.text}>Location: {route.params.location}</Text>
