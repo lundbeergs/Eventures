@@ -74,7 +74,7 @@ const SearchEventItem = ({
 const styles = StyleSheet.create({
   eventContainer: {
     flex: 2,
-    margin: 15,
+    margin: '4%',
     width: '92%',
     height: 230,
   },

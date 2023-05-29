@@ -1,4 +1,5 @@
 import { React, useState, useEffect } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -19,38 +20,128 @@ import { format } from "date-fns";
 import { API_BASE_URL } from "../axios.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PopUpModal from "../components/PopUpModal.js";
-import { useNavigation } from "@react-navigation/native";
 
-const CreatePage = () => {
-  const [event_name, setTitle] = useState("");
+const EditEventPage = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const [event_name, setTitle] = useState(route.params.eventTitle);
   //const [location, setLocation] = useState("");
-  const [event_desc, setInformation] = useState("");
-  const [event_pic, setEventPic] = useState("");
-  const [event_price, setPrice] = useState("");
-  const [event_date, setDate] = useState(new Date());
+  const [event_desc, setInformation] = useState(route.params.eventInformation);
+  const [event_pic, setEventPic] = useState(route.params.eventPic);
+  const [event_price, setPrice] = useState(route.params.price);
+  const [event_date, setDate] = useState(
+    new Date(route.params.date + "T11:43:00.000Z")
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [cut_date_string, setCutDate] = useState("");
-  const [event_time, setTime] = useState(new Date());
+  const [cut_date_string, setCutDate] = useState(route.params.date);
+  const [event_time, setTime] = useState(
+    new Date("2023-05-27T" + route.params.time + ".000Z")
+  );
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [cut_time_string, setCutTime] = useState("");
-  const [release_date, setReleaseDate] = useState(new Date());
+  const [cut_time_string, setCutTime] = useState(route.params.time);
+  const [release_date, setReleaseDate] = useState(
+    new Date(route.params.releaseDate + "T11:43:00.000Z")
+  );
   const [showReleaseDatePicker, setShowReleaseDatePicker] = useState(false);
-  const [cut_release_date_string, setCutReleaseDate] = useState("");
-  const [release_time, setReleaseTime] = useState(new Date());
-  const [cut_release_time_string, setCutReleaseTime] = useState("");
+  const [cut_release_date_string, setCutReleaseDate] = useState(
+    route.params.releaseDate
+  );
+  const [release_time, setReleaseTime] = useState(
+    new Date("2023-05-27T" + route.params.releaseTime + "Z")
+  );
+  const [cut_release_time_string, setCutReleaseTime] = useState(
+    route.params.releaseTime
+  );
   const [showReleaseTimePicker, setShowReleaseTimePicker] = useState(false);
   const [imageUri, setImageUri] = useState("");
-  const [location, setLocation] = useState("");
-  const [tickets_left, setTicketsLeft] = useState("");
+  const [location, setLocation] = useState(route.params.location);
+  const [tickets_left, setTicketsLeft] = useState(route.params.ticketsLeft);
   const [organization, setOrganizationID] = useState(" ");
   const [error, setError] = useState("");
+  const eventId = route.params.eventId;
   const [modalVisible, setModalVisible] = useState(false);
-  const [successModalVisible, setSuccessModalVisible] = useState(false);
-  const [message, setMessage] = useState("");
-  const navigation = useNavigation();
+
+  console.log("event id " + eventId);
+  console.log("org id: " + organization);
+  console.log(event_date);
+  console.log(event_time);
+  console.log("price: " + event_price);
+  console.log("cuttad tid" + cut_date_string);
+  console.log("eventvild: " + event_pic);
+  console.log("tickets " + tickets_left);
+
+  const getOrganizationProfile = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      const response = await API_BASE_URL.get("/api/profile/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const { data: userProfile } = response.data;
+
+      if (userProfile && userProfile.length > 0) {
+        const { id } = userProfile[0];
+        setOrganizationID(id);
+        console.log("org: " + organization + " hej" + id);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSave = async () => {
+    if (
+      !event_name ||
+      !event_desc ||
+      !event_pic ||
+      !event_price ||
+      !event_date ||
+      !event_time ||
+      !location ||
+      !tickets_left
+    ) {
+      setError("Please fill in all the required fields to edit your event!");
+      setModalVisible(true);
+      console.log('FEL');
+      return;
+    }
+    const body = {
+      event_name: event_name,
+      event_desc: event_desc,
+      event_pic: event_pic,
+      event_price: event_price,
+      event_date: cut_date_string,
+      event_time: cut_time_string,
+      release_date: cut_release_date_string,
+      release_time: cut_release_time_string,
+      event_location: location,
+      tickets_left: tickets_left,
+    };
+
+    try {
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      console.log(body);
+      const response = await API_BASE_URL.put(
+        `/api/organizations/${organization}/events/${eventId}/`,
+        body,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log("hej" + body);
+      console.log(response.data);
+      navigation.navigate("MyEventuresOrgPage", { isProfileUpdated: true });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     getOrganizationProfile();
+    console.log(organization);
   }, []);
 
   const [showModal, setShowModal] = useState(false);
@@ -74,78 +165,6 @@ const CreatePage = () => {
     setSelectedImage(image);
     setShowModal(false);
     setEventPic(index + 101);
-  };
-
-  const getOrganizationProfile = async () => {
-    try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.get("/api/profile/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const { data: userProfile } = response.data;
-
-      if (userProfile && userProfile.length > 0) {
-        const { id } = userProfile[0];
-        setOrganizationID(id);
-        console.log("org: " + organization + " hej" + id);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (
-      !event_name ||
-      !event_desc ||
-      !event_pic ||
-      !event_price ||
-      !cut_date_string ||
-      !cut_time_string ||
-      !location ||
-      !tickets_left
-    ) {
-      setMessage("Please fill in all the required fields to create an event!");
-      setModalVisible(true);
-      return;
-    }
-    try {
-      const body = {
-        event_name: event_name,
-        event_desc: event_desc,
-        event_pic: event_pic,
-        event_price: event_price,
-        event_date: cut_date_string,
-        event_time: cut_time_string,
-        release_date: cut_release_date_string,
-        release_time: cut_release_time_string,
-        event_location: location,
-        tickets_left: tickets_left,
-        event_org: organization,
-      };
-      console.log(organization);
-
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await API_BASE_URL.post(
-        `/api/organizations/${organization}/events/`,
-        body,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      setMessage("Good job, you have created a new event!");
-      setSuccessModalVisible(true);
-      console.log("Event created");
-      const state = {
-        userToken: response.data.token,
-      };
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const handleDateChange = (event, selectedDate) => {
@@ -186,38 +205,8 @@ const CreatePage = () => {
     console.log(event_release_time_string);
   };
 
-  const resetInputFields = () => {
-    setTitle("");
-    setInformation("");
-    setEventPic("");
-    setPrice("");
-    setDate(new Date());
-    setShowDatePicker(false);
-    setCutDate("");
-    setTime(new Date());
-    setShowTimePicker(false);
-    setCutTime("");
-    setReleaseDate(new Date());
-    setShowReleaseDatePicker(false);
-    setCutReleaseDate("");
-    setReleaseTime(new Date());
-    setShowReleaseTimePicker(false);
-    setCutReleaseTime("");
-    setImageUri("");
-    setLocation("");
-    setTicketsLeft("");
-    setError("");
-    setSelectedImage(null);
-  };
-
   const closeModal = () => {
     setModalVisible(false);
-  };
-
-  const closeSuccessModal = () => {
-    setSuccessModalVisible(false);
-    resetInputFields();
-    navigation.navigate("MyEventuresOrgPage");
   };
 
   return (
@@ -229,7 +218,7 @@ const CreatePage = () => {
             style={styles.inputField}
             onChangeText={(text) => setTitle(text)}
             value={event_name}
-            placeholder="Enter event title..."
+            placeholder="Enter event title"
           />
         </View>
 
@@ -280,12 +269,7 @@ const CreatePage = () => {
               <View style={styles.dateText}>
                 <Text style={{ marginLeft: "5%" }}>Time *</Text>
                 <Text style={styles.dateAndTimeText}>
-                  {event_time.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                    hourCycle: "h23",
-                  })}
+                  {event_time.toString().slice(16, 21)}
                 </Text>
               </View>
             </View>
@@ -339,12 +323,7 @@ const CreatePage = () => {
               <View style={styles.dateText}>
                 <Text style={{ marginLeft: "5%" }}>Time</Text>
                 <Text style={styles.dateAndTimeText}>
-                  {release_time.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                    hourCycle: "h23",
-                  })}
+                  {release_time.toString().slice(16, 21)}
                 </Text>
               </View>
             </View>
@@ -425,7 +404,7 @@ const CreatePage = () => {
             ]}
             onChangeText={(text) => setInformation(text)}
             value={event_desc}
-            placeholder="Enter event info..."
+            placeholder="Enter event info"
           />
         </View>
 
@@ -435,7 +414,7 @@ const CreatePage = () => {
             style={styles.inputField}
             onChangeText={(text) => setLocation(text)}
             value={location}
-            placeholder="Enter event location..."
+            placeholder="Enter event location"
           />
         </View>
 
@@ -444,12 +423,12 @@ const CreatePage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d+$/.test(text)) {
+              if (/^\d*(\.\d*)?$/.test(text)) {
                 setPrice(text);
               }
             }}
             value={event_price}
-            placeholder="Enter event price..."
+            placeholder="Enter event price"
             keyboardType="numeric"
           />
         </View>
@@ -463,37 +442,28 @@ const CreatePage = () => {
                 setTicketsLeft(text);
               }
             }}
-            value={tickets_left}
-            placeholder="Enter ticket amount..."
+            value={tickets_left.toString()}
+            placeholder="Enter ticket amount"
             keyboardType="numeric"
           />
         </View>
-
-        <View style={{ marginVertical: "0.5%", marginHorizontal: "4%" }}>
+        <View style={{ marginHorizontal: "4%" }}>
           <Pressable
+            onPress={handleSave}
             style={({ pressed }) => [
               GlobalStyles.button,
               pressed && { opacity: 0.8 },
             ]}
           >
-            <Text style={GlobalStyles.buttonText} onPress={handleSubmit}>
-              {" "}
-              Create Eventure
-            </Text>
+            <Text style={GlobalStyles.buttonText}> Save changes</Text>
           </Pressable>
         </View>
         <View style={{ height: 50 }}></View>
         <PopUpModal
           isVisible={modalVisible}
-          text={message}
+          text={error}
           closeModal={closeModal}
           buttonText="OK"
-        />
-        <PopUpModal
-          isVisible={successModalVisible}
-          text={message}
-          closeModal={closeSuccessModal}
-          buttonText="Go to My Eventures"
         />
       </ScrollView>
     </SafeAreaView>
@@ -501,118 +471,119 @@ const CreatePage = () => {
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-    width: "auto",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#B8E3FF",
-  },
-  createEventArea: {
-    flex: 1,
-  },
-  inputContainer: {
-    width: "100%",
-    marginTop: 10,
-    paddingHorizontal: "4%",
-  },
-  inputLabel: {
-    fontSize: 13,
-    marginBottom: 5,
-  },
-  inputField: {
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: "white",
-  },
-  inputComponent: {
-    width: "100%",
-    marginTop: 10,
-    paddingHorizontal: "4%",
-  },
-  inputPictureField: {
-    width: "99%",
-    height: 200,
-    margin: "0.5%",
-    borderRadius: 5,
-    backgroundColor: "white",
-    justifyContent: "center",
-  },
 
-  dateAndTime: {
-    alignItems: "center",
-    flexDirection: "row",
-    height: "8%",
-    marginBottom: 5,
-    marginHorizontal: "4%",
-  },
-
-  datePickerButton: {
-    width: "48%",
-    height: 55,
-    padding: 10,
-    borderRadius: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "white",
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-
-  timePickerButton: {
-    width: "48%",
-    height: 55,
-    padding: 10,
-    borderRadius: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginLeft: "4%",
-    backgroundColor: "white",
-  },
-
-  dateAndTimeText: {
-    fontWeight: "bold",
-    marginLeft: "5%",
-    fontSize: 13,
-  },
-  imagePickerImage: {
-    marginVertical: 4,
-    borderWidth: 2,
-    borderColor: "#ffffff",
-    borderRadius: 5,
-    height: 120,
-    width: 200,
-    marginLeft: "4%",
-  },
-  imagePickerButton: {
-    height: 100,
-    width: "92%",
-    backgroundColor: "white",
-    marginHorizontal: "4%",
-    borderRadius: 4,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 20,
-  },
+    headerContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 20,
+        width: "auto",
+      },
+      container: {
+        flex: 1,
+        backgroundColor: "#B8E3FF",
+      },
+      createEventArea: {
+        flex: 1,
+      },
+      inputContainer: {
+        width: "100%",
+        marginTop: 10,
+        paddingHorizontal: "4%",
+      },
+      inputLabel: {
+        fontSize: 13,
+        marginBottom: 5,
+      },
+      inputField: {
+        borderRadius: 5,
+        padding: 10,
+        backgroundColor: "white",
+      },
+      inputComponent: {
+        width: "100%",
+        marginTop: 10,
+        paddingHorizontal: "4%",
+      },
+      inputPictureField: {
+        width: "99%",
+        height: 200,
+        margin: "0.5%",
+        borderRadius: 5,
+        backgroundColor: "white",
+        justifyContent: "center",
+      },
+    
+      dateAndTime: {
+        alignItems: "center",
+        flexDirection: "row",
+        height: "8%",
+        marginBottom: 5,
+        marginHorizontal: "4%",
+      },
+    
+      datePickerButton: {
+        width: "48%",
+        height: 55,
+        padding: 10,
+        borderRadius: 5,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "white",
+      },
+      buttonContent: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
+      },
+    
+      timePickerButton: {
+        width: "48%",
+        height: 55,
+        padding: 10,
+        borderRadius: 5,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginLeft: "4%",
+        backgroundColor: "white",
+      },
+    
+      dateAndTimeText: {
+        fontWeight: "bold",
+        marginLeft: "5%",
+        fontSize: 13,
+      },
+      imagePickerImage: {
+        marginVertical: 4,
+        borderWidth: 2,
+        borderColor: "#ffffff",
+        borderRadius: 5,
+        height: 120,
+        width: 200,
+        marginLeft: "4%",
+      },
+      imagePickerButton: {
+        height: 100,
+        width: "92%",
+        backgroundColor: "white",
+        marginHorizontal: "4%",
+        borderRadius: 4,
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      },
+      modalContent: {
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingVertical: 20,
+      },
 });
 
-export default CreatePage;
+export default EditEventPage;

@@ -5,10 +5,28 @@ import CreatePage from "../screens/createPage";
 import RequestPage from "../screens/requestPage";
 import MemberPage from "../screens/memberPage";
 import myEventuresOrgPage from "../screens/myEventuresOrgPage";
+import OrgEventPage from '../screens/orgEventPage';
+import EditEventPage from '../screens/editEventPage';
 import { createStackNavigator } from "@react-navigation/stack";
 
 const Tab = createBottomTabNavigator();
 const OrganizationProfileStack = createStackNavigator();
+const MyEventuresOrgStack = createStackNavigator()
+
+function MyEventuresOrgScreen() {
+  return (
+    
+  <MyEventuresOrgStack.Navigator screenOptions={{ headerShown: true }}>
+    <MyEventuresOrgStack.Screen
+        name="MyEventuresOrgPage"
+        component={myEventuresOrgPage}
+        options={{ title: "My Eventures", ...headerStyle, headerLeft: null }}
+      />
+  <OrganizationProfileStack.Screen name="OrgEventPage" component = {OrgEventPage} options= {{title: "", ...headerStyle}}/>
+  <OrganizationProfileStack.Screen name="EditEventPage" component = {EditEventPage} options= {{title: "Edit Eventure", ...headerStyle}}/>
+  </MyEventuresOrgStack.Navigator>
+  )
+}
 
 function OrganizationProfileScreen() {
   return (
@@ -16,14 +34,14 @@ function OrganizationProfileScreen() {
       <OrganizationProfileStack.Screen
         name="Profile"
         component={OrganizationProfilePage}
-        options={{ title: "My profile", ...headerStyle, headerLeft: null }}
+        options={{ title: "My Profile", ...headerStyle, headerLeft: null }}
       />
       <OrganizationProfileStack.Screen
         name="Requests"
         component={RequestPage}
-        options={{ title: "Membership requests", ...headerStyle }}
+        options={{ title: "Membership Requests", ...headerStyle }}
       />
-      <OrganizationProfileStack.Screen
+       <OrganizationProfileStack.Screen
         name="Members"
         component={MemberPage}
         options={{ title: "Members", ...headerStyle }}
@@ -65,8 +83,8 @@ export const OrgTabs = () => {
     >
       <Tab.Screen
         name="MyEventuresOrg"
-        component={myEventuresOrgPage}
-        options={{ title: "My Eventures", ...headerStyle, headerLeft: null  }}
+        component={MyEventuresOrgScreen}
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Create"

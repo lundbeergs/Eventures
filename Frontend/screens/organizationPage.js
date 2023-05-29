@@ -36,6 +36,8 @@ const OrganizationPage = () => {
 
   const handleRefresh = () => {
     setRefreshing(true);
+    fetchOrgData();
+    fetchEventData();
     checkMembership();
     checkMembershipRequest();
     setRefreshing(false);
@@ -103,23 +105,27 @@ const OrganizationPage = () => {
   const checkMembershipRequest = async () => {
     try {
       const student = await AsyncStorage.getItem("studentId");
+      console.log(student);
 
       if (student) {
+        console.log("HÄR");
         const accessToken = await AsyncStorage.getItem("accessToken");
+        console.log(accessToken);
         const response = await API_BASE_URL.get(
-          `/api/membership/request/${student}`,
+          `/api/membership/request/${student}/`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
+        console.log(response.data);
 
         const membershipRequestData = response.data;
         const isPendingRequest = membershipRequestData.find(
           (membershipRequest) => membershipRequest.organization === orgId
         );
-        console.log("Pending: " + isPendingRequest);
+        console.log("Pending: " + membershipRequestData);
 
         if (isPendingRequest) {
           setHasRequestPending(true);
@@ -210,7 +216,17 @@ const OrganizationPage = () => {
   };
 
   return (
-    <View style={{ backgroundColor: "#BDE3FF", flex: 1 }}>
+    <ScrollView
+      style={{ backgroundColor: "#BDE3FF", flex: 1 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          progressBackgroundColor="white"
+          progressViewOffset={-20}
+        />
+      }
+    >
       <View style={styles.whiteBox}>
         <ImageBackground
           source={EventuresBackground}
@@ -230,24 +246,37 @@ const OrganizationPage = () => {
       <View style={styles.orgEventures}>
         <Text style={styles.eventuresText}>
           {" "}
-          {route.params.orgName}s eventures{" "}
+          {route.params.orgName}s Eventures{" "}
         </Text>
       </View>
       <View style={{ flex: 1 }}>
-        <FlatList
-          data={eventData}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderEventItem}
-          contentContainerStyle={styles.eventListContainer}
-        />
+        {eventData.map((item) => (
+          <OnlyEventItem
+            key={item.id.toString()}
+            orgId={item.event_org}
+            orgName={orgName}
+            organizationInformation={item.organizationInformation}
+            eventId={item.id}
+            eventTitle={item.event_name}
+            eventPic={item.event_pic}
+            eventInformation={item.event_desc}
+            location={item.event_location}
+            date={item.event_date}
+            time={item.event_time}
+            price={item.event_price + " kr"}
+            releaseDate={item.release_date}
+            releaseTime={item.release_time}
+            ticketsLeft={item.tickets_left}
+          />
+        ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   whiteBox: {
-    height: "50%",
+    height: 305,
     backgroundColor: "white",
     borderRadius: 4,
     marginHorizontal: "4%",
@@ -277,6 +306,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: "white",
     fontWeight: 800,
+    textAlign: "center",
   },
   headerContainer: {
     marginTop: "2%",
@@ -287,45 +317,6 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     fontWeight: "bold",
-  },
-  editIconContainer: {
-    justifyContent: "center",
-    marginTop: "20%",
-  },
-  buttonContainer: {
-    width: "100%",
-    bottom: "2%",
-    paddingHorizontal: "8%",
-  },
-  myMembershipsField: {
-    paddingVertical: 8,
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.45)",
-    borderRadius: 10,
-  },
-  myMembershipsText: {
-    fontSize: 14,
-    color: "rgba(0, 0, 0, 1)",
-    fontWeight: 600,
-    justifyContent: "center",
-    alignSelf: "center",
-  },
-  membershipField: {
-    paddingVertical: 8,
-    padding: "10%",
-    width: "100%",
-    backgroundColor: "white",
-    borderRadius: 10,
-  },
-  membershipText: {
-    fontSize: 14,
-    color: "rgba(0, 0, 0, 1)",
-  },
-  membershipContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
   },
   button: {
     width: "100%",
@@ -359,14 +350,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "grey",
   },
-  informationContainer: {
-    height: 350,
-    marginRight: 15,
-    marginLeft: 15,
-    backgroundColor: "white",
-    borderRadius: 5,
-  },
-
   background: {
     borderRadius: 4,
     overflow: "hidden",
@@ -376,7 +359,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   orgEventures: {
-    height: 50,
+    height: 30,
     justifyContent: "center",
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     marginHorizontal: 15,

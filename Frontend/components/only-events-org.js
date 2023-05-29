@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import OrgEventPage from "../screens/orgEventPage";
 
 const imagePaths = {
   101: require("../assets/1.png"),
@@ -42,7 +43,7 @@ const OnlyEventOrg = ({
   const navigation = useNavigation();
 
   const goToEvent = () => {
-    navigation.navigate("Create", {
+    navigation.navigate("OrgEventPage", {
       orgId: orgId,
       orgName: orgName,
       orgIcon: orgIcon,
@@ -71,12 +72,12 @@ const OnlyEventOrg = ({
               <Image style={styles.eventPic} source={eventPicSource} />
               <View style={styles.eventTextInfo}>
                 <Text style={{ marginLeft: "3%" }}>
-                  {"Tickets: " + ticketsLeft}
+                  {"Tickets: " + ticketsLeft }
                 </Text>
                 <Text style={{ marginRight: "12%", fontWeight: "bold" }}>
                   {eventTitle}
                 </Text>
-                <Text style={{ marginRight: "3%" }}>{price}</Text>
+                <Text style={{ marginRight: "3%" }}>{price + " kr"}</Text>
               </View>
             </View>
           </View>

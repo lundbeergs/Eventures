@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FlatList } from "react";
 import { useRoute } from "@react-navigation/native";
 import {
   View,
@@ -8,12 +8,14 @@ import {
   SafeAreaView,
   ImageBackground,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../global-style";
+import OnlyEventOrg from "../components/only-events-org";
 
 const OrganizationProfilePage = () => {
   const route = useRoute();
@@ -22,6 +24,7 @@ const OrganizationProfilePage = () => {
   const [orgBio, setOrgBio] = useState("");
   const [eventData, setEventData] = useState([]);
   const [orgId, setOrgId] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const requestHandler = async () => {
     navigation.navigate("Requests");
@@ -29,6 +32,12 @@ const OrganizationProfilePage = () => {
 
   const memberHandler = async () => {
     navigation.navigate("Members");
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getProfile();
+    setRefreshing(false);
   };
 
   const getProfile = async () => {
@@ -85,10 +94,18 @@ const OrganizationProfilePage = () => {
     }
   };
 
-
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            progressBackgroundColor="white"
+            progressViewOffset={-20}
+          />
+        }
+      >
         <View style={styles.whiteBox}>
           <ImageBackground
             source={require("../assets/images/eventures_background.png")}
@@ -106,13 +123,16 @@ const OrganizationProfilePage = () => {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <PurpleButton onPress={requestHandler} text={"Membership requests"} />
-          <PurpleButton onPress={memberHandler} text={"Memberships"} />
+          <PurpleButton onPress={requestHandler} text={"Membership Requests"} />
+          <PurpleButton onPress={memberHandler} text={"Members"} />
+        </View>
+
+        <View style={{ alignItems: "center", bottom: "2%" }}>
+          <View style={styles.buttonContainer}>
+            <PurpleButton onPress={logOutHandler} text="Sign Out" />
+          </View>
         </View>
       </ScrollView>
-      <View style={styles.buttonContainer}>
-        <PurpleButton onPress={logOutHandler} text="Log Out" />
-      </View>
     </SafeAreaView>
   );
 };
@@ -122,7 +142,7 @@ const styles = StyleSheet.create({
     height: "70%",
     backgroundColor: "white",
     borderRadius: 4,
-    marginHorizontal: "8%",
+    marginHorizontal: "4%",
     padding: "2%",
     flex: 1,
   },
@@ -167,7 +187,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    paddingHorizontal: "8%",
+    paddingHorizontal: "4%",
     marginBottom: 10,
   },
 });

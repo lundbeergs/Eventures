@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     height: "auto",
     marginBottom: 10,
-    marginHorizontal: 15,
+    marginHorizontal: '4%',
   },
 
   eventContainer: {

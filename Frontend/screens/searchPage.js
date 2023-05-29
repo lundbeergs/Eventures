@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  ScrollView,
+  RefreshControl,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -14,6 +14,7 @@ import SearchEventList from "../components/search-event-list";
 import OrgList from "../components/org-list";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios.js";
+import GlobalStyles from "../global-style";
 
 const SearchPage = () => {
   const navigation = useNavigation();
@@ -24,6 +25,7 @@ const SearchPage = () => {
   const [orgData, setOrgData] = useState([]);
   const [eventData, setEventData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchOrgData();
@@ -33,6 +35,13 @@ const SearchPage = () => {
   useEffect(() => {
     filterData();
   }, [searchQuery, currentSelection, eventData, orgData]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchOrgData();
+    fetchEventData();
+    setRefreshing(false);
+  };
 
   const fetchOrgData = async () => {
     try {
@@ -134,19 +143,34 @@ const SearchPage = () => {
         </View>
       </View>
       <View style={styles.compArea}>
-        {currentSelection
-          === 'events' && (
-            <FlatList
-              data={[{ key: 'event' }]}
-              renderItem={({ item }) => <SearchEventList data={filteredData.reverse()}/>}
-              keyExtractor={(item) => item.key}
-            />
-          )}
+        {currentSelection === 'events' && (
+          <FlatList
+            data={[{ key: 'event' }]}
+            renderItem={({ item }) => <SearchEventList data={filteredData.reverse()} />}
+            keyExtractor={(item) => item.key}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                progressBackgroundColor="white"
+                progressViewOffset={-20}
+              />
+            }
+          />
+        )}
         {currentSelection === 'organizations' && (
           <FlatList
             data={[{ key: 'org' }]}
             renderItem={({ item }) => <OrgList data={filteredData} />}
             keyExtractor={(item) => item.key}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                progressBackgroundColor="white"
+                progressViewOffset={-20}
+              />
+            }
           />
         )}
       </View>

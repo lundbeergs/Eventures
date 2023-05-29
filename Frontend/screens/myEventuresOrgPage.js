@@ -3,13 +3,10 @@ import { useRoute } from "@react-navigation/native";
 import {
   View,
   StyleSheet,
-  Image,
-  ScrollView,
   SafeAreaView,
-  ImageBackground,
   FlatList,
+  RefreshControl,
 } from "react-native";
-import PurpleButton from "../components/PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
@@ -17,12 +14,11 @@ import GlobalStyles from "../global-style";
 import OnlyEventOrg from "../components/only-events-org";
 
 const MyEventuresOrgPage = () => {
-  const route = useRoute();
-  const navigation = useNavigation();
   const [orgName, setOrgName] = useState("");
   const [orgBio, setOrgBio] = useState("");
   const [eventData, setEventData] = useState([]);
   const [orgId, setOrgId] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const getProfile = async () => {
     try {
@@ -44,15 +40,18 @@ const MyEventuresOrgPage = () => {
       console.error(error);
     }
   };
-  useEffect(() => {
-    getProfile();
-  }, []);
 
   useEffect(() => {
-    if (orgId) {
-      fetchEventData();
-    }
+    getProfile();
+    fetchEventData();
   }, [orgId]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    getProfile();
+    fetchEventData();
+    setRefreshing(false);
+  };
 
   const fetchEventData = async () => {
     try {
@@ -66,7 +65,7 @@ const MyEventuresOrgPage = () => {
       const filteredEvents = allEvents.filter(
         (eventData) => eventData.event_org === orgId
       );
-      setEventData(filteredEvents);
+      setEventData(filteredEvents.reverse());
     } catch (error) {
       console.error(error);
     }
@@ -109,7 +108,7 @@ const MyEventuresOrgPage = () => {
         location={event_location}
         date={event_date}
         time={event_time}
-        price={event_price + " kr"}
+        price={event_price}
         releaseDate={release_date}
         releaseTime={release_time}
         ticketsLeft={tickets_left}
@@ -119,16 +118,24 @@ const MyEventuresOrgPage = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-        <View style={{ flex: 1, justifyContent: "space-between" }}>
-          <View style={styles.eventField}>
-            <FlatList
-              data={eventData}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderEventItem}
-              contentContainerStyle={styles.eventListContainer}
-            />
-          </View>
+      <View style={{ flex: 1, justifyContent: "space-between" }}>
+        <View style={styles.eventField}>
+          <FlatList
+            data={eventData}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderEventItem}
+            contentContainerStyle={styles.eventListContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                progressBackgroundColor="white"
+                progressViewOffset={-20}
+              />
+            }
+          />
         </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -138,10 +145,8 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 4,
     marginVertical: "2%",
-    paddingHorizontal: "4.5%",
     flex: 1,
   },
 });
 
 export default MyEventuresOrgPage;
-
