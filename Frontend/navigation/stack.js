@@ -23,7 +23,7 @@ export const FirstStack = () => {
       <Stack.Screen name="FirstPage" component={FirstPage}
       options={{title: '', headerStyle: {backgroundColor: '#B8E3FF'}, headerLeft: null}}
       />
-      <Stack.Screen name="HomeStackStudent" component={HomeTabs} options={{ headerShown: false }}/>
+      <Stack.Screen name="HomeStackStudent" component={HomeTabs} options={{ headerShown: false,  gestureEnabled: false }}/>
   
       <Stack.Screen name="HomePageOrganization" component={OrgTabs} options={{ headerShown: false }}/>
       <Stack.Screen name="StudentLoginPage" component={StudentLoginPage}
