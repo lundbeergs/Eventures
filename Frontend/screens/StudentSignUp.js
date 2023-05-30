@@ -14,6 +14,8 @@ import GlobalStyles from "../global-style.js";
 import PurpleButton from "../components/PurpleButton.js";
 import PopUpModal from "../components/PopUpModal.js";
 import { Picker } from "@react-native-picker/picker";
+import { Switch } from "react-native";
+
 
 const drinkOptions = [
   "Select drink preference...",
@@ -23,6 +25,7 @@ const drinkOptions = [
   "Cider & White wine",
   "Cider & Red wine",
 ];
+
 
 const StudentSignUp = () => {
   const [email, setEmail] = useState("");
@@ -38,6 +41,7 @@ const StudentSignUp = () => {
     useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [gdprChecked, setGdprChecked] = useState(false);
 
   const navigation = useNavigation();
 
@@ -48,7 +52,8 @@ const StudentSignUp = () => {
       !first_name ||
       !last_name ||
       !allergies ||
-      !drinkpref
+      !drinkpref ||
+      !gdprChecked
     ) {
       setError("Please fill in all the required fields to register!");
       setModalVisible(true);
@@ -196,6 +201,18 @@ const StudentSignUp = () => {
               ))}
             </Picker>
           </View>
+          <View style={styles.gdprContainer}>
+            <Text style={styles.gdprText}>
+              I agree to the GDPR terms.
+            </Text>
+            <Switch
+              value={gdprChecked}
+              onValueChange={setGdprChecked}
+              thumbColor={gdprChecked ? "white" : "white"}
+              trackColor={{ false: "lightgray", true: "#6B48D3" }}
+            />
+          </View>
+
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
@@ -255,4 +272,17 @@ const styles = StyleSheet.create({
     marginVertical: "1%",
     fontWeight: 400,
   },
+  gdprContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+    paddingHorizontal: '4%'
+  },
+  gdprText: {
+    marginRight: 10
+  },
+  gdprSwitch: {
+    alignSelf: 'flex-end'
+  }
 });

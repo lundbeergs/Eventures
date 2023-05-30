@@ -186,6 +186,19 @@ const CreatePage = () => {
     console.log(event_release_time_string);
   };
 
+  const handleDatePress = () => {
+    setShowDatePicker(!showDatePicker);
+  };
+  const handleTimePress = () => {
+    setShowTimePicker(!showTimePicker);
+  };
+  const handleReleasePress = () => {
+    setShowReleaseDatePicker(!showReleaseDatePicker);
+  };
+  const handleReleaseTimePress = () => {
+    setShowReleaseTimePicker(!showReleaseTimePicker);
+  };
+
   const resetInputFields = () => {
     setTitle("");
     setInformation("");
@@ -249,7 +262,7 @@ const CreatePage = () => {
         <View style={styles.dateAndTime}>
           <TouchableOpacity
             style={styles.datePickerButton}
-            onPress={() => setShowDatePicker(true)}
+            onPress={() => setShowDatePicker(handleDatePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="calendar" size={30} color="black" />
@@ -261,19 +274,9 @@ const CreatePage = () => {
               </View>
             </View>
           </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={event_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
           <TouchableOpacity
             style={styles.timePickerButton}
-            onPress={() => setShowTimePicker(true)}
+            onPress={() => setShowTimePicker(handleTimePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="time" size={30} color="black" />
@@ -290,6 +293,21 @@ const CreatePage = () => {
               </View>
             </View>
           </TouchableOpacity>
+        </View>
+        <View style={styles.dateAndTimeChange}>
+          <View style={styles.dateChange}>
+          {showDatePicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={event_date}
+              mode="date"
+              is24Hour={true}
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
+          </View>
+          <View style={styles.timeChange}>
           {showTimePicker && (
             <DateTimePicker
               testID="dateTimePicker"
@@ -300,7 +318,8 @@ const CreatePage = () => {
               onChange={handleTimeChange}
             />
           )}
-        </View>
+          </View>
+          </View>
 
         <Text style={{ fontSize: 13, marginTop: 8, marginLeft: "4%" }}>
           Ticket release:
@@ -308,7 +327,7 @@ const CreatePage = () => {
         <View style={styles.dateAndTime}>
           <TouchableOpacity
             style={styles.datePickerButton}
-            onPress={() => setShowReleaseDatePicker(true)}
+            onPress={() => setShowReleaseDatePicker(handleReleasePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="calendar" size={30} color="black" />
@@ -320,19 +339,10 @@ const CreatePage = () => {
               </View>
             </View>
           </TouchableOpacity>
-          {showReleaseDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={release_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleReleaseDateChange}
-            />
-          )}
+         
           <TouchableOpacity
             style={styles.timePickerButton}
-            onPress={() => setShowReleaseTimePicker(true)}
+            onPress={() => setShowReleaseTimePicker(handleReleaseTimePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="time" size={30} color="black" />
@@ -349,7 +359,23 @@ const CreatePage = () => {
               </View>
             </View>
           </TouchableOpacity>
-          {showReleaseTimePicker && (
+         
+        </View>
+        <View style={styles.dateAndTimeChange}>
+        <View style={styles.dateChange}>
+        {showReleaseDatePicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={release_date}
+              mode="date"
+              is24Hour={true}
+              display="default"
+              onChange={handleReleaseDateChange}
+            />
+          )}
+        </View>
+        <View style={styles.dateChange}>
+        {showReleaseTimePicker && (
             <DateTimePicker
               testID="dateTimePicker"
               value={release_time}
@@ -359,9 +385,10 @@ const CreatePage = () => {
               onChange={handleReleaseTimeChange}
             />
           )}
+          </View>
         </View>
 
-        <View style={styles.container}>
+        <View style={styles.imageContainer}>
           {selectedImage ? (
             <TouchableOpacity onPress={handleImagePicker}>
               <Image
@@ -583,6 +610,23 @@ const styles = StyleSheet.create({
     marginLeft: "5%",
     fontSize: 13,
   },
+  dateAndTimeChange: {
+    flexDirection: 'row'
+  },
+
+  dateChange: {
+    width: '42%',
+    marginRight: '5%'
+  },
+
+  timeChange: {
+    marginLeft: '14%'
+  },
+
+  imageContainer: {
+    marginTop: '4%'
+  },
+
   imagePickerImage: {
     marginVertical: 4,
     borderWidth: 2,
