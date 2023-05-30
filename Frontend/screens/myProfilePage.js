@@ -164,6 +164,11 @@ const MyProfilePage = () => {
       if (response.status === 200) {
         await AsyncStorage.removeItem("accessToken");
         await AsyncStorage.removeItem("refreshToken");
+        await AsyncStorage.removeItem("firstName");
+        await AsyncStorage.removeItem("lastName");
+        await AsyncStorage.removeItem("allergies");
+        await AsyncStorage.removeItem("studentId");
+        console.log('HÄR'+ await AsyncStorage.getItem("accessToken"));
 
         navigation.navigate("FirstPage");
       } else {
