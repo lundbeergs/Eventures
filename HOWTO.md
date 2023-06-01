@@ -12,8 +12,11 @@ Django REST FRAMEWORK **highly recommend** and only officially support the lates
 
 * [Node.js > 12](https://nodejs.org) and [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 * [Expo Go](https://reactnative.dev/docs/environment-setup)
+
+**Simulator of choice:**
+* [Android Studio and Android SDK](https://developer.android.com/studio) (recommended)
 * [Xcode 12](https://developer.apple.com/xcode)
-* [Android Studio and Android SDK](https://developer.android.com/studio)
+* [Expo Go App](https://expo.dev/client)
 
 ## Backend setup
 
@@ -41,7 +44,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 5. Open up <http://localhost:8000/admin/> in your browser. You will see that your BACK-END setup functions if this is your first view.
-![Backend runserver](/assets/success-runserver.png)
+![Backend runserver](/howto-assets/success-runserver.png)
 
 6. Run ^C (command + C) to stop the backend server. You have to create a superuser, to be able to login to the Django admin. Do this by running the following code, and entering an email and password:
 
@@ -68,7 +71,7 @@ npm install
 npx expo start
 ```
 
-![Frontend server running](/assets/npx-expo-start.png)
+![Frontend server running](/howto-assets/npx-expo-start.png)
 
 4. Copy the url the frontend server is running on (see the url returned as "130.243.218.18:19000" in the image above). Change the port to for example 8000, so the url is "XXX.XXX.XXX.XX:8000", and start the backend server in the backend terminal using the following command:
 
@@ -77,10 +80,10 @@ npx expo start
 python manage.py runserver XXX.XXX.XXX.XX:8000
 ```
 
-![Backend server running](/assets/python-runserver.png)
+![Backend server running](/howto-assets/python-runserver.png)
 
 5. Copy the <http://XXX.XXX.XXX.XX:8000/> returned when starting the backend server and paste it in the axios.js file in the frontend folder to change the API_BASE_URL and the API_REFRESH_URL. 
 
-![Axios url](/assets/Axios.png)
+![Axios url](/howto-assets/Axios.png)
 
 6. Lastly, start the simulator of your choice using any of the expo commands in the frontend terminal, and the mobile application should be successfully up and running with the frontend and backend connected.
