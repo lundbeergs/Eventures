@@ -225,6 +225,7 @@ const EventPage = () => {
   };
 
   const renderButton = () => {
+    console.log(route.params.price.charAt(0));
     if (currentTime < releaseTime) {
       return (
         <Pressable style={styles.disabledButton} disabled={true}>
@@ -246,7 +247,7 @@ const EventPage = () => {
           <Text style={styles.buttonText}>No Tickets Left</Text>
         </Pressable>
       );
-    } else if (route.params.price === 0) {
+    } else if (route.params.price.charAt(0) === "0") {
       return (
         <Pressable style={styles.button} onPress={buyTicketHandler}>
           <Text style={styles.buttonText}> Get Ticket</Text>

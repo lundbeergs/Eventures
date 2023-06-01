@@ -139,6 +139,19 @@ const EditEventPage = () => {
     }
   };
 
+  const handleDatePress = () => {
+    setShowDatePicker(!showDatePicker);
+  };
+  const handleTimePress = () => {
+    setShowTimePicker(!showTimePicker);
+  };
+  const handleReleasePress = () => {
+    setShowReleaseDatePicker(!showReleaseDatePicker);
+  };
+  const handleReleaseTimePress = () => {
+    setShowReleaseTimePicker(!showReleaseTimePicker);
+  };
+
   useEffect(() => {
     getOrganizationProfile();
     console.log(organization);
@@ -238,7 +251,7 @@ const EditEventPage = () => {
         <View style={styles.dateAndTime}>
           <TouchableOpacity
             style={styles.datePickerButton}
-            onPress={() => setShowDatePicker(true)}
+            onPress={() => setShowDatePicker(handleDatePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="calendar" size={30} color="black" />
@@ -250,19 +263,9 @@ const EditEventPage = () => {
               </View>
             </View>
           </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={event_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
           <TouchableOpacity
             style={styles.timePickerButton}
-            onPress={() => setShowTimePicker(true)}
+            onPress={() => setShowTimePicker(handleTimePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="time" size={30} color="black" />
@@ -274,7 +277,22 @@ const EditEventPage = () => {
               </View>
             </View>
           </TouchableOpacity>
-          {showTimePicker && (
+        </View>
+        <View style={styles.dateAndTimeChange}>
+        <View style={styles.dateChange}>
+        {showDatePicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={event_date}
+              mode="date"
+              is24Hour={true}
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
+        </View>
+        <View style={styles.timeChange}>
+        {showTimePicker && (
             <DateTimePicker
               testID="dateTimePicker"
               value={event_time}
@@ -285,6 +303,7 @@ const EditEventPage = () => {
             />
           )}
         </View>
+        </View>
 
         <Text style={{ fontSize: 13, marginTop: 8, marginLeft: "4%" }}>
           Ticket release:
@@ -292,7 +311,7 @@ const EditEventPage = () => {
         <View style={styles.dateAndTime}>
           <TouchableOpacity
             style={styles.datePickerButton}
-            onPress={() => setShowReleaseDatePicker(true)}
+            onPress={() => setShowReleaseDatePicker(handleReleasePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="calendar" size={30} color="black" />
@@ -304,19 +323,9 @@ const EditEventPage = () => {
               </View>
             </View>
           </TouchableOpacity>
-          {showReleaseDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={release_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleReleaseDateChange}
-            />
-          )}
           <TouchableOpacity
             style={styles.timePickerButton}
-            onPress={() => setShowReleaseTimePicker(true)}
+            onPress={() => setShowReleaseTimePicker(handleReleaseTimePress)}
           >
             <View style={styles.buttonContent}>
               <Ionicons name="time" size={30} color="black" />
@@ -328,7 +337,22 @@ const EditEventPage = () => {
               </View>
             </View>
           </TouchableOpacity>
-          {showReleaseTimePicker && (
+        </View>
+        <View style={styles.dateAndTimeChange}>
+        <View style={styles.dateChange}>
+        {showReleaseDatePicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={release_date}
+              mode="date"
+              is24Hour={true}
+              display="default"
+              onChange={handleReleaseDateChange}
+            />
+          )}
+        </View>
+        <View style={styles.timeChange}>
+        {showReleaseTimePicker && (
             <DateTimePicker
               testID="dateTimePicker"
               value={release_time}
@@ -339,8 +363,9 @@ const EditEventPage = () => {
             />
           )}
         </View>
+        </View>
 
-        <View style={styles.container}>
+        <View style={styles.imageContainer}>
           {selectedImage ? (
             <TouchableOpacity onPress={handleImagePicker}>
               <Image
@@ -530,6 +555,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         backgroundColor: "white",
+      },
+      dateAndTimeChange: {
+        flexDirection: 'row'
+      },
+    
+      dateChange: {
+        width: '42%',
+        marginRight: '5%'
+      },
+    
+      timeChange: {
+        marginLeft: '14%'
+      },
+      imageContainer: {
+        marginTop: '4%'
       },
       buttonContent: {
         flexDirection: "row",
