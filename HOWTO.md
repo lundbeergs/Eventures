@@ -79,7 +79,7 @@ python manage.py runserver XXX.XXX.XXX.XX:8000
 
 ![Backend server running](/assets/python-runserver.png)
 
-5. Copy the http://XXX.XXX.XXX.XX:8000 returned when starting the backend server and paste it in the axios.js file in the frontend folder to change the API_BASE_URL and the API_REFRESH_URL. 
+5. Copy the <http://XXX.XXX.XXX.XX:8000/> returned when starting the backend server and paste it in the axios.js file in the frontend folder to change the API_BASE_URL and the API_REFRESH_URL. 
 
 ![Axios url](/assets/Axios.png)
 
