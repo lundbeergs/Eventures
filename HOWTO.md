@@ -68,7 +68,7 @@ npm install
 npx expo start
 ```
 
-![Frontend server running](/assets/Axios.png)
+![Frontend server running](/assets/npx-expo-start.png)
 
 4. Copy the url the frontend server is running on (see the url returned as "130.243.218.18:19000" in the image above). Change the port to for example 8000, so the url is "XXX.XXX.XXX.XX:8000", and start the backend server in the backend terminal using the following command:
 
@@ -81,6 +81,6 @@ python manage.py runserver XXX.XXX.XXX.XX:8000
 
 5. Copy the http://XXX.XXX.XXX.XX:8000 returned when starting the backend server and paste it in the axios.js file in the frontend folder to change the API_BASE_URL and the API_REFRESH_URL. 
 
-![Axios url](/assets/python-runserver.png)
+![Axios url](/assets/Axios.png)
 
 6. Lastly, start the simulator of your choice using any of the expo commands in the frontend terminal, and the mobile application should be successfully up and running with the frontend and backend connected.
