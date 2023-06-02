@@ -103,7 +103,7 @@ export const OrgTabs = () => {
 const headerStyle = {
   headerTintColor: "black",
   headerTitleStyle: { fontWeight: "bold", fontSize: 20 },
-  headerStyle: { backgroundColor: "#B8E3FF" },
+  headerStyle: { backgroundColor: "#bde3ff" },
   headerTitleAlign: "center",
   headerBackTitle: null,
   headerBackImage: () => (

@@ -194,7 +194,7 @@ export default function StudentLoginPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#B8E3FF",
+    backgroundColor: "#BDE3FF",
   },
   headerContainer: {
     justifyContent: "center",

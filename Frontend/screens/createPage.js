@@ -111,6 +111,7 @@ const CreatePage = () => {
       setModalVisible(true);
       return;
     }
+    getOrganizationProfile()
     try {
       const body = {
         event_name: event_name,
@@ -234,7 +235,7 @@ const CreatePage = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={GlobalStyles.container}>
       <ScrollView style={styles.createEventArea}>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Eventure Title *</Text>
@@ -296,30 +297,30 @@ const CreatePage = () => {
         </View>
         <View style={styles.dateAndTimeChange}>
           <View style={styles.dateChange}>
-          {showDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={event_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
+            {showDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={event_date}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
           </View>
           <View style={styles.timeChange}>
-          {showTimePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={event_time}
-              mode="time"
-              is24Hour={true}
-              display="default"
-              onChange={handleTimeChange}
-            />
-          )}
+            {showTimePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={event_time}
+                mode="time"
+                is24Hour={true}
+                display="default"
+                onChange={handleTimeChange}
+              />
+            )}
           </View>
-          </View>
+        </View>
 
         <Text style={{ fontSize: 13, marginTop: 8, marginLeft: "4%" }}>
           Ticket release:
@@ -339,7 +340,7 @@ const CreatePage = () => {
               </View>
             </View>
           </TouchableOpacity>
-         
+
           <TouchableOpacity
             style={styles.timePickerButton}
             onPress={() => setShowReleaseTimePicker(handleReleaseTimePress)}
@@ -359,32 +360,32 @@ const CreatePage = () => {
               </View>
             </View>
           </TouchableOpacity>
-         
+
         </View>
         <View style={styles.dateAndTimeChange}>
-        <View style={styles.dateChange}>
-        {showReleaseDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={release_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleReleaseDateChange}
-            />
-          )}
-        </View>
-        <View style={styles.dateChange}>
-        {showReleaseTimePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={release_time}
-              mode="time"
-              is24Hour={true}
-              display="default"
-              onChange={handleReleaseTimeChange}
-            />
-          )}
+          <View style={styles.dateChange}>
+            {showReleaseDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={release_date}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={handleReleaseDateChange}
+              />
+            )}
+          </View>
+          <View style={styles.dateChange}>
+            {showReleaseTimePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={release_time}
+                mode="time"
+                is24Hour={true}
+                display="default"
+                onChange={handleReleaseTimeChange}
+              />
+            )}
           </View>
         </View>
 
@@ -471,7 +472,7 @@ const CreatePage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d+$/.test(text)) {
+              if (/^\d*$/.test(text)) { 
                 setPrice(text);
               }
             }}
@@ -486,7 +487,7 @@ const CreatePage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d+$/.test(text)) {
+              if (/^\d*$/.test(text)) { 
                 setTicketsLeft(text);
               }
             }}
@@ -495,6 +496,7 @@ const CreatePage = () => {
             keyboardType="numeric"
           />
         </View>
+
 
         <View style={{ marginVertical: "0.5%", marginHorizontal: "4%" }}>
           <Pressable
@@ -536,7 +538,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#B8E3FF",
+    backgroundColor: "#BDE3FF",
   },
   createEventArea: {
     flex: 1,

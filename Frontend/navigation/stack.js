@@ -18,10 +18,10 @@ export const FirstStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="WelcomePage" component={WelcomePage}
-      options={{title: '', headerStyle: {backgroundColor: '#B8E3FF'}, headerLeft: null}}
+      options={{title: '', headerStyle: {backgroundColor: '#bde3ff'}, headerLeft: null}}
       />
       <Stack.Screen name="FirstPage" component={FirstPage}
-      options={{title: '', headerStyle: {backgroundColor: '#B8E3FF'}, headerLeft: null}}
+      options={{title: '', headerStyle: {backgroundColor: '#bde3ff'}, headerLeft: null}}
       />
       <Stack.Screen name="HomeStackStudent" component={HomeTabs} options={{ headerShown: false,  gestureEnabled: false }}/>
   
@@ -46,7 +46,7 @@ export const FirstStack = () => {
 const commonHeaderStyle = {
     headerTintColor: 'black',
     headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
-    headerStyle: { backgroundColor: '#B8E3FF' },
+    headerStyle: { backgroundColor: '#bde3ff' },
     headerTitleAlign: 'center',
     headerBackTitle: '',
     headerBackImage: () => (

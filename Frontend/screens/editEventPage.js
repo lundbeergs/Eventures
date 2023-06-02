@@ -223,7 +223,7 @@ const EditEventPage = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={GlobalStyles.container}>
       <ScrollView style={styles.createEventArea}>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Eventure Title *</Text>
@@ -279,30 +279,30 @@ const EditEventPage = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.dateAndTimeChange}>
-        <View style={styles.dateChange}>
-        {showDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={event_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
-        </View>
-        <View style={styles.timeChange}>
-        {showTimePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={event_time}
-              mode="time"
-              is24Hour={true}
-              display="default"
-              onChange={handleTimeChange}
-            />
-          )}
-        </View>
+          <View style={styles.dateChange}>
+            {showDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={event_date}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
+          </View>
+          <View style={styles.timeChange}>
+            {showTimePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={event_time}
+                mode="time"
+                is24Hour={true}
+                display="default"
+                onChange={handleTimeChange}
+              />
+            )}
+          </View>
         </View>
 
         <Text style={{ fontSize: 13, marginTop: 8, marginLeft: "4%" }}>
@@ -339,30 +339,30 @@ const EditEventPage = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.dateAndTimeChange}>
-        <View style={styles.dateChange}>
-        {showReleaseDatePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={release_date}
-              mode="date"
-              is24Hour={true}
-              display="default"
-              onChange={handleReleaseDateChange}
-            />
-          )}
-        </View>
-        <View style={styles.timeChange}>
-        {showReleaseTimePicker && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={release_time}
-              mode="time"
-              is24Hour={true}
-              display="default"
-              onChange={handleReleaseTimeChange}
-            />
-          )}
-        </View>
+          <View style={styles.dateChange}>
+            {showReleaseDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={release_date}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={handleReleaseDateChange}
+              />
+            )}
+          </View>
+          <View style={styles.timeChange}>
+            {showReleaseTimePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={release_time}
+                mode="time"
+                is24Hour={true}
+                display="default"
+                onChange={handleReleaseTimeChange}
+              />
+            )}
+          </View>
         </View>
 
         <View style={styles.imageContainer}>
@@ -448,7 +448,7 @@ const EditEventPage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d*(\.\d*)?$/.test(text)) {
+              if (/^\d*(\.\d*)?$/.test(text) || text === '') {
                 setPrice(text);
               }
             }}
@@ -463,7 +463,7 @@ const EditEventPage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d+$/.test(text)) {
+              if (/^\d*$/.test(text) || text === '') {
                 setTicketsLeft(text);
               }
             }}
@@ -472,6 +472,7 @@ const EditEventPage = () => {
             keyboardType="numeric"
           />
         </View>
+
         <View style={{ marginHorizontal: "4%" }}>
           <Pressable
             onPress={handleSave}
@@ -497,133 +498,133 @@ const EditEventPage = () => {
 
 const styles = StyleSheet.create({
 
-    headerContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-        marginBottom: 20,
-        width: "auto",
-      },
-      container: {
-        flex: 1,
-        backgroundColor: "#B8E3FF",
-      },
-      createEventArea: {
-        flex: 1,
-      },
-      inputContainer: {
-        width: "100%",
-        marginTop: 10,
-        paddingHorizontal: "4%",
-      },
-      inputLabel: {
-        fontSize: 13,
-        marginBottom: 5,
-      },
-      inputField: {
-        borderRadius: 5,
-        padding: 10,
-        backgroundColor: "white",
-      },
-      inputComponent: {
-        width: "100%",
-        marginTop: 10,
-        paddingHorizontal: "4%",
-      },
-      inputPictureField: {
-        width: "99%",
-        height: 200,
-        margin: "0.5%",
-        borderRadius: 5,
-        backgroundColor: "white",
-        justifyContent: "center",
-      },
-    
-      dateAndTime: {
-        alignItems: "center",
-        flexDirection: "row",
-        height: "8%",
-        marginBottom: 5,
-        marginHorizontal: "4%",
-      },
-    
-      datePickerButton: {
-        width: "48%",
-        height: 55,
-        padding: 10,
-        borderRadius: 5,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        backgroundColor: "white",
-      },
-      dateAndTimeChange: {
-        flexDirection: 'row'
-      },
-    
-      dateChange: {
-        width: '42%',
-        marginRight: '5%'
-      },
-    
-      timeChange: {
-        marginLeft: '14%'
-      },
-      imageContainer: {
-        marginTop: '4%'
-      },
-      buttonContent: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-      },
-    
-      timePickerButton: {
-        width: "48%",
-        height: 55,
-        padding: 10,
-        borderRadius: 5,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginLeft: "4%",
-        backgroundColor: "white",
-      },
-    
-      dateAndTimeText: {
-        fontWeight: "bold",
-        marginLeft: "5%",
-        fontSize: 13,
-      },
-      imagePickerImage: {
-        marginVertical: 4,
-        borderWidth: 2,
-        borderColor: "#ffffff",
-        borderRadius: 5,
-        height: 120,
-        width: 200,
-        marginLeft: "4%",
-      },
-      imagePickerButton: {
-        height: 100,
-        width: "92%",
-        backgroundColor: "white",
-        marginHorizontal: "4%",
-        borderRadius: 4,
-        justifyContent: "center",
-        alignItems: "center",
-      },
-      modalContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-      },
-      modalContent: {
-        flexGrow: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingVertical: 20,
-      },
+  headerContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+    width: "auto",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#BDE3FF",
+  },
+  createEventArea: {
+    flex: 1,
+  },
+  inputContainer: {
+    width: "100%",
+    marginTop: 10,
+    paddingHorizontal: "4%",
+  },
+  inputLabel: {
+    fontSize: 13,
+    marginBottom: 5,
+  },
+  inputField: {
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: "white",
+  },
+  inputComponent: {
+    width: "100%",
+    marginTop: 10,
+    paddingHorizontal: "4%",
+  },
+  inputPictureField: {
+    width: "99%",
+    height: 200,
+    margin: "0.5%",
+    borderRadius: 5,
+    backgroundColor: "white",
+    justifyContent: "center",
+  },
+
+  dateAndTime: {
+    alignItems: "center",
+    flexDirection: "row",
+    height: "8%",
+    marginBottom: 5,
+    marginHorizontal: "4%",
+  },
+
+  datePickerButton: {
+    width: "48%",
+    height: 55,
+    padding: 10,
+    borderRadius: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "white",
+  },
+  dateAndTimeChange: {
+    flexDirection: 'row'
+  },
+
+  dateChange: {
+    width: '42%',
+    marginRight: '5%'
+  },
+
+  timeChange: {
+    marginLeft: '14%'
+  },
+  imageContainer: {
+    marginTop: '4%'
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+
+  timePickerButton: {
+    width: "48%",
+    height: 55,
+    padding: 10,
+    borderRadius: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginLeft: "4%",
+    backgroundColor: "white",
+  },
+
+  dateAndTimeText: {
+    fontWeight: "bold",
+    marginLeft: "5%",
+    fontSize: 13,
+  },
+  imagePickerImage: {
+    marginVertical: 4,
+    borderWidth: 2,
+    borderColor: "#ffffff",
+    borderRadius: 5,
+    height: 120,
+    width: 200,
+    marginLeft: "4%",
+  },
+  imagePickerButton: {
+    height: 100,
+    width: "92%",
+    backgroundColor: "white",
+    marginHorizontal: "4%",
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
+  },
 });
 
 export default EditEventPage;

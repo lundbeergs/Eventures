@@ -238,7 +238,7 @@ export default StudentSignUp;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#B8E3FF",
+    backgroundColor: "#BDE3FF",
   },
   contentContainer: {
     flex: 1,

@@ -137,7 +137,7 @@ export default EmailSent;
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: "#B8E3FF",
+    backgroundColor: "#bde3ff",
   },
   contentContainer: {
     marginTop: "20%",
