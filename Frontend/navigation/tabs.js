@@ -9,7 +9,6 @@ import MyProfilePage from '../screens/myProfilePage';
 import EventPage from '../screens/eventPage';
 import OrganizationPage from '../screens/organizationPage';
 import EditStudentProfileScreen from '../screens/editStudentProfile';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const HomeStack = createStackNavigator();
 const MyProfileStack = createStackNavigator();

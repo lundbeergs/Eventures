@@ -11,6 +11,7 @@ import { API_BASE_URL } from "../axios";
 import GlobalStyles from "../global-style";
 import OnlyEventOrg from "../components/only-events-org";
 
+// An organization to see an overview of all of their events 
 const MyEventuresOrgPage = () => {
   const [orgName, setOrgName] = useState("");
   const [orgBio, setOrgBio] = useState("");
@@ -69,6 +70,7 @@ const MyEventuresOrgPage = () => {
     }
   };
 
+  // To see all the events in a scroll
   const renderEventItem = ({ item }) => {
     const org_name = orgName;
     const org_id = id;

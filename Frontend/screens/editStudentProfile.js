@@ -33,7 +33,7 @@ export default function EditStudentProfileScreen() {
 
   const handleSave = async () => {
     if (!first_name || !last_name || !allergies) {
-      setError("Please fill in all the required fields to edit your profile");
+      setError("Please fill in all the required fields to edit your profile.");
       setModalVisible(true);
       return;
     }

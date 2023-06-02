@@ -1,5 +1,4 @@
 import { View, Text, FlatList, RefreshControl } from "react-native";
-//import { DUMMY_DATA } from "../data/dummy";
 import SearchEventItem from "./search-event-item";
 
 const SearchEventList = ({data}) => {

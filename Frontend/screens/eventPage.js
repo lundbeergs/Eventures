@@ -34,6 +34,7 @@ const EventPage = () => {
   const eventPic = route.params.eventPic;
   const [orgName, setOrgName] = useState("")
 
+  // Eight pre created images for events
   const imagePaths = {
     101: require("../assets/1.png"),
     102: require("../assets/2.png"),
@@ -72,7 +73,7 @@ const EventPage = () => {
       setReleaseTime(releaseTime);
     }
 
-    // Update current time every second
+    // Checking current time
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -146,21 +147,24 @@ const EventPage = () => {
     setRefreshing(false);
   };
 
+  // Cross referencing the current date and time with the date and time of the ticket release
   const releaseTimeDateHandler = async () => {
     if (
       route.params.releaseDate !== null &&
       route.params.releaseTime !== null
     ) {
       const currentTime = new Date();
+
+      // Changing the release date and time to the wanted format for cross referencing
       const releaseDateParts = route.params.releaseDate.split("-");
       const releaseTimeParts = route.params.releaseTime.split(":");
 
       const releaseDateTime = new Date(
-        releaseDateParts[0], // Year
-        releaseDateParts[1] - 1, // Month (subtract 1 as it is 0-based)
-        releaseDateParts[2], // Day
-        releaseTimeParts[0], // Hours
-        releaseTimeParts[1] // Minutes
+        releaseDateParts[0], 
+        releaseDateParts[1] - 1, 
+        releaseDateParts[2], 
+        releaseTimeParts[0], 
+        releaseTimeParts[1] 
       );
       setReleaseTime(releaseDateTime);
 
@@ -224,8 +228,8 @@ const EventPage = () => {
     setPopUpModalVisible(!popUpModalVisible);
   };
 
+  // Button looking different depending on different parameters
   const renderButton = () => {
-    console.log(route.params.price.charAt(0));
     if (currentTime < releaseTime) {
       return (
         <Pressable style={styles.disabledButton} disabled={true}>

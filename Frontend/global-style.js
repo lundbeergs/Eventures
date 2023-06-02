@@ -10,8 +10,6 @@ const GlobalStyles = StyleSheet.create({
     marginTop: 6,
     backgroundColor: "#BDE3FF",   
   },
-
-  //Text
   header: {
     fontSize: 20,
     fontWeight: "bold",
@@ -21,8 +19,6 @@ const GlobalStyles = StyleSheet.create({
     padding: 14,
     borderRadius: 4,
   },
-
-  //Buttons
   buttonContainer: {
     justifyContent: "center",
     alignItems: "center",
