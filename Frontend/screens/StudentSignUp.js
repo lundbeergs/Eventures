@@ -201,7 +201,7 @@ const StudentSignUp = () => {
           </View>
           <View style={styles.gdprContainer}>
             <Text style={styles.gdprText}>
-              I agree to the GDPR terms.
+              I agree to Eventures terms and conditions
             </Text>
             <Switch
               value={gdprChecked}
