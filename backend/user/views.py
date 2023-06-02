@@ -1,7 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
-
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.response import Response
@@ -21,6 +18,17 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
+# OrganizationRegistrationView, StudentRegistrationView and UserLoginView are inspired by: 
+'''
+***************************************************************************************/
+*    Title: JWT-MultiUser-Authentication-API
+*    Author: 19mddil
+*    Date: 2020
+*    Availability: https://github.com/19mddil/JWT-MultiUser-Authentication-API.git
+*
+***************************************************************************************/
+[Source code]. https://github.com/19mddil/JWT-MultiUser-Authentication-API.git
+'''
 class StudentRegistrationView(CreateAPIView):
 
     serializer_class = StudentRegistrationSerializer
@@ -78,20 +86,6 @@ class UserLoginView(TokenObtainPairView):
 class TokenRefreshView(TokenRefreshView):
     pass
 
-
-# class Logout(APIView):
-#     authentication_classes = [JSONWebTokenAuthentication]
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request):
-#         try:
-#             request.user.auth_token.delete()
-#         except (AttributeError, ObjectDoesNotExist):
-#             pass
-#         return Response({"detail": "You have been logged out."})
-
-
-
 class UserLogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -104,34 +98,7 @@ class UserLogoutView(APIView):
         refresh_token = self.request.data.get('refresh_token')
         token = RefreshToken(token=refresh_token)
         token.blacklist()
-        return Response({"status": "OK, goodbye"})
-
-# class UserLogoutView(APIView):
-#     permission_classes = (IsAuthenticated,)
-#     authentication_classes = [JWTAuthentication]
-
-#     def post(self, request):
-#         refresh_token = request.data.get("refresh_token")
-#         if not refresh_token:
-#             return Response(
-#                 {"error": "Please provide a refresh token"},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         try:
-#             token = RefreshToken(refresh_token)
-#             token.blacklist()
-#         except Exception as e:
-#             return Response(
-#                 {"error": "Token is invalid or expired"},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         return Response(
-#             {"success": "User logged out successfully"},
-#             status=status.HTTP_200_OK
-#         )
-    
+        return Response({"status": "OK, goodbye"})    
 
 class UserDeleteAPIView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -153,29 +120,3 @@ class UserDeleteAPIView(APIView):
                 'error': str(e)
             }
         return Response(response, status=status_code)
-
-
-# def logout_view(request):
-#     logout(request)
-#     return Response({"success": "Successfully logged out."})
-
-# class UserLoginView(RetrieveAPIView):
-#     permission_classes = (AllowAny,)
-#     serializer_class = UserLoginSerializer
-#     lookup_fields = ['email', 'password']
-#     queryset = User.objects.all()
-    
-    
-#     def post(self, request):
-#         serializer = self.serializer_class(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-
-#         response = {
-#             'success' : 'True',
-#             'status code' : status.HTTP_200_OK,
-#             'message': 'User logged in  successfully',
-#             'token' : serializer.data['token'],
-#             }
-#         status_code = status.HTTP_200_OK
-
-#         return Response(response, status=status_code)

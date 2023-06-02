@@ -2,77 +2,80 @@ from django.urls import path,include
 from rest_framework import routers
 from userprofile.views import *
 
-# organizations_router = routers.DefaultRouter()
-# organizations_router.register(r'organizations', OrganizationViewSet)
-
-
-# OBS FIXA SÅ STUDENTID OCH ORGID ALLTID FINNS I URL FROM LOGIN!!!!!!!!!!!!
-
 urlpatterns = [
 	path('profile/',UserProfileView.as_view()),
-    path('drinkpref/', DrinkPrefView.as_view()),
+    path('drinkpref/', DrinkPrefView.as_view()), # Currently not used in front-end
 
-    # Sjsjsjs
-	path('membership/request/<uuid:organization_id>/<uuid:student_id>/', MembershipRequestView.as_view()), # ANVÄND DENNA <3
+    # For students to POST and GET membership requests
+	path('membership/request/<uuid:organization_id>/<uuid:student_id>/', MembershipRequestView.as_view()), 
     path('membership/request/<uuid:student_id>/', MembershipRequestView.as_view()), #Lista på alla membership requests som en user har
 
-    # För organisationen att se sina membership requests, och ändra dessa.
+    # For organizations to GET, PUT and DELETE membership requests
     path('membership/requests/<uuid:organization_id>/', OrganizationMembershipRequestsView.as_view()),
 	path('membership/requests/<uuid:organization_id>/<uuid:student_id>/', OrganizationMembershipRequestsView.as_view()),
 
-    #För organisationen att få en lista på sina medlemmar, samt möjlighet att radera. 
+    # For organizations to GET and DELETE memberships
     path('membership/organization/<uuid:organization_id>/', OrganizationMembershipView.as_view(), name='organization_membership_list'),
-        # för: 
+        # for: 
         #   - GET
     path('membership/organization/<uuid:organization_id>/<uuid:student_id>/', OrganizationMembershipView.as_view(), name='membership_delete'),
-        # för: 
+        # for: 
         #   - DELETE
 
-	# path('membership/request/organization/<uuid:organization_id>/<uuid:student_id>/', MembershipDeleteView.as_view(), name='membership_delete'),
-    path('memberships/', StudentMembershipView.as_view(), name='student-memberships'),
+    # For students to GET a list of all memberships
+	path('memberships/', StudentMembershipView.as_view(), name='student-memberships'),
+
+    # For students to GET membership status for a specific organization
     path('memberships/<uuid:organization_id>/', CheckMembershipView.as_view(), name='organization-memberships'),
+
+    # For students to DELETE membership to a specific organization
 	path('membership/student/<uuid:organization_id>/<uuid:student_id>/', MembershipDeleteView.as_view(), name='membership_delete'),
 
+    # For organizations to GET a list of ID, first name and last name of all student users in the application
     path('students/', StudentListView.as_view()),
+
+    # For students to GET a list of ID and org_name of all the organization users in the application
     path('organizations/', OrganizationListView.as_view()),
+
+    # For students to GET organization profile
     path('organizations/<uuid:organization_id>/', OrganizationStudentView.as_view()),
+
+    # For students to GET a list of all the events hosted by all organizations a student user is member of
     path('student/home/', StudentHomePageView.as_view(), name='student-home'),
 
-    # För alla events (homepage)
-    path('events/', StudentEventView.as_view()),      # behövs studetn_id va me här? kanske kan användas ex när försöker bli member?
+    # For a student to GET a list of all the events in the application
+    path('events/', StudentEventView.as_view()),
     
-    # För events på organizationprofile
+    # For an organization to GET a list of all the events hosted by that organization
     path('organizations/<uuid:organization_id>/events/', OrganizationEventView.as_view(), name='organization_event_list'),                     
-        # för: 
-        #   - GET lista avspecifik orgs events
-        #   - POST nytt event för specifik org
+        # for: 
+        #   - GET list of all events for a specific organization
+        #   - POST for an organization to create a new event
 
+    # For an organization or student to GET information about a specific event
     path('organizations/<uuid:organization_id>/events/<uuid:event_id>/', OrganizationEventView.as_view(), name='organization_event_detail'),
-        # för:
-        #   - GET specifikt attribut av event för en org
-        #   - PUT vid ändring av events attribut
-        #   - DELETE av event
+        # for:
+        #   - GET for organization or student to get specific information about one event
+        #   - PUT for organization to change event details
+        #   - DELETE for organization to delete a specific event they are hosting
 
     # This view returns the list of all tickets bought for a particular event by the members of the organization. 
     path('events/<uuid:event_id>/tickets/', EventTicketsListView.as_view(), name='event-tickets-list'),
-        # för:
+        # for:
         # - GET 
 
-    # This view returns the list of all tickets bought by the logged-in student user.
+    # This view returns the list of all tickets bought by the student user.
     path('student-tickets/', StudentTicketsListView.as_view(), name='student-tickets-list'),
-        # för:
+        # for:
         # - GET
 
-    #This view returns the details of a particular ticket bought for an event by a member of the organization
+    # This view returns the details of a particular ticket bought for an event by a member of the organization
     path('events/<uuid:event_id>/tickets/<uuid:ticket_id>/', EventTicketsDetailView.as_view(), name='event-ticket-detail'),
-        # för:
+        # for:
         # - GET
 
-
+    # For a student to buy a ticket for a specific event
     path('events/<uuid:event_id>/buy/', BuyTicketView.as_view(), name ='buy_tickets')
-        # för:
-        # - POST en student köper en biljett från en specifikt event.
-
-
-   
-]	# path('organizations/', OrganizationViewSet.as_view({'get': 'list'})
+        # for:
+        # - POST 
+]

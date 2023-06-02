@@ -1,10 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
-// import LinearGradient from 'react-native-linear-gradient';
 import { LinearGradient } from 'expo-linear-gradient';
 
-
+// # Loader and the LoaderItem is created by: 
+// '''
+// ***************************************************************************************/
+// *    Title: Welcome
+// *    Author: Musa Adanur
+// *    Date: 2023
+// *    Availability: https://assets6.lottiefiles.com/packages/lf20_llbjwp92qL.json
+// *
+// ***************************************************************************************/
+// [Source code]. https://assets6.lottiefiles.com/packages/lf20_llbjwp92qL.json
+// '''
 
 const Loader = () => {
   return (
