@@ -3,12 +3,12 @@ import { StyleSheet } from "react-native";
 const GlobalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#B8E3FF",
+    backgroundColor: "#BDE3FF",
   },
   modalContainer: {
     flex: 1,
     marginTop: 6,
-    backgroundColor: "#B8E3FF",   
+    backgroundColor: "#BDE3FF",   
   },
 
   //Text

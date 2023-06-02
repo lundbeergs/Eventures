@@ -99,7 +99,7 @@ export default SignInInput;
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: "#B8E3FF",
+    backgroundColor: "#bde3ff",
   },
   headerText: {
     fontSize: 20,

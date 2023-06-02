@@ -102,7 +102,7 @@ const studentHomePageStyle = {
     headerTintColor: 'black',
     headerTitleStyle: { fontWeight: '300', fontSize: 20, borderBottomWidth: 1,
     borderBottomColor: 'black', paddingHorizontal: 20}, 
-    headerStyle: { backgroundColor: '#B8E3FF' },
+    headerStyle: { backgroundColor: '#bde3ff' },
     headerTitleAlign: 'center',
     headerBackTitle: null,
   };
@@ -110,7 +110,7 @@ const studentHomePageStyle = {
 const headerStyle = {
     headerTintColor: 'black',
     headerTitleStyle: { fontWeight: 'bold', fontSize: 20 },
-    headerStyle: { backgroundColor: '#B8E3FF' },
+    headerStyle: { backgroundColor: '#bde3ff' },
     headerTitleAlign: 'center',
     headerBackTitle: null,
     headerBackImage: () => (

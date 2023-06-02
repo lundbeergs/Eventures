@@ -176,7 +176,7 @@ export default function OrganizationLoginPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#B8E3FF",
+    backgroundColor: "#BDE3FF",
   },
   newUsersContainer: {
     margin: 40,
