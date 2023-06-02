@@ -25,7 +25,6 @@ const EditEventPage = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [event_name, setTitle] = useState(route.params.eventTitle);
-  //const [location, setLocation] = useState("");
   const [event_desc, setInformation] = useState(route.params.eventInformation);
   const [event_pic, setEventPic] = useState(route.params.eventPic);
   const [event_price, setPrice] = useState(route.params.price);
@@ -103,7 +102,6 @@ const EditEventPage = () => {
     ) {
       setError("Please fill in all the required fields to edit your event!");
       setModalVisible(true);
-      console.log('FEL');
       return;
     }
     const body = {
@@ -131,8 +129,7 @@ const EditEventPage = () => {
           },
         }
       );
-      console.log("hej" + body);
-      console.log(response.data);
+
       navigation.navigate("MyEventuresOrgPage", { isProfileUpdated: true });
     } catch (error) {
       console.log(error);
@@ -160,6 +157,7 @@ const EditEventPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const availableImages = [
+    // Eight pre created images for events
     require("../assets/1.png"),
     require("../assets/2.png"),
     require("../assets/3.png"),
@@ -234,17 +232,6 @@ const EditEventPage = () => {
             placeholder="Enter event title"
           />
         </View>
-
-        {/*  <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Location:</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={(text) => setLocation(text)}
-                        value={location}
-                        placeholder="Enter event location"
-                    />
-                </View> */}
-
         <Text style={{ fontSize: 13, marginTop: 8, marginLeft: "4%" }}>
           Eventure date:
         </Text>
@@ -448,7 +435,7 @@ const EditEventPage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d*(\.\d*)?$/.test(text) || text === '') {
+              if (/^\d*(\.\d*)?$/.test(text) || text === "") {
                 setPrice(text);
               }
             }}
@@ -463,7 +450,7 @@ const EditEventPage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d*$/.test(text) || text === '') {
+              if (/^\d*$/.test(text) || text === "") {
                 setTicketsLeft(text);
               }
             }}
@@ -497,7 +484,6 @@ const EditEventPage = () => {
 };
 
 const styles = StyleSheet.create({
-
   headerContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -558,19 +544,19 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   dateAndTimeChange: {
-    flexDirection: 'row'
+    flexDirection: "row",
   },
 
   dateChange: {
-    width: '42%',
-    marginRight: '5%'
+    width: "42%",
+    marginRight: "5%",
   },
 
   timeChange: {
-    marginLeft: '14%'
+    marginLeft: "14%",
   },
   imageContainer: {
-    marginTop: '4%'
+    marginTop: "4%",
   },
   buttonContent: {
     flexDirection: "row",

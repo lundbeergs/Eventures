@@ -23,7 +23,6 @@ import { useNavigation } from "@react-navigation/native";
 
 const CreatePage = () => {
   const [event_name, setTitle] = useState("");
-  //const [location, setLocation] = useState("");
   const [event_desc, setInformation] = useState("");
   const [event_pic, setEventPic] = useState("");
   const [event_price, setPrice] = useState("");
@@ -56,6 +55,7 @@ const CreatePage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const availableImages = [
+    // Eight pre created pictures for events
     require("../assets/1.png"),
     require("../assets/2.png"),
     require("../assets/3.png"),
@@ -111,7 +111,7 @@ const CreatePage = () => {
       setModalVisible(true);
       return;
     }
-    getOrganizationProfile()
+    getOrganizationProfile();
     try {
       const body = {
         event_name: event_name,
@@ -246,17 +246,6 @@ const CreatePage = () => {
             placeholder="Enter event title..."
           />
         </View>
-
-        {/*  <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Location:</Text>
-                    <TextInput
-                        style={styles.inputField}
-                        onChangeText={(text) => setLocation(text)}
-                        value={location}
-                        placeholder="Enter event location"
-                    />
-                </View> */}
-
         <Text style={{ fontSize: 13, marginTop: 8, marginLeft: "4%" }}>
           Eventure date:
         </Text>
@@ -360,7 +349,6 @@ const CreatePage = () => {
               </View>
             </View>
           </TouchableOpacity>
-
         </View>
         <View style={styles.dateAndTimeChange}>
           <View style={styles.dateChange}>
@@ -472,7 +460,7 @@ const CreatePage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d*$/.test(text)) { 
+              if (/^\d*$/.test(text)) {
                 setPrice(text);
               }
             }}
@@ -487,7 +475,7 @@ const CreatePage = () => {
           <TextInput
             style={styles.inputField}
             onChangeText={(text) => {
-              if (/^\d*$/.test(text)) { 
+              if (/^\d*$/.test(text)) {
                 setTicketsLeft(text);
               }
             }}
@@ -496,7 +484,6 @@ const CreatePage = () => {
             keyboardType="numeric"
           />
         </View>
-
 
         <View style={{ marginVertical: "0.5%", marginHorizontal: "4%" }}>
           <Pressable
@@ -613,20 +600,20 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   dateAndTimeChange: {
-    flexDirection: 'row'
+    flexDirection: "row",
   },
 
   dateChange: {
-    width: '42%',
-    marginRight: '5%'
+    width: "42%",
+    marginRight: "5%",
   },
 
   timeChange: {
-    marginLeft: '14%'
+    marginLeft: "14%",
   },
 
   imageContainer: {
-    marginTop: '4%'
+    marginTop: "4%",
   },
 
   imagePickerImage: {
