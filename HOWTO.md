@@ -20,8 +20,6 @@ Django REST FRAMEWORK **highly recommend** and only officially support the lates
 
 ## Backend setup
 
-**Run Following Commands in the Terminal**  
-
 To get this project up and running locally on your computer follow the following steps. This assumes you are using the code editor [Visual Studio Code](https://code.visualstudio.com).
 
 1. Clone this repository to your local machine.
