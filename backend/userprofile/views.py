@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import status, viewsets
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
@@ -15,44 +13,23 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.utils import timezone
 from rest_framework import permissions
 from userprofile.permissions import *
-
-
-# Eventsidadiskussion 
-#   - när trycker på "events" dyker ALLA events upp, även från organisationer man ej är member av
-#           - när klickar på event kommer till eventsidan
-#           - om ej member ska buy tickets va gråat och ska stå att måste va member
-#   - när trycker på "organizations" dyker ALLA organisationer upp
-#           - när klickar på organisation kommer in på orgsida
-#           - på orgsida ska finnas knapp BECOME MEMBBER och eventuellt alla organisaionens events under dess profil
-#  
-
-
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
     
 class StudentEventView(APIView):
 
-    # För studenthomepage se alla event
     def get(self, request):
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-   
-        
-    # Ska vi göra så att events för en viss org visas för student när klickar på den org? 
-    # Kan man isf från frontend bara göra en request till get i OrganizationEventView
-    
-
-# OBS ALLA ARGUMENT SOM organization_id, event_id osv MÅSTE FINNAS I URL!!! k
+# OBS ALLA ARGUMENT SOM organization_id, event_id osv MÅSTE FINNAS I URL!!! 
 class OrganizationEventView(APIView):
     permission_classes = (IsAuthenticated, EventViewPermission)
     authentication_classes = [JWTAuthentication] 
 
     # För att se en orgs events  
-    #       - OBS: org_id tas nu från URL!!! Hur kommer det funka om det är en student som gör getrequesten? asså en student som trycker på orgprofilen? organisationens url kommer väl från när man logga in som organisation, studenten har väl ej tilgång till den?????
-    #       - samt borde vi inte ha mer "if student/ if org" både här och för ex membershiprequests? asså för säkerhetsaspekten typ :P
     def get(self, request, organization_id):    
         events = Event.objects.filter(event_org=organization_id)
         serialized_events = EventSerializer(events, many=True)
@@ -70,7 +47,6 @@ class OrganizationEventView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     # För att lägga till nya
     def post(self, request, organization_id):
@@ -116,7 +92,7 @@ class BuyTicketView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-#This view returns the list of all tickets bought for a particular event by the members of the organization. 
+# This view returns the list of all tickets bought for a particular event by the members of the organization. 
 class EventTicketsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -126,7 +102,7 @@ class EventTicketsListView(generics.ListAPIView):
         event_id = self.kwargs['event_id']
         return Ticket.objects.filter(event_id=event_id)
 
-# This view returns the list of all tickets bought by the logged-in student user.
+# This view returns the list of all tickets bought by the student user.
 class StudentTicketsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -136,7 +112,7 @@ class StudentTicketsListView(generics.ListAPIView):
         return Ticket.objects.filter(student_id=self.request.user.student_profile.id)
 
 
-#This view returns the details of a particular ticket bought for an event by a member of the organization
+# This view returns the details of a particular ticket bought for an event by a member of the organization
 class EventTicketsDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication] 
@@ -146,36 +122,6 @@ class EventTicketsDetailView(RetrieveAPIView):
         ticket_id = self.kwargs['ticket_id']
         return Ticket.objects.get(id=ticket_id)
 
-
-# class StudentHomePageView(viewsets.ModelViewSet):
-#     serializer_class = EventSerializer
-#     permission_classes = (IsAuthenticated)
-
-#     def get_queryset(self):
-#         user = self.request.user
-#         if user.is_student:
-#             student = StudentProfile.objects.get(user.id)
-#             organizations = student.member_organizations.all()
-#             events = Event.objects.filter(event_org__in=organizations)
-#             return events
-#         else:
-#             organization = user.organization_profile
-#             events = organization.event.all()
-#             return events
-
-
-# class StudentHomePageView(generics.ListAPIView):
-#     serializer_class = EventSerializer
-
-#     def get_queryset(self):
-#         student_profile = self.request.user.student_profile
-#         memberships = Membership.objects.filter(student=student_profile)
-#         organization_ids = memberships.values_list('organization__id', flat=True)
-#         queryset = Event.objects.filter(event_org__id__in=organization_ids, event_release__lte=timezone.now())
-#         queryset = queryset.order_by('event_release')
-#         return queryset
-
-#DEN HÄR FINKAR!!!!! --------
 class StudentHomePageView(APIView):
      permission_classes = [IsAuthenticated]
      authentication_classes = [JWTAuthentication] 
@@ -200,33 +146,9 @@ class StudentHomePageView(APIView):
          serializer = EventSerializer(events, many=True)
          return Response(serializer.data)
 
-#DENNA OVAN FUNKAR!!!!!!!! ----------
 
-    # def get(self, request, student_id):
-    #     student = StudentProfile.objects.get(id=student_id)
-
-    #     events = Event.objects.all()
-    #     serializer = EventSerializer(events, many=True)
-    #     return Response(serializer.data)
-
-    # @action(detail=True, methods=['get'], url_path='events')
-    # def get_events(self, request, student_id):
-    #     # Get the student from the request user
-    #     student = StudentProfile.objects.get(id=student_id)
-
-    #     # Get all the organizations that the student is a member of
-    #     organizations = student.member_organizations.all()
-    #     memberships = Membership.objects.filter(
-    #         student=request.user.student_profile)
-
-        # # Get all the events related to the organizations that the student is a member of
-        # events = Event.objects.filter(event_org__in=organizations)
-
-        # # Serialize the events
-        # serializer = EventSerializer(events, many=True)
-
-        # return Response(serializer.data)
-
+# Responsible for retreiving the list of membership requests for an organization ('GET')
+# and updating the status of a membership request ('PUT')
 class MembershipRequestView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -245,10 +167,6 @@ class MembershipRequestView(APIView):
         return Response(serializer.data)
 
 
-# Responsible for retreiving the list of membership requests for an organization ('GET')
-# and updating the status of a membership request ('PUT)
-
-
 class OrganizationMembershipRequestsView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -260,7 +178,6 @@ class OrganizationMembershipRequestsView(APIView):
         return Response(serializer.data)
 
     def put(self, request, organization_id, student_id):
-        # student_id = request.data.get('student_id')
         organization = OrganizationProfile.objects.get(id=organization_id)
         student = StudentProfile.objects.get(id=student_id)
 
@@ -268,9 +185,6 @@ class OrganizationMembershipRequestsView(APIView):
             organization=organization, student=student).first()
         if not membership_request:
             return Response({'detail': 'Membership request does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        #if membership_request.accepted:
-        #    return Response({'detail': 'Student is already a member.'}, status=status.HTTP_400_BAD_REQUEST)
 
         membership_request.accepted = True
         membership_request.save()
@@ -319,7 +233,7 @@ class OrganizationMembershipView(APIView):
 
         return Response({'detail': 'Membership deleted.'})
 
-# För student att se vilka medlemskap den har.
+# For student to see what memberships they have.
 class StudentMembershipView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -330,7 +244,7 @@ class StudentMembershipView(APIView):
         serializer = MembershipSerializer(memberships, many=True)
         return Response(serializer.data)
     
-#For the student to check weather the student is a member of this organizatio or not
+# For the student to check weather the student is a member of this organization or not.
 class CheckMembershipView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -386,7 +300,7 @@ class StudentListView(APIView):
         serializer = StudentListSerializer(students, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-#För en student att kunna få in fullständig information om Organization profile
+# For a student to see all the information about an organization profile
 class OrganizationStudentView(APIView):
     permission_classes = [IsAuthenticated|ReadOnly]
     authentication_classes = [JWTAuthentication]
@@ -397,22 +311,7 @@ class OrganizationStudentView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# class OrganizationProfileList(generics.ListAPIView):
-#     serializer_class = OrganizationSerializer
-#     permission_classes = [IsAuthenticated|ReadOnly]
-#     organizations_name = OrganizationProfile.objects.filter().values_list('org_name')
-
-#     def get_queryset(self):
-#         organizations_name = OrganizationProfile.objects.filter().values_list('org_name')
-#         return organizations_name
-
-
-# qs = OrganizationProfile.objects.all()
-#         org_name = self.request.query_params.get('title')
-#         if org_name is not None:
-#             qs =  qs.filter(org_name__icontains=org_name)
-# 		return qs
-
+# Currently not used in the front-end
 class DrinkPrefView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [JWTAuthentication]
@@ -427,6 +326,17 @@ class DrinkPrefView(APIView):
             response_data = {'error': 'Student profile not found.'}
             return Response(response_data, status=404)
 
+# UserProfileView is inspired by: 
+'''
+***************************************************************************************/
+*    Title: JWT-MultiUser-Authentication-API
+*    Author: 19mddil
+*    Date: 2020
+*    Availability: https://github.com/19mddil/JWT-MultiUser-Authentication-API.git
+*
+***************************************************************************************/
+[Source code]. https://github.com/19mddil/JWT-MultiUser-Authentication-API.git
+'''
 class UserProfileView(RetrieveAPIView):
 
     permission_classes = (IsAuthenticated,)
@@ -520,42 +430,3 @@ class UserProfileView(RetrieveAPIView):
                 'error': str(e)
             }
         return Response(response, status=status_code)
-
-# class OrganizationViewSet(viewsets.ModelViewSet):
-    
-# 	queryset = OrganizationProfile.objects.all()
-#     serializer_class = OrganizationSerializer
-# 	permission_classes = (AllowAny,)
-# 	def get_queryset(self):
-#     	qs = OrganizationProfile.objects.all()
-#         org_name = self.request.query_params.get('title')
-#         if org_name is not None:
-#             qs =  qs.filter(org_name__icontains=org_name)
-# 		return qs
-
-
-# GAMLA KODER
-
-
-# class OrganizationMembershipRequestsView(APIView):
-#     permission_classes = (IsAuthenticated,)
-#     authentication_classes = (JSONWebTokenAuthentication,)
-
-#     def get(self, request, organization_id):
-#         organization = OrganizationProfile.objects.get(id=organization_id)
-#         requests = MembershipRequest.objects.filter(organization=organization)
-#         serializer = MembershipRequestSerializer(requests, many=True)
-#         return Response(serializer.data)
-
-#     def put(self, request, organization_id):
-#         organization = OrganizationProfile.objects.get(id=organization_id)
-#         request_id = request.data.get('request_id')
-#         accepted = request.data.get('accepted')
-#         membership_request = MembershipRequest.objects.get(id=request_id, organization=organization)
-#         if accepted:
-#             membership_request.accepted = True
-#             membership_request.save()
-#             organization.members.add(membership_request.student)
-#         else:
-#             membership_request.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)

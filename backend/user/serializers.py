@@ -20,8 +20,6 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    # membership_requests = MembershipRequestSerializer(many=True, read_only=True, required=False)
-    # memberships = MembershipSerializer(many = True, read_only =True, required=False)
     class Meta:
         model = StudentProfile
         fields = ('id','first_name', 'last_name', 'allergies', 'drinkpref')
@@ -60,6 +58,18 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ['id', 'event', 'student', 'date_bought']
+
+# OrganizationRegistrationSerializer, StudentRegistrationSerializer and UserLoginSerializer are inspired by: 
+'''
+***************************************************************************************/
+*    Title: JWT-MultiUser-Authentication-API
+*    Author: 19mddil
+*    Date: 2020
+*    Availability: https://github.com/19mddil/JWT-MultiUser-Authentication-API.git
+*
+***************************************************************************************/
+[Source code]. https://github.com/19mddil/JWT-MultiUser-Authentication-API.git
+'''
 
 class OrganizationRegistrationSerializer(serializers.ModelSerializer):
 
