@@ -25,10 +25,10 @@ The FRONT-END is built using React Native and Expo Go. Expo is an open-source cl
 
 Eventures is an application containing several different screens, therefore it utilizes React Native’s built-in stack navigation and tab navigation. This can be found in the folder "navigation". The navigation stacks consists of several screens, which can be found in the folder "screens".
 
-Eventures utilizes Axios to communicate with the BACK-END API. To enable the application to run during development, the correct API_BASE_URL must be configured in the axios.js file. See the [HOWTO.md][] to know more about how to run the application.
+Eventures utilizes Axios to communicate with the BACK-END API. To enable the application to run during development, the correct API_BASE_URL must be configured in the axios.js file. See the [HOWTO.md](HOWTO.md) to know more about how to run the application.
 
 The BACK-END is built using Django and consist of a core-app, where the settings.py is located, a "user" app where all authentication and the API is located as well as a "userprofile" app where all other objects of the database is located.
 
 Django REST Framework is utilized for building the API. For authentication, SimpleJWT is used.
 
-See the [HOWTO.md][] to know more about how to run the application.
+See the [HOWTO.md](HOWTO.md) to know more about how to run the application.
