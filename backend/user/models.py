@@ -1,23 +1,13 @@
 from django.db import models
-
-# Create your models here.
-
 import uuid
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-
-
 class UserManager(BaseUserManager):
-	'''
-	creating a manager for a custom user model
-	https://docs.djangoproject.com/en/3.0/topics/auth/customizing/#writing-a-manager-for-a-custom-user-model
-	'''
+	
 	def create_user(self, email, password=None):
-		"""
-		Create and return a `User` with an email, username and password.
-		"""
+		
 		if not email:
-			raise ValueError('Users Must Have an email address')
+			raise ValueError('User must have an email address')
 
 		user = self.model(
 			email=self.normalize_email(email),
@@ -27,11 +17,9 @@ class UserManager(BaseUserManager):
 		return user
 
 	def create_superuser(self, email, password):
-		"""
-		Create and return a `User` with superuser (admin) permissions.
-		"""
+		
 		if password is None:
-			raise TypeError('Superusers must have a password.')
+			raise TypeError('Superuser must have a password.')
 
 		user = self.create_user(email, password)
 		user.is_superuser = True
@@ -56,6 +44,7 @@ class UserManager(BaseUserManager):
 		user.save()
 		return user
 		
+# Creation of custom user model
 class User(AbstractBaseUser, PermissionsMixin):
 
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -72,15 +61,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = []
 
-	# Tells Django that the UserManager class defined above should manage
-	# objects of this type.
 	objects = UserManager()
 
 	def __str__(self):
 		return self.email
 
 class Meta:
-	'''
-	to set table name in database
-	'''
 	db_table = "login"
