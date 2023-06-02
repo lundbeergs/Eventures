@@ -4,13 +4,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwtDecode from "jwt-decode";
 import { API_BASE_URL } from "../axios.js";
 
-import { StyleSheet, Text, View, Image, SafeAreaView } from "react-native";
+import { StyleSheet, SafeAreaView } from "react-native";
 
 import GlobalStyles from "../global-style";
-import eventures from "../assets/images/eventures.png";
-import PurpleButton from "../components/PurpleButton";
 import { StatusBar } from "expo-status-bar";
 import Loader from "../components/Loader";
+
+// This page welcomes the user by using the component 'Loader', and checks whether the user has an active refresh token or not
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
@@ -50,14 +50,15 @@ export default function WelcomeScreen() {
     }
   };
 
+
   const checkUserType = async (storedAccessToken) => {
     const storedUserType = await AsyncStorage.getItem("userType");
     if (storedUserType == "is_student") {
-        console.log("EN STUDENT");
+        console.log("A STUDENT");
         getProfile(storedAccessToken);
         navigation.navigate("HomeStackStudent");
       } else if (storedUserType == "is_organization") {
-        console.log("EN ORGANIZATION");
+        console.log("AN ORGANIZATION");
         navigation.navigate("HomePageOrganization");
       }
   };
@@ -66,7 +67,7 @@ export default function WelcomeScreen() {
     setTimeout(() => {
       setIsLoading(false);
       checkRefreshTokenFromStorage();
-    }, 4000); // Wait for 8 seconds before setting isLoading to false
+    }, 8000); 
   }, []);
 
   const refreshTokens = async () => {
@@ -137,7 +138,7 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle="dark-content" />
-      {isLoading ? ( // render the loader if isLoading is true
+      {isLoading ? ( 
         <Loader />
       ) : (
         <></>

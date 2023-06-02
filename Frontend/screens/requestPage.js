@@ -3,7 +3,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Button,
   TouchableOpacity,
   RefreshControl,
 } from "react-native";
@@ -19,9 +18,13 @@ const RequestPage = () => {
   const [students, setStudents] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const capitalizeFirstLetter = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
+  useEffect(() => {
+    getOrganizationProfile();
+
+    if (organization !== "") {
+      getRequests();
+    }
+  }, [organization]);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -109,14 +112,6 @@ const RequestPage = () => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    getOrganizationProfile();
-
-    if (organization !== "") {
-      getRequests();
-    }
-  }, [organization]);
 
   const deleteRequest = async (studentId) => {
     try {

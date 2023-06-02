@@ -11,7 +11,6 @@ import EventList from "../components/event-list";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "../axios.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import PurpleButton from "../components/PurpleButton";
 import { useNavigation } from "@react-navigation/native";
 
 const HomePageStudent = () => {

@@ -34,6 +34,7 @@ const OrgEventPage = () => {
 
   const navigation = useNavigation();
 
+  // Pre created event pictures
   const imagePaths = {
     101: require("../assets/1.png"),
     102: require("../assets/2.png"),

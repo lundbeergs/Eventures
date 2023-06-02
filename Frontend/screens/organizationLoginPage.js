@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import {
@@ -23,7 +23,6 @@ export default function OrganizationLoginPage() {
   const [popUpModalVisible, setPopUpModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
   const [error, setError] = useState("");
   const navigation = useNavigation();
 
@@ -79,7 +78,6 @@ export default function OrganizationLoginPage() {
           userData: jwtDecode(access),
         });
       } else {
-        console.log("Not a student!!!");
         setError("You are not an organization!");
         togglePopUpModal();
       }

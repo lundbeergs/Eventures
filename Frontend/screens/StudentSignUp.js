@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
-  FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { API_BASE_URL } from "../axios.js";
@@ -25,7 +24,6 @@ const drinkOptions = [
   "Cider & White wine",
   "Cider & Red wine",
 ];
-
 
 const StudentSignUp = () => {
   const [email, setEmail] = useState("");
@@ -114,8 +112,8 @@ const StudentSignUp = () => {
     if (password.length < 8) {
       return false;
     }
-    const numberRegex = /[0-9]/;
-    if (!numberRegex.test(password)) {
+    const numbers = /[0-9]/;
+    if (!numbers.test(password)) {
       return false;
     }
     return true;

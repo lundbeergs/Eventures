@@ -18,10 +18,6 @@ const MemberPage = () => {
   const [students, setStudents] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const capitalizeFirstLetter = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
-
   const handleRefresh = () => {
     setRefreshing(true);
     getMembers();
@@ -104,7 +100,6 @@ const MemberPage = () => {
           },
         }
       );
-      console.log(response.data);
       setStudents((prevStudents) =>
         prevStudents.filter((student) => student.id !== studentId)
       );
@@ -136,7 +131,8 @@ const MemberPage = () => {
         {students.map((student) => (
           <View style={styles.studentContainer} key={student.id}>
             <Text style={styles.studentName}>
-            {capitalLetter(student.first_name)} {capitalLetter(student.last_name)}
+              {capitalLetter(student.first_name)}{" "}
+              {capitalLetter(student.last_name)}
             </Text>
             <TouchableOpacity
               style={styles.iconContainer}

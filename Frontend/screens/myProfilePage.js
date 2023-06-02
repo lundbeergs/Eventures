@@ -30,18 +30,16 @@ const MyProfilePage = () => {
   }, []);
 
   useEffect(() => {
-    // Check if the profile has been updated
+    // Checking if the profile is updated, otherwise setting isProfileUpdated to false
     if (route.params?.isProfileUpdated) {
-      // Fetch the updated profile data
       fetchData();
-      // Reset the isProfileUpdated parameter
       navigation.setParams({ isProfileUpdated: false });
     }
   }, [route.params?.isProfileUpdated]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([fetchData()]);
+    await fetchData();
     setRefreshing(false);
   };
 
@@ -60,7 +58,7 @@ const MyProfilePage = () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
 
-      // Fetch profile data
+      // Fetching the student user profile data from the database
       const profileResponse = await API_BASE_URL.get("/api/profile/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -73,7 +71,7 @@ const MyProfilePage = () => {
         setProfileData(userProfile[0]);
       }
 
-      // Fetch organization data
+      // Fetching the organization data from the database
       const orgResponse = await API_BASE_URL.get("/api/organizations/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -81,11 +79,9 @@ const MyProfilePage = () => {
       });
 
       const { data: orgData } = orgResponse;
-
       setOrgData(orgData);
-      console.log(orgData);
 
-      // Fetch membership data
+      // Fetching the student users memberships
       const membershipResponse = await API_BASE_URL.get("/api/memberships/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -93,13 +89,12 @@ const MyProfilePage = () => {
       });
 
       const { data: membershipData } = membershipResponse;
-
       setMyMemberships(membershipData);
+
     } catch (error) {
       console.error(error);
     }
   };
-
 
   const deleteMembership = async (organizationId) => {
     try {
@@ -114,9 +109,8 @@ const MyProfilePage = () => {
           {
             text: "Delete",
             style: "destructive",
+
             onPress: async () => {
-              console.log(organizationId);
-              console.log(profileData.id);
               const accessToken = await AsyncStorage.getItem("accessToken");
               await API_BASE_URL.delete(
                 `/api/membership/student/${organizationId}/${profileData.id}/`,
@@ -149,10 +143,11 @@ const MyProfilePage = () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
 
+      // Blacklisting all the tokens
       const response = await API_BASE_URL.post(
         "/api/logout/",
         {
-          all: true, // Set the 'all' key to true to blacklist all refresh tokens
+          all: true,
         },
         {
           headers: {
@@ -188,7 +183,6 @@ const MyProfilePage = () => {
   };
 
   if (!profileData) {
-    // Render loading state or any other UI when profile data is not available
     return (
       <SafeAreaView style={GlobalStyles.container}>
         <Text>Loading...</Text>

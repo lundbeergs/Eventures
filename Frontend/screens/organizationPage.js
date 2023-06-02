@@ -2,15 +2,13 @@ import {
   Text,
   View,
   ScrollView,
-  Image,
   StyleSheet,
   Pressable,
   RefreshControl,
-  FlatList,
   ImageBackground,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import OnlyEventItem from "../components/only-events-item";
@@ -77,6 +75,7 @@ const OrganizationPage = () => {
     }
   };
 
+  // Checking if the user is a member of the organization
   const checkMembership = async () => {
     try {
       setStudent(await AsyncStorage.getItem("studentId"));
@@ -102,13 +101,13 @@ const OrganizationPage = () => {
     }
   };
 
+  // Checking if the user has sent a membership request to the organization
   const checkMembershipRequest = async () => {
     try {
       const student = await AsyncStorage.getItem("studentId");
-      console.log(student);
+      console.log('Student id: ' + student);
 
       if (student) {
-        console.log("HÄR");
         const accessToken = await AsyncStorage.getItem("accessToken");
         console.log(accessToken);
         const response = await API_BASE_URL.get(
@@ -119,7 +118,6 @@ const OrganizationPage = () => {
             },
           }
         );
-        console.log(response.data);
 
         const membershipRequestData = response.data;
         const isPendingRequest = membershipRequestData.find(
@@ -133,13 +131,14 @@ const OrganizationPage = () => {
           setHasRequestPending(false);
         }
       } else {
-        console.log("Not fast enough!");
+        console.log("Have not recived student id!");
       }
     } catch (error) {
       console.error(error);
     }
   };
 
+  // Function that sends a member request to the organization, but only if the student is not already a member and has no pending request
   const becomeMember = async () => {
     const body = {
       organization: orgId,
@@ -171,28 +170,8 @@ const OrganizationPage = () => {
       console.error(error);
     }
   };
-
-  const renderEventItem = ({ item }) => {
-    return (
-      <OnlyEventItem
-        orgId={item.event_org}
-        orgName={orgName}
-        organizationInformation={item.organizationInformation}
-        eventId={item.id}
-        eventTitle={item.event_name}
-        eventPic={item.event_pic}
-        eventInformation={item.event_desc}
-        location={item.event_location}
-        date={item.event_date}
-        time={item.event_time}
-        price={item.event_price + " kr"}
-        releaseDate={item.release_date}
-        releaseTime={item.release_time}
-        ticketsLeft={item.tickets_left}
-      />
-    );
-  };
-
+ 
+  // Function that gives the button different looks and functionality depending on several parameters
   const renderButton = () => {
     if (isMember) {
       return (

@@ -1,5 +1,4 @@
-import React, { useState, useEffect, FlatList } from "react";
-import { useRoute } from "@react-navigation/native";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +6,6 @@ import {
   ScrollView,
   SafeAreaView,
   ImageBackground,
-  TouchableOpacity,
   RefreshControl,
 } from "react-native";
 import PurpleButton from "../components/PurpleButton";
@@ -15,21 +13,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
 import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../global-style";
-import OnlyEventOrg from "../components/only-events-org";
 
 const OrganizationProfilePage = () => {
-  const route = useRoute();
   const navigation = useNavigation();
   const [orgName, setOrgName] = useState("");
   const [orgBio, setOrgBio] = useState("");
-  const [eventData, setEventData] = useState([]);
   const [orgId, setOrgId] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
+  // Function navigating the user to the request page
   const requestHandler = async () => {
     navigation.navigate("Requests");
   };
 
+  // Function navigating the user to the member page
   const memberHandler = async () => {
     navigation.navigate("Members");
   };
@@ -40,6 +37,7 @@ const OrganizationProfilePage = () => {
     setRefreshing(false);
   };
 
+  // Getting the organization profile from the database
   const getProfile = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
@@ -61,6 +59,7 @@ const OrganizationProfilePage = () => {
       console.error(error);
     }
   };
+
   useEffect(() => {
     getProfile();
   }, []);
@@ -68,11 +67,11 @@ const OrganizationProfilePage = () => {
   const logOutHandler = async () => {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
-
+      // Blacklisting all the tokens
       const response = await API_BASE_URL.post(
         "/api/logout/",
         {
-          all: true, // Set the 'all' key to true to blacklist all refresh tokens
+          all: true,
         },
         {
           headers: {

@@ -14,6 +14,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import GlobalStyles from "../global-style";
 import PurpleButton from "../components/PurpleButton";
 
+// This page generates the users ticket as QR codes, using react native inbuild qr-code generator
+
 const TicketPage = () => {
   const [tickets, setTickets] = useState([]);
   const [events, setEvents] = useState([]);

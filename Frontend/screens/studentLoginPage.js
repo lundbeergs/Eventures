@@ -23,8 +23,6 @@ export default function StudentLoginPage() {
   const [popUpModalVisible, setPopUpModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userType, setUserType] = useState("");
-  const [token, setToken] = useState("");
   const [error, setError] = useState("");
   const navigation = useNavigation();
 
@@ -57,6 +55,7 @@ export default function StudentLoginPage() {
   const removeTokenFromStorage = async () => {
     try {
       await AsyncStorage.removeItem("accessToken");
+      await AsyncStorage.removeItem("refreshToken");
     } catch (error) {
       console.log("Error removing token from storage:", error);
     }
@@ -110,30 +109,8 @@ export default function StudentLoginPage() {
     } catch (error) {
       console.log("Error logging in:", error);
       setError("Wrong email or password. Please try again!");
-      togglePopUpModal();
-    }
-  };
-
-  const refreshTokens = async () => {
-    try {
-      const refreshToken = await AsyncStorage.getItem("refreshToken");
-      if (!refreshToken) {
-        throw new Error("Refresh token not found in storage");
-      }
-      const response = await API_BASE_URL.post("/api/token/refresh/", {
-        refreshToken,
-      });
-      console.log(response.data);
-      const { accessToken, refreshToken: newRefreshToken } = response.data;
-      if (!accessToken || !newRefreshToken) {
-        throw new Error("Tokens not found in response data");
-      }
-      setToken(accessToken);
-      storeAccessTokenInStorage(accessToken);
-      await AsyncStorage.setItem("refreshToken", newRefreshToken);
-    } catch (error) {
-      console.log("Error refreshing tokens:", error);
       removeTokenFromStorage();
+      togglePopUpModal();
     }
   };
 

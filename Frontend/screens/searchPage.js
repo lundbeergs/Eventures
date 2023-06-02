@@ -8,18 +8,13 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import SearchEventList from "../components/search-event-list";
 import OrgList from "../components/org-list";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios.js";
-import GlobalStyles from "../global-style";
 
 const SearchPage = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-
   const [currentSelection, setCurrentSelection] = useState("events");
   const [searchQuery, setSearchQuery] = useState("");
   const [orgData, setOrgData] = useState([]);

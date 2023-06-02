@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useRoute } from "@react-navigation/native";
 import {
   View,
   StyleSheet,
@@ -9,7 +8,6 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "../axios";
-import { useNavigation } from "@react-navigation/native";
 import GlobalStyles from "../global-style";
 import OnlyEventOrg from "../components/only-events-org";
 
